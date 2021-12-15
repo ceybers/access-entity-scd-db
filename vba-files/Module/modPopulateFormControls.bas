@@ -3,12 +3,17 @@ Option Compare Database
 Option Explicit
 
 Const FILENAME As String = "C:\Users\User\Documents\xvba-access-test\schema.csv"
-Const FORM_NAME As String = "sfrmTestTable"
-Const TABLE_NAME As String = "tblTestTable"
+'Const FORM_NAME As String = "sfrmTestTable"
+'Const TABLE_NAME As String = "tblTestTable"
+Dim FORM_NAME As String
+Dim TABLE_NAME As String
 Const CM_TO_TWIP As Integer = 567
 Const DEFAULT_HEIGHT As Integer = 360
 
 Public Sub PopulateFormControls()
+    FORM_NAME = "sfrmDetailC"
+    TABLE_NAME = "tblDetailC"
+    
     'frm.RecordSource = "TableName"
     Dim frm As Form
     DoCmd.OpenForm formName:=FORM_NAME, View:=acDesign
@@ -24,9 +29,10 @@ Public Sub PopulateFormControls()
     frm.AllowAdditions = True
     frm.AllowEdits = True
     frm.AllowDeletions = False
+    frm.RecordSource = TABLE_NAME
     'DoCmd.Close acForm, FORM_NAME, acSaveYes
     'DoCmd.OpenForm formName:=FORM_NAME
-    Exit Sub
+    'Exit Sub
     
     Call RemoveAllControls(FORM_NAME)
     DoCmd.OpenForm formName:=FORM_NAME, View:=acDesign
@@ -44,7 +50,7 @@ Private Function LoadControlSets() As Collection
     Set controlSetCollection = New Collection
     
     Open FILENAME For Input As #1
-    
+    'Debug.Print "hi"
     ' Check CSV schema
     Line Input #1, TextLine
     arr = split(TextLine, ",")
@@ -56,9 +62,10 @@ Private Function LoadControlSets() As Collection
     Debug.Assert arr(5) = "default"
     
     ' Load controlSets
-    Do While Not Eof(1)
+    Do While Not EOF(1)
         Line Input #1, TextLine
         arr = split(TextLine, ",")
+        'Debug.Print CStr(arr(0))
         If CStr(arr(0)) = TABLE_NAME Then
             Set controlSet = New sfrmControlSet
             With controlSet
@@ -126,6 +133,7 @@ Private Function CreateTextBox(formName As String, controlName As String, fieldN
     tb.SpecialEffect = 2
     tb.TopMargin = 31
     tb.ControlSource = fieldName
+    tb.TextAlign = 1 'Left
 End Function
 
 Private Function CreateComboBox(formName As String, controlName As String, fieldName As String, lookup As String, left As Integer, top As Integer)

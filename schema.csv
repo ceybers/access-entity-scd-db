@@ -4,3 +4,18 @@ tblTestTable,field1,Hello,,meters,123
 tblTestTable,field2,World,,cubic meters,456
 tblTestTable,field3,Test,,date,789
 tblTestTable,field4,Lookup test,lkpTestLookup,,
+tblDetailA,ID,ID,,detail ID,
+tblDetailA,EntityFK,Entity,tblEntities,entityFK,
+tblDetailA,DetailA1,Detail A1,,,
+tblDetailA,DetailA2,Detail A2,,,
+tblDetailA,DetailA3,Detail A3,,,
+tblDetailB,ID,ID,,detail ID,
+tblDetailB,EntityFK,Entity,tblEntities,entityFK,
+tblDetailB,DetailB1,Detail B1,,,
+tblDetailB,DetailB2,Detail B2,,,
+tblDetailB,DetailB3,Detail B3,,,
+tblDetailC,ID,ID,,detail ID,
+tblDetailC,EntityFK,Entity,tblEntities,entityFK,
+tblDetailC,DetailC1,Detail C1,,,
+tblDetailC,DetailC2,Detail C2,,,
+tblDetailC,DetailC3,Detail C3,,,

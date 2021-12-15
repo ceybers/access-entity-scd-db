@@ -18,6 +18,9 @@ Private mSelectedDetail As clsDetail
 Private mSelectedEntity As clsEntity
 Private mSelectedEntityType As clsEntityType
 
+Private details As Collection
+Private entities As Collection
+
 Public Property Get Detail() As clsDetail
     Set Detail = mSelectedDetail
 End Property
@@ -45,3 +48,67 @@ Public Property Let EntityType(ByRef vNewValue As clsEntityType)
     RaiseEvent EntityTypeChanged
 End Property
 
+Private Sub Class_Initialize()
+    LoadData
+End Sub
+
+Public Sub LoadData()
+    LoadDetails
+    LoadEntities
+End Sub
+
+Private Function LoadEntities()
+    Set entities = New Collection
+    
+    Dim rs As DAO.Recordset
+    Set rs = CurrentDb.OpenRecordset("SELECT * FROM tblEntities")
+    
+    If Not rs.BOF And Not rs.EOF Then
+        Do Until rs.EOF = True
+            entities.Add clsEntity.Create(rs!ID, rs!Entity)
+            rs.MoveNext
+        Loop
+    End If
+    
+    rs.Close
+    Set rs = Nothing
+    Debug.Print "LoadEntities() complete"
+End Function
+
+Private Function LoadDetails()
+    Set details = New Collection
+    
+    Dim rs As DAO.Recordset
+    Set rs = CurrentDb.OpenRecordset("SELECT * FROM tblDetailTables")
+    
+    If Not rs.BOF And Not rs.EOF Then
+        Do Until rs.EOF = True
+            details.Add clsDetail.Create(rs!ID, rs!DetailTable, rs!tableName)
+            rs.MoveNext
+        Loop
+    End If
+    
+    rs.Close
+    Set rs = Nothing
+    Debug.Print "LoadDetails() complete"
+End Function
+
+Public Function SetEntityByID(idx As Double)
+    Dim thisEntity As clsEntity
+    For Each thisEntity In entities
+        If thisEntity.ID = idx Then
+            Entity = thisEntity
+            Exit Function
+        End If
+    Next thisEntity
+End Function
+
+Public Function SetDetailByID(idx As Double)
+    Dim thisDetail As clsDetail
+    For Each thisDetail In details
+        If thisDetail.ID = idx Then
+            Detail = thisDetail
+            Exit Function
+        End If
+    Next thisDetail
+End Function
