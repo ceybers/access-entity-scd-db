@@ -1,0 +1,6 @@
+table,field,caption,lookup,suffix,default
+tblTestTable,ID,ID,,none,0
+tblTestTable,field1,Hello,,meters,123
+tblTestTable,field2,World,,cubic meters,456
+tblTestTable,field3,Test,,date,789
+tblTestTable,field4,Lookup test,lkpTestLookup,,
