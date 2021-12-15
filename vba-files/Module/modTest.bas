@@ -3,6 +3,8 @@ Option Compare Database
 Option Explicit
 
 Public Function Test()
-    Debug.Print "hi"
-    Xdebug.printx "Hi"
-End Sub
+    Dim Detail As IThing
+    Set Detail = DetailFactory.Create(1, "name", "table")
+    Debug.Print Detail.Name
+End Function
+

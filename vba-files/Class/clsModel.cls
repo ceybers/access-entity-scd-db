@@ -10,105 +10,62 @@ Attribute VB_Exposed = False
 Option Compare Database
 Option Explicit
 
-Public Event DetailChanged()
-Public Event EntityChanged()
-Public Event EntityTypeChanged()
+' Constants
+Const DETAILS_TABLE As String = "tblDetailTables"
+Const ENTITIES_TABLE As String = "tblEntities"
+Const ENTITYTYPES_TABLE As String = "lkpEntityTypes"
 
-Private mSelectedDetail As clsDetail
-Private mSelectedEntity As clsEntity
-Private mSelectedEntityType As clsEntityType
+' Private Variables
+Private Type TModel
+     Details As Collection
+     Entities As Collection
+     EntityTypes As Collection
+End Type
+Private This As TModel
 
-Private details As Collection
-Private entities As Collection
-
-Public Property Get Detail() As clsDetail
-    Set Detail = mSelectedDetail
-End Property
-
-Public Property Let Detail(ByRef vNewValue As clsDetail)
-    Set mSelectedDetail = vNewValue
-    RaiseEvent DetailChanged
-End Property
-
-Public Property Get Entity() As clsEntity
-    Set Entity = mSelectedEntity
-End Property
-
-Public Property Let Entity(ByRef vNewValue As clsEntity)
-    Set mSelectedEntity = vNewValue
-    RaiseEvent EntityChanged
-End Property
-
-Public Property Get EntityType() As clsEntityType
-    Set EntityType = mSelectedEntityType
-End Property
-
-Public Property Let EntityType(ByRef vNewValue As clsEntityType)
-    Set mSelectedEntityType = vNewValue
-    RaiseEvent EntityTypeChanged
-End Property
-
+' Ctor
 Private Sub Class_Initialize()
-    LoadData
+    Debug.Print "Model initialised"
+    Set This.Entities = LoadThings(ENTITIES_TABLE)
+    Set This.Details = LoadThings(DETAILS_TABLE)
+    Set This.EntityTypes = LoadThings(ENTITYTYPES_TABLE)
+    Debug.Print "OK"
 End Sub
 
-Public Sub LoadData()
-    LoadDetails
-    LoadEntities
-End Sub
+' Getters
+Public Property Get Details() As Collection
+    Set Details = This.Details
+End Property
 
-Private Function LoadEntities()
-    Set entities = New Collection
-    
+Public Property Get Entities() As Collection
+    Set Entities = This.Entities
+End Property
+
+Public Property Get EntityTypes() As Collection
+    Set EntityTypes = This.EntityTypes
+End Property
+
+' Private Methods
+Private Function LoadThings(TableName As String) As Collection
     Dim rs As DAO.Recordset
-    Set rs = CurrentDb.OpenRecordset("SELECT * FROM tblEntities")
+    Set LoadThings = New Collection
+
+    Set rs = CurrentDb.OpenRecordset("SELECT * FROM " & TableName)
     
     If Not rs.BOF And Not rs.EOF Then
         Do Until rs.EOF = True
-            entities.Add clsEntity.Create(rs!ID, rs!Entity)
+            Select Case TableName
+                Case DETAILS_TABLE
+                    LoadThings.Add DetailFactory.CreateFromRecordset(rs)
+                Case ENTITIES_TABLE
+                    LoadThings.Add EntityFactory.CreateFromRecordset(rs)
+                Case ENTITYTYPES_TABLE
+                    LoadThings.Add EntityTypeFactory.CreateFromRecordset(rs)
+            End Select
             rs.MoveNext
         Loop
     End If
     
     rs.Close
     Set rs = Nothing
-    Debug.Print "LoadEntities() complete"
-End Function
-
-Private Function LoadDetails()
-    Set details = New Collection
-    
-    Dim rs As DAO.Recordset
-    Set rs = CurrentDb.OpenRecordset("SELECT * FROM tblDetailTables")
-    
-    If Not rs.BOF And Not rs.EOF Then
-        Do Until rs.EOF = True
-            details.Add clsDetail.Create(rs!ID, rs!DetailTable, rs!tableName)
-            rs.MoveNext
-        Loop
-    End If
-    
-    rs.Close
-    Set rs = Nothing
-    Debug.Print "LoadDetails() complete"
-End Function
-
-Public Function SetEntityByID(idx As Double)
-    Dim thisEntity As clsEntity
-    For Each thisEntity In entities
-        If thisEntity.ID = idx Then
-            Entity = thisEntity
-            Exit Function
-        End If
-    Next thisEntity
-End Function
-
-Public Function SetDetailByID(idx As Double)
-    Dim thisDetail As clsDetail
-    For Each thisDetail In details
-        If thisDetail.ID = idx Then
-            Detail = thisDetail
-            Exit Function
-        End If
-    Next thisDetail
 End Function

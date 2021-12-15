@@ -10,38 +10,40 @@ Attribute VB_Exposed = False
 Option Compare Database
 Option Explicit
 
-Private mID As Double
-Private mName As String
-Private mTableName As String
+Implements IThing
 
-Public Property Get ID() As Double
-    ID = mID
+Private Type TDetail
+ ID As Double
+ Name As String
+ TableName As String
+End Type
+Private This As TDetail
+
+Public Property Get Self() As clsDetail
+    Set Self = Me
+End Property
+
+Private Property Get IThing_ID() As Double
+    IThing_ID = This.ID
+End Property
+
+Private Property Get IThing_Name() As String
+    IThing_Name = This.Name
+End Property
+
+Public Property Get TableName() As String
+    TableName = This.TableName
 End Property
 
 Public Property Let ID(ByVal vNewValue As Double)
-    mID = vNewValue
-End Property
-
-Public Property Get Name() As String
-    Name = mName
+    This.ID = vNewValue
 End Property
 
 Public Property Let Name(ByVal vNewValue As String)
-    mName = vNewValue
+    This.Name = vNewValue
 End Property
 
-Public Property Get tableName() As String
-    tableName = mTableName
+Public Property Let TableName(ByVal vNewValue As String)
+    This.TableName = vNewValue
 End Property
 
-Public Property Let tableName(ByVal vNewValue As String)
-    mTableName = vNewValue
-End Property
-
-Public Function Create(detailId As Double, detailName As String, tableName As String) As clsDetail
-    Dim result As New clsDetail
-    result.ID = detailId
-    result.Name = detailName
-    result.tableName = tableName
-    Set Create = result
-End Function

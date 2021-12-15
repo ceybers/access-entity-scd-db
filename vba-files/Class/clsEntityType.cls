@@ -10,28 +10,33 @@ Attribute VB_Exposed = False
 Option Compare Database
 Option Explicit
 
-Private mID As Double
-Private mName As String
+Implements IThing
 
-Public Property Get ID() As Double
-    ID = mID
+Private Type TEntityType
+    ID As Double
+    Name As String
+End Type
+Private This As TEntityType
+
+Public Property Get Self() As clsEntityType
+    Set Self = Me
+End Property
+
+Private Property Get IThing_ID() As Double
+    IThing_ID = This.ID
+End Property
+
+Private Property Get IThing_Name() As String
+    IThing_Name = This.Name
 End Property
 
 Public Property Let ID(ByVal vNewValue As Double)
-    mID = vNewValue
-End Property
-
-Public Property Get Name() As String
-    Name = mName
+    This.ID = vNewValue
 End Property
 
 Public Property Let Name(ByVal vNewValue As String)
-    mName = vNewValue
+    This.Name = vNewValue
 End Property
 
-Public Function Create(entityTypeId As Double, detailName As String) As clsEntityType
-    Dim result As New clsEntityType
-    result.ID = entityTypeId
-    result.Name = detailName
-    Set Create = result
-End Function
+
+
