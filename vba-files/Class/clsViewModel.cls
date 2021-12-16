@@ -104,7 +104,10 @@ Public Function ReplaceSubform(ByRef sfrm As SubForm)
     sfrm.Form.Filter = "EntityFK = " & entity.ID
     sfrm.Form.FilterOn = True
     sfrm.SetFocus
-    DoCmd.GoToRecord Record:=acLast
+    sfrm.Form.AllowAdditions = False
+    sfrm.Form.AllowEdits = False
+    sfrm.Form.AllowDeletions = False
+    'DoCmd.GoToRecord Record:=acLast
 End Function
 
 Public Function ApplyEntitiesSourceToListbox(ByRef lb As ListBox)

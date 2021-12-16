@@ -11,8 +11,8 @@ Const CM_TO_TWIP As Integer = 567
 Const DEFAULT_HEIGHT As Integer = 360
 
 Public Sub PopulateFormControls()
-    FORM_NAME = "sfrmDetailC"
-    TABLE_NAME = "tblDetailC"
+    FORM_NAME = "sfrmDetailA"
+    TABLE_NAME = "tblDetailA"
     
     'frm.RecordSource = "TableName"
     Dim frm As Form
@@ -91,15 +91,19 @@ Private Function PopulateFormWithControlSets(formName As String, controlSetColle
     
     For Each controlSet In controlSetCollection
         x = ((DEFAULT_HEIGHT + 60) * controlSet.index) + 120
+        
         CreateLabel FORM_NAME, "lbl" & controlSet.fieldName, controlSet.caption, (0.25 * CM_TO_TWIP), x
+        
         If controlSet.lookup <> "" Then
-            CreateComboBox FORM_NAME, "txt" & controlSet.fieldName, controlSet.fieldName, controlSet.lookup, (3.25 * CM_TO_TWIP), x
+            CreateComboBox FORM_NAME, "cmbBefore" & controlSet.fieldName, controlSet.fieldName, controlSet.lookup, (3.25 * CM_TO_TWIP), x
+            CreateComboBox FORM_NAME, "cmbAfter" & controlSet.fieldName, controlSet.fieldName, "", (7.5 * CM_TO_TWIP), x
         Else
-            CreateTextBox FORM_NAME, "txt" & controlSet.fieldName, controlSet.fieldName, (3.25 * CM_TO_TWIP), x
+            CreateTextBox FORM_NAME, "txtBefore" & controlSet.fieldName, controlSet.fieldName, (3.25 * CM_TO_TWIP), x
+            CreateTextBox FORM_NAME, "txtAfter" & controlSet.fieldName, "", (7.5 * CM_TO_TWIP), x
         End If
         
         ' Add second textbox for before/after X/Y
-        CreateLabel FORM_NAME, "lblSuffix" & controlSet.fieldName, controlSet.suffix, (7.5 * CM_TO_TWIP), x
+        CreateLabel FORM_NAME, "lblSuffix" & controlSet.fieldName, controlSet.suffix, (11.75 * CM_TO_TWIP), x
     Next controlSet
 End Function
 
