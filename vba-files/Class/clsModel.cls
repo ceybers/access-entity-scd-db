@@ -29,7 +29,6 @@ Private Sub Class_Initialize()
     Set This.Entities = LoadThings(ENTITIES_TABLE)
     Set This.Details = LoadThings(DETAILS_TABLE)
     Set This.EntityTypes = LoadThings(ENTITYTYPES_TABLE)
-    Debug.Print "OK"
 End Sub
 
 ' Getters

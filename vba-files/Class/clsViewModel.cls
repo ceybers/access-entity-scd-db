@@ -48,39 +48,66 @@ End Property
 
 ' Letters
 Public Property Let Detail(ByRef vNewValue As IThing)
+    If vNewValue Is Nothing Then Exit Property
+    If Not This.SelectedDetail Is Nothing Then
+        If Detail.ID = vNewValue.ID Then
+            Exit Property
+        End If
+    End If
+
     Set This.SelectedDetail = vNewValue
     RaiseEvent DetailChanged
 End Property
 
 Public Property Let Entity(ByRef vNewValue As IThing)
+    If vNewValue Is Nothing Then Exit Property
+    If Not This.SelectedEntity Is Nothing Then
+        If Entity.ID = vNewValue.ID Then
+            Exit Property
+        End If
+    End If
+    
     Set This.SelectedEntity = vNewValue
     RaiseEvent EntityChanged
 End Property
 
 Public Property Let EntityType(ByRef vNewValue As IThing)
+    If vNewValue Is Nothing Then Exit Property
+    If Not This.SelectedEntityType Is Nothing Then
+        If EntityType.ID = vNewValue.ID Then
+            Exit Property
+        End If
+    End If
+    
     Set This.SelectedEntityType = vNewValue
     RaiseEvent EntityTypeChanged
 End Property
 
 ' Methods
 Public Function SetDetailByID(idx As Double)
-    Set Detail = SetThingByID(This.Model.Entities, idx)
+    Detail = GetThingByID(This.Model.Details, idx)
 End Function
 
 Public Function SetEntityByID(idx As Double)
-    Set Entity = SetThingByID(This.Model.Entities, idx)
+    Entity = GetThingByID(This.Model.Entities, idx)
 End Function
 
 Public Function SetEntityTypeByID(idx As Double)
-    ' TODO Fix this
-    Debug.Print "EntityType is setting..."
-    Dim thing As IThing
-    Set thing = GetThingByID(This.Model.EntityTypes, idx)
-    Debug.Assert Not thing Is Nothing
-    'Set EntityType = GetThingByID(This.Model.EntityTypes, idx)
-    Debug.Print "EntityType is set"
-    Set This.SelectedEntityType = thing
-    RaiseEvent EntityTypeChanged
+    EntityType = GetThingByID(This.Model.EntityTypes, idx)
+End Function
+
+Public Function UpdateSubform(ByRef sfrm As SubForm)
+    sfrm.SourceObject = Replace(This.SelectedDetail.TableName, "tbl", "sfrm")
+    sfrm.Form.Filter = "EntityFK = " & Entity.ID
+    sfrm.Form.FilterOn = True
+End Function
+
+Public Function ApplyEntitiesSourceToListbox(ByRef lb As ListBox)
+    lb.RowSource = "SELECT * FROM tblEntities WHERE EntityType = " & EntityType.ID & ";"
+End Function
+
+Public Function ApplyDetailsSourceToListbox(ByRef lb As ListBox)
+    lb.RowSource = "SELECT DetailTableFK,DetailTable FROM qryEntityTypeToDetail WHERE EntityTypeFK = " & EntityType.ID & ";"
 End Function
 
 ' Private Methods
@@ -88,7 +115,6 @@ Private Function GetThingByID(thingCollection As Collection, idx As Double) As I
     Dim thisThing As IThing
     For Each thisThing In thingCollection
         If thisThing.ID = idx Then
-            Debug.Print "Found a thing"
             Set GetThingByID = thisThing
             Exit Function
         End If
