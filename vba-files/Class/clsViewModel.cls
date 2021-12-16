@@ -31,23 +31,23 @@ Private Sub Class_Initialize()
 End Sub
 
 ' Getters
-Public Property Get Detail() As IThing
+Public Property Get Detail() As clsDetail
     Debug.Assert Not This.SelectedDetail Is Nothing
     Set Detail = This.SelectedDetail
 End Property
 
-Public Property Get Entity() As IThing
+Public Property Get Entity() As clsEntity
     Debug.Assert Not This.SelectedEntity Is Nothing
     Set Entity = This.SelectedEntity
 End Property
 
-Public Property Get EntityType() As IThing
+Public Property Get EntityType() As clsEntityType
     Debug.Assert Not This.SelectedEntityType Is Nothing
     Set EntityType = This.SelectedEntityType
 End Property
 
 ' Letters
-Public Property Let Detail(ByRef vNewValue As IThing)
+Public Property Let Detail(ByRef vNewValue As clsDetail)
     If vNewValue Is Nothing Then Exit Property
     If Not This.SelectedDetail Is Nothing Then
         If Detail.ID = vNewValue.ID Then
@@ -59,7 +59,7 @@ Public Property Let Detail(ByRef vNewValue As IThing)
     RaiseEvent DetailChanged
 End Property
 
-Public Property Let Entity(ByRef vNewValue As IThing)
+Public Property Let Entity(ByRef vNewValue As clsEntity)
     If vNewValue Is Nothing Then Exit Property
     If Not This.SelectedEntity Is Nothing Then
         If Entity.ID = vNewValue.ID Then
@@ -71,7 +71,7 @@ Public Property Let Entity(ByRef vNewValue As IThing)
     RaiseEvent EntityChanged
 End Property
 
-Public Property Let EntityType(ByRef vNewValue As IThing)
+Public Property Let EntityType(ByRef vNewValue As clsEntityType)
     If vNewValue Is Nothing Then Exit Property
     If Not This.SelectedEntityType Is Nothing Then
         If EntityType.ID = vNewValue.ID Then
@@ -96,10 +96,12 @@ Public Function SetEntityTypeByID(idx As Double)
     EntityType = GetThingByID(This.Model.EntityTypes, idx)
 End Function
 
-Public Function UpdateSubform(ByRef sfrm As SubForm)
-    sfrm.SourceObject = Replace(This.SelectedDetail.TableName, "tbl", "sfrm")
+Public Function ReplaceSubform(ByRef sfrm As SubForm)
+    sfrm.SourceObject = Replace(Detail.TableName, "tbl", "sfrm")
     sfrm.Form.Filter = "EntityFK = " & Entity.ID
     sfrm.Form.FilterOn = True
+    sfrm.SetFocus
+    DoCmd.GoToRecord Record:=acLast
 End Function
 
 Public Function ApplyEntitiesSourceToListbox(ByRef lb As ListBox)

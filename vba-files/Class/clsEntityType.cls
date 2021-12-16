@@ -22,6 +22,14 @@ Public Property Get Self() As clsEntityType
     Set Self = Me
 End Property
 
+Public Property Get ID() As Double
+    ID = This.ID
+End Property
+
+Public Property Get Name() As String
+    Name = This.Name
+End Property
+
 Private Property Get IThing_ID() As Double
     IThing_ID = This.ID
 End Property
