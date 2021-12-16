@@ -18,15 +18,15 @@ Const ENTITYTYPES_TABLE As String = "lkpEntityTypes"
 ' Private Variables
 Private Type TModel
      Details As Collection
-     Entities As Collection
+     entities As Collection
      EntityTypes As Collection
 End Type
 Private This As TModel
 
 ' Ctor
 Private Sub Class_Initialize()
-    Debug.Print "Model initialised"
-    Set This.Entities = LoadThings(ENTITIES_TABLE)
+    'Debug.Print "Model initialised"
+    Set This.entities = LoadThings(ENTITIES_TABLE)
     Set This.Details = LoadThings(DETAILS_TABLE)
     Set This.EntityTypes = LoadThings(ENTITYTYPES_TABLE)
 End Sub
@@ -36,8 +36,8 @@ Public Property Get Details() As Collection
     Set Details = This.Details
 End Property
 
-Public Property Get Entities() As Collection
-    Set Entities = This.Entities
+Public Property Get entities() As Collection
+    Set entities = This.entities
 End Property
 
 Public Property Get EntityTypes() As Collection

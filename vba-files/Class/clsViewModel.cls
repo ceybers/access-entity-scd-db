@@ -26,7 +26,7 @@ Private This As TViewModel
 
 ' Ctor
 Private Sub Class_Initialize()
-    Debug.Print "ViewModel initialised"
+    'Debug.Print "ViewModel initialised"
     Set This.Model = New clsModel
 End Sub
 
@@ -36,9 +36,9 @@ Public Property Get Detail() As clsDetail
     Set Detail = This.SelectedDetail
 End Property
 
-Public Property Get Entity() As clsEntity
+Public Property Get entity() As clsEntity
     Debug.Assert Not This.SelectedEntity Is Nothing
-    Set Entity = This.SelectedEntity
+    Set entity = This.SelectedEntity
 End Property
 
 Public Property Get EntityType() As clsEntityType
@@ -59,10 +59,10 @@ Public Property Let Detail(ByRef vNewValue As clsDetail)
     RaiseEvent DetailChanged
 End Property
 
-Public Property Let Entity(ByRef vNewValue As clsEntity)
+Public Property Let entity(ByRef vNewValue As clsEntity)
     If vNewValue Is Nothing Then Exit Property
     If Not This.SelectedEntity Is Nothing Then
-        If Entity.ID = vNewValue.ID Then
+        If entity.ID = vNewValue.ID Then
             Exit Property
         End If
     End If
@@ -89,7 +89,7 @@ Public Function SetDetailByID(idx As Double)
 End Function
 
 Public Function SetEntityByID(idx As Double)
-    Entity = GetThingByID(This.Model.Entities, idx)
+    entity = GetThingByID(This.Model.entities, idx)
 End Function
 
 Public Function SetEntityTypeByID(idx As Double)
@@ -97,8 +97,11 @@ Public Function SetEntityTypeByID(idx As Double)
 End Function
 
 Public Function ReplaceSubform(ByRef sfrm As SubForm)
+    If This.SelectedEntity Is Nothing Then Exit Function
+    If This.SelectedDetail Is Nothing Then Exit Function
+    
     sfrm.SourceObject = Replace(Detail.TableName, "tbl", "sfrm")
-    sfrm.Form.Filter = "EntityFK = " & Entity.ID
+    sfrm.Form.Filter = "EntityFK = " & entity.ID
     sfrm.Form.FilterOn = True
     sfrm.SetFocus
     DoCmd.GoToRecord Record:=acLast
@@ -110,6 +113,44 @@ End Function
 
 Public Function ApplyDetailsSourceToListbox(ByRef lb As ListBox)
     lb.RowSource = "SELECT DetailTableFK,DetailTable FROM qryEntityTypeToDetail WHERE EntityTypeFK = " & EntityType.ID & ";"
+End Function
+
+Public Function SearchEntity(tb As TextBox, lb As ListBox)
+    Dim filteredEntities As Collection
+    Dim entity As clsEntity
+    Dim i As Integer
+    Dim criteria As String
+    
+    If IsNull(tb) Then
+        Call ApplyEntitiesSourceToListbox(lb)
+        Exit Function
+    End If
+    
+    If tb.Value = "" Then
+        Call ApplyEntitiesSourceToListbox(lb)
+        Exit Function
+    End If
+    
+    Set filteredEntities = New Collection
+    tb.SetFocus
+    criteria = tb.Text & "*"
+    
+    For Each entity In This.Model.entities
+        If entity.Name Like criteria And entity.EntityType = This.SelectedEntityType.ID Then
+            filteredEntities.Add entity
+        End If
+    Next entity
+    
+    lb.RowSource = ""
+    lb.RowSourceType = "Value List"
+    
+    For i = lb.ListCount - 1 To 0 Step -1
+        Call lb.RemoveItem(i)
+    Next i
+    
+    For Each entity In filteredEntities
+        lb.AddItem CStr(entity.ID) & ";" & entity.Name
+    Next entity
 End Function
 
 ' Private Methods
