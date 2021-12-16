@@ -49,36 +49,48 @@ End Property
 ' Letters
 Public Property Let Detail(ByRef vNewValue As IThing)
     If vNewValue Is Nothing Then Exit Property
+<<<<<<< HEAD
     If Not This.SelectedDetail Is Nothing Then
         If Detail.ID = vNewValue.ID Then
             Exit Property
         End If
     End If
 
+=======
+    If This.SelectedDetail.ID = vNewValue.ID Then Exit Property
+>>>>>>> 7f8c097c6402314e8c1eb56ee66b78b799455028
     Set This.SelectedDetail = vNewValue
     RaiseEvent DetailChanged
 End Property
 
 Public Property Let Entity(ByRef vNewValue As IThing)
     If vNewValue Is Nothing Then Exit Property
+<<<<<<< HEAD
     If Not This.SelectedEntity Is Nothing Then
         If Entity.ID = vNewValue.ID Then
             Exit Property
         End If
     End If
     
+=======
+    If This.SelectedDetail.ID = vNewValue.ID Then Exit Property
+>>>>>>> 7f8c097c6402314e8c1eb56ee66b78b799455028
     Set This.SelectedEntity = vNewValue
     RaiseEvent EntityChanged
 End Property
 
 Public Property Let EntityType(ByRef vNewValue As IThing)
     If vNewValue Is Nothing Then Exit Property
+<<<<<<< HEAD
     If Not This.SelectedEntityType Is Nothing Then
         If EntityType.ID = vNewValue.ID Then
             Exit Property
         End If
     End If
     
+=======
+    If This.SelectedDetail.ID = vNewValue.ID Then Exit Property
+>>>>>>> 7f8c097c6402314e8c1eb56ee66b78b799455028
     Set This.SelectedEntityType = vNewValue
     RaiseEvent EntityTypeChanged
 End Property
