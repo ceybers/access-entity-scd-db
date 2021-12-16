@@ -1,0 +1,53 @@
+VERSION 1.0 CLASS
+BEGIN
+  MultiUse = -1  'True
+END
+Attribute VB_Name = "clsEventTest"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = False
+Option Compare Database
+Option Explicit
+
+Private Enum RAGColors
+    Default = 16777215
+    Red = 13421823
+    Yellow = 13431551
+    green = 14282978
+End Enum
+
+Private WithEvents tb As Access.textbox
+Attribute tb.VB_VarHelpID = -1
+
+Public Property Set SetTextbox(textbox As Access.textbox)
+    Set tb = textbox
+    tb.OnChange = "" '"[Event Procedure]"
+    tb.OnExit = "[Event Procedure]"
+End Property
+
+Private Sub tb_Change()
+    Debug.Print tb.Parent.Name & "!" & tb.Name & "_Change()"
+    Dim tbBefore As textbox
+    Set tbBefore = tb.Parent.Controls(Replace(tb.Name, "txtAfter", "txtBefore"))
+    If CStr(tbBefore) <> CStr(tb) Then
+        Debug.Print "Differs"
+        Debug.Print "   " & CStr(tbBefore)
+        Debug.Print "   " & CStr(tb)
+        
+    Else
+        Debug.Print "Same"
+    End If
+End Sub
+
+
+Private Sub tb_Exit(Cancel As Integer)
+    Debug.Print tb.Parent.Name & "!" & tb.Name & "_Exit()"
+    Dim tbBefore As textbox
+    Set tbBefore = tb.Parent.Controls(Replace(tb.Name, "txtAfter", "txtBefore"))
+    If CStr(tbBefore) <> CStr(tb) Then
+        tb.BackColor = RAGColors.Red
+    Else
+        tb.BackColor = RAGColors.green
+    End If
+End Sub

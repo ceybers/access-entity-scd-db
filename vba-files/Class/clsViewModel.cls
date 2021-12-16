@@ -118,7 +118,7 @@ Public Function ApplyDetailsSourceToListbox(ByRef lb As ListBox)
     lb.RowSource = "SELECT DetailTableFK,DetailTable FROM qryEntityTypeToDetail WHERE EntityTypeFK = " & EntityType.ID & ";"
 End Function
 
-Public Function SearchEntity(tb As TextBox, lb As ListBox)
+Public Function SearchEntity(tb As textbox, lb As ListBox)
     Dim filteredEntities As Collection
     Dim entity As clsEntity
     Dim i As Integer

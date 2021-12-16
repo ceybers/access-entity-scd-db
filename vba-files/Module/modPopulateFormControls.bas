@@ -131,7 +131,7 @@ Private Function CreateLabel(formName As String, controlName As String, caption 
 End Function
 
 Private Function CreateTextBox(formName As String, controlName As String, fieldName As String, left As Integer, top As Integer)
-    Dim tb As TextBox
+    Dim tb As textbox
     Set tb = CreateControl(formName:=formName, ControlType:=acTextBox, left:=left, top:=top, Width:=(4 * CM_TO_TWIP), Height:=DEFAULT_HEIGHT)
     tb.Name = controlName
     tb.SpecialEffect = 2
@@ -158,7 +158,7 @@ Private Function TEST_QueryControl()
     Set frm = Forms(FORM_NAME)
     Dim i As Integer
     Dim ctl As Control
-    Dim tb As TextBox
+    Dim tb As textbox
     For i = frm.Controls.Count To 1 Step -1
         Set ctl = frm.Controls(i - 1)
         If ctl.ControlType = acTextBox Then
