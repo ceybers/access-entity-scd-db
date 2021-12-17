@@ -21,6 +21,10 @@ Private Type TControlSet
 End Type
 
 Public Sub BuildFormsForDetails()
+    If MsgBox("Build forms?", vbYesNo + vbDefaultButton2) = vbNo Then
+        Exit Sub
+    End If
+    
     Call BuildFormForDetail("Dimensions")
     Call BuildFormForDetail("MaintPlan")
     Call BuildFormForDetail("Service")
