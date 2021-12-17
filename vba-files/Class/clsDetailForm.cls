@@ -10,10 +10,13 @@ Attribute VB_Exposed = False
 Option Compare Database
 Option Explicit
 
+Private WithEvents frmEvents As Form
+Attribute frmEvents.VB_VarHelpID = -1
+
 Public Enum DetailFormState
     NotYetInitialized
     NoEntries
-    NewEntry
+    newentry
     ViewSingle
     ViewXY
     EditXY
@@ -28,6 +31,7 @@ Private Type TDetailForm
     entityID As Integer
     HasExistingRecords As Boolean
     TableName As String
+    IsEditing As Boolean
 End Type
 Private This As TDetailForm
 
@@ -44,7 +48,9 @@ Public Property Set Form(frm As Form)
         End If
     Next
     This.TableName = Replace(frm.name, "sfrm", "tbl")
-    
+    Set frmEvents = frm
+    frm.AfterInsert = "[Event Procedure]"
+    frm.AfterUpdate = "[Event Procedure]"
 End Property
 
 Public Property Get Form() As Form
@@ -80,7 +86,11 @@ Public Function ToString() As String
 End Function
 
 Public Function TryChangeState(newState As DetailFormState) As Boolean
-    TryChangeState = False
+    Select Case newState
+        Case newentry
+            TryChangeState = TryChangeStateNewEntry
+    End Select
+    
 End Function
 
 Public Sub ShowRHS()
@@ -144,6 +154,10 @@ Public Function ShowFirstValid(idx As Integer)
     Call This.frm.Recordset.FindFirst("EntityFK = " & idx & " AND ValidUntil = #9999/12/31#")
 End Function
 
+Public Sub notifychanged()
+    MsgBox "thank you"
+End Sub
+
 ' Private Methods
 Private Function GetControlByName(coll As Collection, name As String)
     Debug.Assert Not coll Is Nothing
@@ -163,6 +177,49 @@ Private Function CheckForExistingRecords() As Boolean
     
     sql = "SELECT Count(*) AS TotalCount FROM " & This.TableName & " WHERE EntityFK = " & This.entityID & ";"
     Set rs = CurrentDb.OpenRecordset(sql)
+    'Debug.Print "Check for existing records"
+    'Debug.Print "   " & sql
+    'Debug.Print "    " & CStr(rs!TotalCount)
     
     CheckForExistingRecords = rs!TotalCount > 0
 End Function
+
+' State Changes
+
+Private Function TryChangeStateNewEntry() As Boolean
+    If This.IsEditing Then Exit Function
+    If This.HasExistingRecords Then Exit Function
+    If This.State = newentry Then Exit Function
+    If This.entityID = 0 Then Exit Function
+    
+    This.frm.DataEntry = True
+
+    'This.frm.Recordset.AddNew
+    This.frm!EntityFK = This.entityID
+    This.frm!ValidFrom = Now()
+    This.frm!CommitFK = 1
+    
+    'With This.frm
+        '.DataEntry = True
+        '.Recordset.AddNew
+        '.Controls("EntityFK") = This.entityID
+        '.Controls("ValidFrom") = Now
+        '.Controls("CommitFK") = 1
+    'End With
+    
+    ResetLHSandRHS
+    HideRHS
+    UnlockLHS
+End Function
+
+Private Sub frmEvents_AfterInsert()
+    'MsgBox "AfterInsert"
+End Sub
+
+Private Sub frmEvents_AfterUpdate()
+    'MsgBox "AfterUpdate"
+End Sub
+
+Private Sub frmEvents_Load()
+
+End Sub
