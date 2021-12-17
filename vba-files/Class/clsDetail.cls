@@ -15,7 +15,7 @@ Implements IThing
 Private Type TDetail
  ID As Double
  Name As String
- TableName As String
+ tableName As String
 End Type
 Private This As TDetail
 
@@ -39,8 +39,8 @@ Private Property Get IThing_Name() As String
     IThing_Name = This.Name
 End Property
 
-Public Property Get TableName() As String
-    TableName = This.TableName
+Public Property Get tableName() As String
+    tableName = This.tableName
 End Property
 
 Public Property Let ID(ByVal vNewValue As Double)
@@ -51,7 +51,7 @@ Public Property Let Name(ByVal vNewValue As String)
     This.Name = vNewValue
 End Property
 
-Public Property Let TableName(ByVal vNewValue As String)
-    This.TableName = vNewValue
+Public Property Let tableName(ByVal vNewValue As String)
+    This.tableName = vNewValue
 End Property
 

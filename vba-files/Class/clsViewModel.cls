@@ -100,7 +100,7 @@ Public Function ReplaceSubform(ByRef sfrm As SubForm)
     If This.SelectedEntity Is Nothing Then Exit Function
     If This.SelectedDetail Is Nothing Then Exit Function
     
-    sfrm.SourceObject = Replace(Detail.TableName, "tbl", "sfrm")
+    sfrm.SourceObject = Replace(Detail.tableName, "tbl", "sfrm")
     sfrm.Form.Filter = "EntityFK = " & entity.ID
     sfrm.Form.FilterOn = True
     sfrm.SetFocus

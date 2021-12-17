@@ -2,7 +2,7 @@ Attribute VB_Name = "modTest"
 Option Compare Database
 Option Explicit
 
-Public Function test()
+Public Function Test()
     Dim lst As ListBox
     Set lst = Forms!frmTest.lstEntities
     Debug.Print lst.OnClick
