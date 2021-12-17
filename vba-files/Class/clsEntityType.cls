@@ -14,7 +14,7 @@ Implements IThing
 
 Private Type TEntityType
     ID As Double
-    Name As String
+    name As String
 End Type
 Private This As TEntityType
 
@@ -26,8 +26,8 @@ Public Property Get ID() As Double
     ID = This.ID
 End Property
 
-Public Property Get Name() As String
-    Name = This.Name
+Public Property Get name() As String
+    name = This.name
 End Property
 
 Private Property Get IThing_ID() As Double
@@ -35,15 +35,15 @@ Private Property Get IThing_ID() As Double
 End Property
 
 Private Property Get IThing_Name() As String
-    IThing_Name = This.Name
+    IThing_Name = This.name
 End Property
 
 Public Property Let ID(ByVal vNewValue As Double)
     This.ID = vNewValue
 End Property
 
-Public Property Let Name(ByVal vNewValue As String)
-    This.Name = vNewValue
+Public Property Let name(ByVal vNewValue As String)
+    This.name = vNewValue
 End Property
 
 

@@ -31,14 +31,14 @@ Public Sub BuildFormsForDetails()
 End Sub
 
 Private Function BuildFormForDetail(detailName As String)
-    Dim tableName As String, formName As String
-    tableName = "tblDetail" & detailName
+    Dim TableName As String, formName As String
+    TableName = "tblDetail" & detailName
     formName = "sfrmDetail" & detailName
     Dim controlSets() As TControlSet
     
     RemoveAllControls formName
     SetFormProperties (formName)
-    controlSets = GetFields(tableName)
+    controlSets = GetFields(TableName)
     Call DrawFields(formName, controlSets)
 End Function
 
@@ -67,14 +67,14 @@ Private Function DrawFields(formName As String, fields() As TControlSet)
     DoCmd.Close acForm, formName, acSaveYes
 End Function
 
-Private Function GetFields(tableName As String) As TControlSet()
+Private Function GetFields(TableName As String) As TControlSet()
     Dim db As DAO.Database
     Dim rs As DAO.Recordset
     Dim results() As TControlSet
     Dim i As Integer
     
     Set db = CurrentDb
-    Set rs = db.OpenRecordset("SELECT * FROM metaSchema WHERE TableName = '" & tableName & "';")
+    Set rs = db.OpenRecordset("SELECT * FROM metaSchema WHERE TableName = '" & TableName & "';")
     i = 1
     
     If Not rs.BOF And Not rs.EOF Then
@@ -127,7 +127,7 @@ Private Function RemoveAllControls(formName As String)
     
     Set frm = Forms(formName)
     For i = frm.Controls.Count To 1 Step -1
-        DeleteControl formName, frm.Controls(i - 1).Name
+        DeleteControl formName, frm.Controls(i - 1).name
     Next i
     
     DoCmd.Close acForm, formName, acSaveYes
@@ -136,7 +136,7 @@ End Function
 Private Function CreateLabel(formName As String, controlName As String, Caption As String, left As Integer, top As Integer)
     Dim lbl As Label
     Set lbl = CreateControl(formName:=formName, ControlType:=acLabel, left:=left, top:=top, Width:=(3 * CM_TO_TWIP), Height:=DEFAULT_HEIGHT)
-    lbl.Name = controlName
+    lbl.name = controlName
     lbl.Caption = Caption
     lbl.TopMargin = 31
 End Function
@@ -144,7 +144,7 @@ End Function
 Private Function CreateTextBox(formName As String, controlName As String, FieldName As String, left As Integer, top As Integer)
     Dim tb As textbox
     Set tb = CreateControl(formName:=formName, ControlType:=acTextBox, left:=left, top:=top, Width:=(4 * CM_TO_TWIP), Height:=DEFAULT_HEIGHT)
-    tb.Name = controlName
+    tb.name = controlName
     tb.SpecialEffect = 2
     tb.TopMargin = 31
     tb.ControlSource = FieldName
@@ -154,7 +154,7 @@ End Function
 Private Function CreateComboBox(formName As String, controlName As String, FieldName As String, lookup As String, left As Integer, top As Integer)
     Dim cb As ComboBox
     Set cb = CreateControl(formName:=formName, ControlType:=acComboBox, left:=left, top:=top, Width:=(4 * CM_TO_TWIP), Height:=DEFAULT_HEIGHT)
-    cb.Name = controlName
+    cb.name = controlName
     cb.SpecialEffect = 2
     cb.TopMargin = 31
     cb.ControlSource = FieldName
@@ -168,7 +168,7 @@ Private Function TEST_QueryControl()
     DoCmd.OpenForm formName:=FORM_NAME, View:=acDesign
     Set frm = Forms(FORM_NAME)
     Dim i As Integer
-    Dim ctl As Control
+    Dim ctl As control
     Dim tb As textbox
     For i = frm.Controls.Count To 1 Step -1
         Set ctl = frm.Controls(i - 1)

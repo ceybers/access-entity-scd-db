@@ -13,5 +13,5 @@ Option Explicit
 Public Property Get ID() As Double
 End Property
 
-Public Property Get Name() As String
+Public Property Get name() As String
 End Property

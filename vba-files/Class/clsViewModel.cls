@@ -36,9 +36,9 @@ Public Property Get Detail() As clsDetail
     Set Detail = This.SelectedDetail
 End Property
 
-Public Property Get entity() As clsEntity
+Public Property Get Entity() As clsEntity
     Debug.Assert Not This.SelectedEntity Is Nothing
-    Set entity = This.SelectedEntity
+    Set Entity = This.SelectedEntity
 End Property
 
 Public Property Get EntityType() As clsEntityType
@@ -59,10 +59,10 @@ Public Property Let Detail(ByRef vNewValue As clsDetail)
     RaiseEvent DetailChanged
 End Property
 
-Public Property Let entity(ByRef vNewValue As clsEntity)
+Public Property Let Entity(ByRef vNewValue As clsEntity)
     If vNewValue Is Nothing Then Exit Property
     If Not This.SelectedEntity Is Nothing Then
-        If entity.ID = vNewValue.ID Then
+        If Entity.ID = vNewValue.ID Then
             Exit Property
         End If
     End If
@@ -89,7 +89,7 @@ Public Function SetDetailByID(idx As Double)
 End Function
 
 Public Function SetEntityByID(idx As Double)
-    entity = GetThingByID(This.Model.entities, idx)
+    Entity = GetThingByID(This.Model.entities, idx)
 End Function
 
 Public Function SetEntityTypeByID(idx As Double)
@@ -100,8 +100,8 @@ Public Function ReplaceSubform(ByRef sfrm As SubForm)
     If This.SelectedEntity Is Nothing Then Exit Function
     If This.SelectedDetail Is Nothing Then Exit Function
     
-    sfrm.SourceObject = Replace(Detail.tableName, "tbl", "sfrm")
-    sfrm.Form.Filter = "EntityFK = " & entity.ID
+    sfrm.SourceObject = Replace(Detail.TableName, "tbl", "sfrm")
+    sfrm.Form.Filter = "EntityFK = " & Entity.ID
     sfrm.Form.FilterOn = True
     sfrm.SetFocus
     sfrm.Form.AllowAdditions = False
@@ -120,7 +120,7 @@ End Function
 
 Public Function SearchEntity(tb As textbox, lb As ListBox)
     Dim filteredEntities As Collection
-    Dim entity As clsEntity
+    Dim Entity As clsEntity
     Dim i As Integer
     Dim criteria As String
     
@@ -138,11 +138,11 @@ Public Function SearchEntity(tb As textbox, lb As ListBox)
     tb.SetFocus
     criteria = tb.Text & "*"
     
-    For Each entity In This.Model.entities
-        If entity.Name Like criteria And entity.EntityType = This.SelectedEntityType.ID Then
-            filteredEntities.Add entity
+    For Each Entity In This.Model.entities
+        If Entity.name Like criteria And Entity.EntityType = This.SelectedEntityType.ID Then
+            filteredEntities.Add Entity
         End If
-    Next entity
+    Next Entity
     
     lb.RowSource = ""
     lb.RowSourceType = "Value List"
@@ -151,9 +151,9 @@ Public Function SearchEntity(tb As textbox, lb As ListBox)
         Call lb.RemoveItem(i)
     Next i
     
-    For Each entity In filteredEntities
-        lb.AddItem CStr(entity.ID) & ";" & entity.Name
-    Next entity
+    For Each Entity In filteredEntities
+        lb.AddItem CStr(Entity.ID) & ";" & Entity.name
+    Next Entity
 End Function
 
 ' Private Methods
