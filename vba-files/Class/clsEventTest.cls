@@ -29,7 +29,7 @@ End Property
 Private Sub tb_Change()
     Debug.Print tb.Parent.name & "!" & tb.name & "_Change()"
     Dim tbBefore As textbox
-    Set tbBefore = tb.Parent.Controls(Replace(tb.name, "txtAfter", "txtBefore"))
+    Set tbBefore = tb.Parent.controls(Replace(tb.name, "txtAfter", "txtBefore"))
     If CStr(tbBefore) <> CStr(tb) Then
         Debug.Print "Differs"
         Debug.Print "   " & CStr(tbBefore)
@@ -44,8 +44,8 @@ End Sub
 Private Sub tb_Exit(Cancel As Integer)
     Debug.Print tb.Parent.name & "!" & tb.name & "_Exit()"
     Dim tbBefore As textbox
-    Set tbBefore = tb.Parent.Controls(Replace(tb.name, "txtAfter", "txtBefore"))
-    If CStr(tbBefore) <> CStr(tb) Then
+    Set tbBefore = tb.Parent.controls(Replace(tb.name, "txtRHS", "txtLHS"))
+    If CStr(tbBefore) <> CStr(Nz(tb)) Then
         tb.BackColor = RAGColors.Red
     Else
         tb.BackColor = RAGColors.green

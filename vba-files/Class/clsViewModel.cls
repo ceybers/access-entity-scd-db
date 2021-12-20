@@ -136,7 +136,7 @@ Public Function SearchEntity(tb As textbox, lb As ListBox)
     
     Set filteredEntities = New Collection
     tb.SetFocus
-    criteria = tb.Text & "*"
+    criteria = tb.text & "*"
     
     For Each Entity In This.Model.entities
         If Entity.name Like criteria And Entity.EntityType = This.SelectedEntityType.ID Then

@@ -16,7 +16,7 @@ Attribute frmEvents.VB_VarHelpID = -1
 Public Enum DetailFormState
     NotYetInitialized
     NoEntries
-    newentry
+    NewEntry
     ViewSingle
     ViewXY
     EditXY
@@ -25,10 +25,10 @@ End Enum
 
 Private Type TDetailForm
     frm As Form
-    lhs As New Collection
-    rhs As New Collection
+    LHS As New Collection
+    RHS As New Collection
     State As DetailFormState
-    entityID As Integer
+    EntityID As Integer
     HasExistingRecords As Boolean
     TableName As String
     IsEditing As Boolean
@@ -40,11 +40,11 @@ Public Property Set Form(frm As Form)
     Debug.Assert Not frm Is Nothing
     Dim ctl As control
     Set This.frm = frm
-    For Each ctl In frm.Controls
+    For Each ctl In frm.controls
         If ctl.name Like "???LHS*" Then
-            This.lhs.Add ctl
+            This.LHS.Add ctl
         ElseIf ctl.name Like "???RHS*" Then
-            This.rhs.Add ctl
+            This.RHS.Add ctl
         End If
     Next
     This.TableName = Replace(frm.name, "sfrm", "tbl")
@@ -67,12 +67,12 @@ Public Property Get State() As DetailFormState
 End Property
 
 Public Property Let Entity(vNewValue As Integer)
-     This.entityID = vNewValue
+     This.EntityID = vNewValue
      This.HasExistingRecords = CheckForExistingRecords()
 End Property
 
 Public Property Get Entity() As Integer
-    Entity = This.entityID
+    Entity = This.EntityID
 End Property
 
 ' Ctor
@@ -87,7 +87,7 @@ End Function
 
 Public Function TryChangeState(newState As DetailFormState) As Boolean
     Select Case newState
-        Case newentry
+        Case NewEntry
             TryChangeState = TryChangeStateNewEntry
     End Select
     
@@ -95,28 +95,28 @@ End Function
 
 Public Sub ShowRHS()
     Dim ctl As control
-    For Each ctl In This.rhs
+    For Each ctl In This.RHS
         ctl.Visible = True
     Next ctl
 End Sub
 
 Public Sub HideRHS()
     Dim ctl As control
-    For Each ctl In This.rhs
+    For Each ctl In This.RHS
         ctl.Visible = False
     Next ctl
 End Sub
 
 Public Sub LockLHS()
     Dim ctl As control
-    For Each ctl In This.lhs
+    For Each ctl In This.LHS
         ctl.Locked = True
     Next ctl
 End Sub
 
 Public Sub UnlockLHS()
     Dim ctl As control
-    For Each ctl In This.lhs
+    For Each ctl In This.LHS
         ctl.Locked = False
     Next ctl
 End Sub
@@ -124,8 +124,8 @@ End Sub
 Public Sub CopyRHStoLHS()
     Dim lhsCtl As control, rhsCtl As control
     
-    For Each rhsCtl In This.rhs
-        Set lhsCtl = GetControlByName(This.lhs, Replace(rhsCtl.name, "RHS", "LHS"))
+    For Each rhsCtl In This.RHS
+        Set lhsCtl = GetControlByName(This.LHS, Replace(rhsCtl.name, "RHS", "LHS"))
         lhsCtl.Value = rhsCtl.Value
     Next rhsCtl
 End Sub
@@ -133,8 +133,8 @@ End Sub
 Public Sub CopyLHStoRHS()
     Dim lhsCtl As control, rhsCtl As control
     
-    For Each lhsCtl In This.lhs
-        Set rhsCtl = GetControlByName(This.rhs, Replace(lhsCtl.name, "LHS", "RHS"))
+    For Each lhsCtl In This.LHS
+        Set rhsCtl = GetControlByName(This.RHS, Replace(lhsCtl.name, "LHS", "RHS"))
         rhsCtl.Value = lhsCtl.Value
         lhsCtl.Locked = True
         'rhsCtl.Properties.Item("BackColor") = RAGColors.yellow
@@ -143,7 +143,7 @@ End Sub
 
 Public Sub ResetLHSandRHS()
     Dim ctl As control
-    For Each ctl In This.rhs
+    For Each ctl In This.RHS
         ctl.Value = ""
         'Ctl.Properties.Item("BackColor") = RAGColors.yellow
     Next
@@ -175,7 +175,7 @@ Private Function CheckForExistingRecords() As Boolean
     Dim rs As Recordset
     Dim sql As String
     
-    sql = "SELECT Count(*) AS TotalCount FROM " & This.TableName & " WHERE EntityFK = " & This.entityID & ";"
+    sql = "SELECT Count(*) AS TotalCount FROM " & This.TableName & " WHERE EntityFK = " & This.EntityID & ";"
     Set rs = CurrentDb.OpenRecordset(sql)
     'Debug.Print "Check for existing records"
     'Debug.Print "   " & sql
@@ -189,13 +189,13 @@ End Function
 Private Function TryChangeStateNewEntry() As Boolean
     If This.IsEditing Then Exit Function
     If This.HasExistingRecords Then Exit Function
-    If This.State = newentry Then Exit Function
-    If This.entityID = 0 Then Exit Function
+    If This.State = NewEntry Then Exit Function
+    If This.EntityID = 0 Then Exit Function
     
     This.frm.DataEntry = True
 
     'This.frm.Recordset.AddNew
-    This.frm!EntityFK = This.entityID
+    This.frm!EntityFK = This.EntityID
     This.frm!ValidFrom = Now()
     This.frm!CommitFK = 1
     
@@ -220,6 +220,3 @@ Private Sub frmEvents_AfterUpdate()
     'MsgBox "AfterUpdate"
 End Sub
 
-Private Sub frmEvents_Load()
-
-End Sub

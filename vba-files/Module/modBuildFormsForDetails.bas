@@ -126,8 +126,8 @@ Private Function RemoveAllControls(formName As String)
     DoCmd.OpenForm formName:=formName, View:=acDesign
     
     Set frm = Forms(formName)
-    For i = frm.Controls.Count To 1 Step -1
-        DeleteControl formName, frm.Controls(i - 1).name
+    For i = frm.controls.Count To 1 Step -1
+        DeleteControl formName, frm.controls(i - 1).name
     Next i
     
     DoCmd.Close acForm, formName, acSaveYes
@@ -170,8 +170,8 @@ Private Function TEST_QueryControl()
     Dim i As Integer
     Dim ctl As control
     Dim tb As textbox
-    For i = frm.Controls.Count To 1 Step -1
-        Set ctl = frm.Controls(i - 1)
+    For i = frm.controls.Count To 1 Step -1
+        Set ctl = frm.controls(i - 1)
         If ctl.ControlType = acTextBox Then
             Set tb = ctl
             Debug.Print "Layout: " & ctl.Layout
