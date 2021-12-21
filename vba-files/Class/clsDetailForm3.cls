@@ -13,6 +13,7 @@ Option Explicit
 Public Event StateChanged(newState As DetailState3)
 Public Event EditingStarted()
 Public Event EditingStopped()
+Public Event EditingCancelled()
 
 Private WithEvents frmForEvents As Access.Form
 Attribute frmForEvents.VB_VarHelpID = -1
@@ -54,8 +55,11 @@ End Property
 'End Property
 
 Public Property Let Entity(RHS As Integer)
-    If This.EntityID = RHS Then Exit Property
+    If This.EntityID = RHS Then
+        Exit Property
+    End If
     This.EntityID = RHS
+    TrySetState Ready
     'Log "Changed entity to '" & This.EntityID & "'"
 End Property
 
@@ -140,13 +144,14 @@ Private Function ChangeToNewMode()
         End If
     Next ctl
     
+    ' Do not use - this will throw Runtime 2449
     'This.frm.SetFocus
     
     StartEditing
     
-    This.frm!EntityFK = Entity
-    This.frm!ValidFrom = Now()
-    This.frm!CommitFK = 1
+    'This.frm!EntityFK = Entity
+    'This.frm!ValidFrom = Now()
+    'This.frm!CommitFK = 1
     
     'Log "Now in New Mode"
 End Function
@@ -211,6 +216,14 @@ Public Function TrySetState(newState As DetailState3) As Boolean
     If This.State = newState Then Exit Function
     
     Select Case newState
+        Case Ready
+            If CheckForExistingRecords Then
+                TrySetState ViewMode
+            Else
+                TrySetState NewMode
+            End If
+            Exit Function
+            
         Case NewMode
             If Not CheckForExistingRecords Then
                 TrySetState = True
@@ -252,9 +265,17 @@ Public Function StartEditing()
 End Function
 
 Public Function StopEditing()
-    If Not This.IsEditing Then Exit Function
+    If This.IsEditing = False Then Exit Function
     This.IsEditing = False
     RaiseEvent EditingStopped
+End Function
+
+Public Function CancelEditing()
+    If This.IsEditing = False Then Exit Function
+    This.IsEditing = False
+    This.frm.Undo
+    Call TrySetState(Ready)
+    RaiseEvent EditingCancelled
 End Function
 
 
@@ -271,14 +292,58 @@ Public Function SaveEdits()
     
     DoCmd.Save
     
-    Call TrySetState(ViewMode)
+    'Call TrySetState(ViewMode)
+    StopEditing
 End Function
 
 Private Sub frmForEvents_AfterInsert()
-    Debug.Print "frmForEvents_AfterInsert()"
+    'Debug.Print "frmForEvents_AfterInsert()"
 End Sub
 
 Private Sub frmForEvents_AfterUpdate()
-    Debug.Print "frmForEvents_AfterUpdate()"
-    StopEditing
+    'Debug.Print "frmForEvents_AfterUpdate()"
+    Debug.Print "frmForEvents_AfterUpdate() & state = " & This.State
+    If This.State = EditMode Then
+        StopEditing
+    End If
+End Sub
+
+' IAction stuff
+Public Function GetButtonState(actionName As String) As Boolean
+    Select Case actionName
+        Case "New"
+            'GetButtonState = True
+            'Exit Function
+            
+        Case "SaveNew"
+            GetButtonState = (This.State = NewMode)
+            
+        Case "CancelNew"
+            GetButtonState = (This.State = NewMode)
+            
+        Case "View"
+            'if (this.IsEditing = False) and (this.
+            GetButtonState = True
+            If This.IsEditing = True Then GetButtonState = False
+            If This.State = ViewMode Then GetButtonState = False
+            
+        Case "Edit"
+            GetButtonState = (This.State = ViewMode)
+            
+        Case "SaveEdits"
+            GetButtonState = (This.State = EditMode)
+            
+        Case "CancelEdit"
+            GetButtonState = (This.State = EditMode)
+    End Select
+End Function
+
+Private Sub frmForEvents_GotFocus()
+    Debug.Print "frmForEvents_GotFocus()"
+    MsgBox "H"
+    If This.State = NewMode And This.frm!ValidFrom = "" Then
+        This.frm!EntityFK = Entity
+        This.frm!ValidFrom = Now()
+        This.frm!CommitFK = 1
+    End If
 End Sub
