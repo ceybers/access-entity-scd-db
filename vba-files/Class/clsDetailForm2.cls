@@ -12,7 +12,7 @@ Option Explicit
 
 Public Enum DetailForm2State
     Invalid
-    Ready
+    ready
     NewMode
     ViewMode
     EditMode
@@ -21,7 +21,7 @@ End Enum
 Private Type TDetailForm2
     LHS As New Collection
     RHS As New Collection
-    State As DetailForm2State
+    state As DetailForm2State
     EntityID As Integer
     CommityID As Integer
     frm As Form
@@ -40,8 +40,8 @@ Public Property Get HasExistingRecords() As Boolean
     HasExistingRecords = This.HasExistingRecords
 End Property
 
-Public Property Get State() As DetailForm2State
-    State = This.State
+Public Property Get state() As DetailForm2State
+    state = This.state
 End Property
 
 Public Property Set Form(frm As Form)
@@ -68,7 +68,7 @@ End Property
 
 ' Ctor
 Private Sub Class_Initialize()
-    This.State = Invalid
+    This.state = Invalid
 End Sub
 
 ' Public Methods
@@ -91,7 +91,7 @@ Public Sub UnlockLHS()
 End Sub
     
 Public Function ChangeState(newState As DetailForm2State) As Boolean
-    Select Case This.State
+    Select Case This.state
         Case Invalid
             Select Case newState
                 Case Invalid

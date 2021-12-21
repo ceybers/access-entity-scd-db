@@ -27,7 +27,7 @@ Private Type TDetailForm
     frm As Form
     LHS As New Collection
     RHS As New Collection
-    State As DetailFormState
+    state As DetailFormState
     EntityID As Integer
     HasExistingRecords As Boolean
     TableName As String
@@ -58,12 +58,12 @@ Public Property Get Form() As Form
     Set Form = This.frm
 End Property
 
-Public Property Let State(vNewValue As DetailFormState)
-    This.State = vNewValue
+Public Property Let state(vNewValue As DetailFormState)
+    This.state = vNewValue
 End Property
 
-Public Property Get State() As DetailFormState
-    State = This.State
+Public Property Get state() As DetailFormState
+    state = This.state
 End Property
 
 Public Property Let Entity(vNewValue As Integer)
@@ -77,12 +77,12 @@ End Property
 
 ' Ctor
 Private Sub Class_Initialize()
-    This.State = NotYetInitialized
+    This.state = NotYetInitialized
 End Sub
 
 ' Public Sub
 Public Function ToString() As String
-    ToString = "State is " & CStr(This.State)
+    ToString = "State is " & CStr(This.state)
 End Function
 
 Public Function TryChangeState(newState As DetailFormState) As Boolean
@@ -189,7 +189,7 @@ End Function
 Private Function TryChangeStateNewEntry() As Boolean
     If This.IsEditing Then Exit Function
     If This.HasExistingRecords Then Exit Function
-    If This.State = NewEntry Then Exit Function
+    If This.state = NewEntry Then Exit Function
     If This.EntityID = 0 Then Exit Function
     
     This.frm.DataEntry = True
