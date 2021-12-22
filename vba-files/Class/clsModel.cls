@@ -14,12 +14,14 @@ Option Explicit
 Const DETAILS_TABLE As String = "tblDetailTables"
 Const ENTITIES_TABLE As String = "tblEntities"
 Const ENTITYTYPES_TABLE As String = "lkpEntityTypes"
+Const COMMITS_TABLE As String = "tblCommits"
 
 ' Private Variables
 Private Type TModel
      Details As Collection
      entities As Collection
      EntityTypes As Collection
+     Commits As Collection
 End Type
 Private This As TModel
 
@@ -29,6 +31,7 @@ Private Sub Class_Initialize()
     Set This.entities = LoadThings(ENTITIES_TABLE)
     Set This.Details = LoadThings(DETAILS_TABLE)
     Set This.EntityTypes = LoadThings(ENTITYTYPES_TABLE)
+    Set This.Commits = LoadThings(COMMITS_TABLE)
 End Sub
 
 ' Getters
@@ -42,6 +45,10 @@ End Property
 
 Public Property Get EntityTypes() As Collection
     Set EntityTypes = This.EntityTypes
+End Property
+
+Public Property Get Commits() As Collection
+    Set Commits = This.Commits
 End Property
 
 ' Private Methods
@@ -60,6 +67,8 @@ Private Function LoadThings(tableName As String) As Collection
                     LoadThings.Add EntityFactory.CreateFromRecordset(rs)
                 Case ENTITYTYPES_TABLE
                     LoadThings.Add EntityTypeFactory.CreateFromRecordset(rs)
+                Case COMMITS_TABLE
+                    LoadThings.Add CommitFactory.CreateFromRecordset(rs)
             End Select
             rs.MoveNext
         Loop
