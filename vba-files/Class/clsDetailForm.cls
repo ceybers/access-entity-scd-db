@@ -27,10 +27,10 @@ Private Type TDetailForm
     frm As Form
     LHS As New Collection
     RHS As New Collection
-    state As DetailFormState
+    State As DetailFormState
     EntityID As Integer
     HasExistingRecords As Boolean
-    TableName As String
+    tableName As String
     IsEditing As Boolean
 End Type
 Private This As TDetailForm
@@ -47,7 +47,7 @@ Public Property Set Form(frm As Form)
             This.RHS.Add ctl
         End If
     Next
-    This.TableName = Replace(frm.name, "sfrm", "tbl")
+    This.tableName = Replace(frm.name, "sfrm", "tbl")
     Set frmEvents = frm
     frm.AfterInsert = "[Event Procedure]"
     frm.AfterUpdate = "[Event Procedure]"
@@ -58,12 +58,12 @@ Public Property Get Form() As Form
     Set Form = This.frm
 End Property
 
-Public Property Let state(vNewValue As DetailFormState)
-    This.state = vNewValue
+Public Property Let State(vNewValue As DetailFormState)
+    This.State = vNewValue
 End Property
 
-Public Property Get state() As DetailFormState
-    state = This.state
+Public Property Get State() As DetailFormState
+    State = This.State
 End Property
 
 Public Property Let Entity(vNewValue As Integer)
@@ -77,12 +77,12 @@ End Property
 
 ' Ctor
 Private Sub Class_Initialize()
-    This.state = NotYetInitialized
+    This.State = NotYetInitialized
 End Sub
 
 ' Public Sub
 Public Function ToString() As String
-    ToString = "State is " & CStr(This.state)
+    ToString = "State is " & CStr(This.State)
 End Function
 
 Public Function TryChangeState(newState As DetailFormState) As Boolean
@@ -175,7 +175,7 @@ Private Function CheckForExistingRecords() As Boolean
     Dim rs As Recordset
     Dim sql As String
     
-    sql = "SELECT Count(*) AS TotalCount FROM " & This.TableName & " WHERE EntityFK = " & This.EntityID & ";"
+    sql = "SELECT Count(*) AS TotalCount FROM " & This.tableName & " WHERE EntityFK = " & This.EntityID & ";"
     Set rs = CurrentDb.OpenRecordset(sql)
     'Debug.Print "Check for existing records"
     'Debug.Print "   " & sql
@@ -189,10 +189,10 @@ End Function
 Private Function TryChangeStateNewEntry() As Boolean
     If This.IsEditing Then Exit Function
     If This.HasExistingRecords Then Exit Function
-    If This.state = NewEntry Then Exit Function
+    If This.State = NewEntry Then Exit Function
     If This.EntityID = 0 Then Exit Function
     
-    This.frm.DataEntry = True
+    This.frm.dataentry = True
 
     'This.frm.Recordset.AddNew
     This.frm!EntityFK = This.EntityID

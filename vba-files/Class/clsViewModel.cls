@@ -96,11 +96,11 @@ Public Function SetEntityTypeByID(idx As Double)
     EntityType = GetThingByID(This.Model.EntityTypes, idx)
 End Function
 
-Public Function ReplaceSubform(ByRef sfrm As SubForm)
+Public Function ReplaceSubform(ByRef sfrm As Subform)
     If This.SelectedEntity Is Nothing Then Exit Function
     If This.SelectedDetail Is Nothing Then Exit Function
     
-    sfrm.SourceObject = Replace(Detail.TableName, "tbl", "sfrm")
+    sfrm.SourceObject = Replace(Detail.tableName, "tbl", "sfrm")
     sfrm.Form.Filter = "EntityFK = " & Entity.ID
     sfrm.Form.FilterOn = True
     sfrm.SetFocus

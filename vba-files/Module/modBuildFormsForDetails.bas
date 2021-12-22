@@ -31,14 +31,14 @@ Public Sub BuildFormsForDetails()
 End Sub
 
 Private Function BuildFormForDetail(detailName As String)
-    Dim TableName As String, formName As String
-    TableName = "tblDetail" & detailName
+    Dim tableName As String, formName As String
+    tableName = "tblDetail" & detailName
     formName = "sfrmDetail" & detailName
     Dim controlSets() As TControlSet
     
     RemoveAllControls formName
     SetFormProperties (formName)
-    controlSets = GetFields(TableName)
+    controlSets = GetFields(tableName)
     Call DrawFields(formName, controlSets)
 End Function
 
@@ -67,14 +67,14 @@ Private Function DrawFields(formName As String, fields() As TControlSet)
     DoCmd.Close acForm, formName, acSaveYes
 End Function
 
-Private Function GetFields(TableName As String) As TControlSet()
+Private Function GetFields(tableName As String) As TControlSet()
     Dim db As DAO.Database
     Dim rs As DAO.Recordset
     Dim results() As TControlSet
     Dim i As Integer
     
     Set db = CurrentDb
-    Set rs = db.OpenRecordset("SELECT * FROM metaSchema WHERE TableName = '" & TableName & "';")
+    Set rs = db.OpenRecordset("SELECT * FROM metaSchema WHERE TableName = '" & tableName & "';")
     i = 1
     
     If Not rs.BOF And Not rs.EOF Then
@@ -109,7 +109,7 @@ Private Function SetFormProperties(formName As String)
     frm.NavigationButtons = False
     frm.RecordSelectors = False
     frm.ScrollBars = 0 ' Neither
-    frm.DataEntry = False
+    frm.dataentry = False
     frm.AllowAdditions = True
     frm.AllowEdits = True
     frm.AllowDeletions = False

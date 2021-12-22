@@ -45,15 +45,15 @@ Public Property Get EntityTypes() As Collection
 End Property
 
 ' Private Methods
-Private Function LoadThings(TableName As String) As Collection
+Private Function LoadThings(tableName As String) As Collection
     Dim rs As DAO.Recordset
     Set LoadThings = New Collection
 
-    Set rs = CurrentDb.OpenRecordset("SELECT * FROM " & TableName)
+    Set rs = CurrentDb.OpenRecordset("SELECT * FROM " & tableName)
     
     If Not rs.BOF And Not rs.EOF Then
         Do Until rs.EOF = True
-            Select Case TableName
+            Select Case tableName
                 Case DETAILS_TABLE
                     LoadThings.Add DetailFactory.CreateFromRecordset(rs)
                 Case ENTITIES_TABLE

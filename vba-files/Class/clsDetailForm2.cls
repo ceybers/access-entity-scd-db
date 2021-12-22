@@ -21,11 +21,11 @@ End Enum
 Private Type TDetailForm2
     LHS As New Collection
     RHS As New Collection
-    state As DetailForm2State
+    State As DetailForm2State
     EntityID As Integer
     CommityID As Integer
     frm As Form
-    TableName As String
+    tableName As String
     IsEditing As Boolean
     HasExistingRecords As Boolean
 End Type
@@ -40,8 +40,8 @@ Public Property Get HasExistingRecords() As Boolean
     HasExistingRecords = This.HasExistingRecords
 End Property
 
-Public Property Get state() As DetailForm2State
-    state = This.state
+Public Property Get State() As DetailForm2State
+    State = This.State
 End Property
 
 Public Property Set Form(frm As Form)
@@ -52,7 +52,7 @@ Public Property Set Form(frm As Form)
 End Property
 
 Public Property Let Entity(EntityID As Integer)
-    Debug.Assert This.TableName <> ""
+    Debug.Assert This.tableName <> ""
     This.EntityID = EntityID
     This.HasExistingRecords = CheckForExistingRecords
 End Property
@@ -68,7 +68,7 @@ End Property
 
 ' Ctor
 Private Sub Class_Initialize()
-    This.state = Invalid
+    This.State = Invalid
 End Sub
 
 ' Public Methods
@@ -91,7 +91,7 @@ Public Sub UnlockLHS()
 End Sub
     
 Public Function ChangeState(newState As DetailForm2State) As Boolean
-    Select Case This.state
+    Select Case This.State
         Case Invalid
             Select Case newState
                 Case Invalid
@@ -156,7 +156,7 @@ End Sub
 
 Private Sub AddTableName()
     Debug.Assert Not This.frm Is Nothing
-    This.TableName = Replace(This.frm.name, "sfrm", "tbl")
+    This.tableName = Replace(This.frm.name, "sfrm", "tbl")
 End Sub
 
 Private Function CheckForExistingRecords() As Boolean
@@ -164,7 +164,7 @@ Private Function CheckForExistingRecords() As Boolean
     Dim rs As Recordset
     Dim sql As String
     
-    sql = "SELECT Count(*) AS TotalCount FROM " & This.TableName & " WHERE EntityFK = " & This.EntityID & ";"
+    sql = "SELECT Count(*) AS TotalCount FROM " & This.tableName & " WHERE EntityFK = " & This.EntityID & ";"
     Set rs = CurrentDb.OpenRecordset(sql)
     results = rs!TotalCount
     

@@ -11,12 +11,10 @@ Option Compare Database
 Option Explicit
 
 Public Event StateChanged(newState As DetailState3)
-Public Event EditingStarted()
-Public Event EditingStopped()
-Public Event EditingCancelled()
 
 Private WithEvents frmForEvents As Access.Form
 Attribute frmForEvents.VB_VarHelpID = -1
+Private Events As Collection
 
 Public Enum DetailState3
     Invalid
@@ -25,25 +23,47 @@ Public Enum DetailState3
     EditNew
     ViewExisting
     EditExisting
+    SaveNew
+    CancelNew
+    SaveExisting
+    CancelExisting
 End Enum
 
 Private Type DetailForm3State
     frm As Form
-    TableName As String
+    sfrm As Subform
+    tableName As String
     SFrmName As String
     EntityID As Integer
-    state As DetailState3
+    State As DetailState3
     IsEditing As Boolean
 End Type
 Private This As DetailForm3State
 
 ' Properties
+Public Property Set Subform(RHS As Subform)
+    Set This.sfrm = RHS
+End Property
+
 Public Property Set Form(RHS As Form)
+    MsgBox "DEPREC"
+    Exit Property
     Set This.frm = RHS
     This.SFrmName = RHS.name
-    This.TableName = Replace(RHS.name, "sfrm", "tbl")
+    This.tableName = Replace(RHS.name, "sfrm", "tbl")
     Set frmForEvents = RHS
     Log "clsDetailForm3_Form('" & RHS.name & "')"
+    If This.EntityID > 0 Then TrySetState ready
+End Property
+
+Public Property Let tableName(tableName As String)
+    This.tableName = tableName
+    This.SFrmName = Replace(tableName, "tbl", "sfrm")
+    This.sfrm.SourceObject = This.SFrmName
+    Set This.frm = This.sfrm.Form 'Forms(This.SFrmName)
+    Set frmForEvents = This.frm
+    Log "Property Let tableName"
+    If This.EntityID > 0 Then TrySetState ready
 End Property
 
 Public Property Let Entity(RHS As Integer)
@@ -51,16 +71,12 @@ Public Property Let Entity(RHS As Integer)
         Exit Property
     End If
     This.EntityID = RHS
-    TrySetState ready
+    If This.SFrmName <> "" Then TrySetState ready
     Log "Changed entity to '" & This.EntityID & "'"
 End Property
 
-Public Property Get TableName() As String
-    TableName = This.TableName
-End Property
-
-Public Property Get SubFormName() As String
-    SubFormName = This.SFrmName
+Public Property Get tableName() As String
+    tableName = This.tableName
 End Property
 
 Public Property Get Entity() As Integer
@@ -73,56 +89,12 @@ End Property
 
 ' Ctor
 Private Sub Class_Initialize()
-    DoChangeState (Invalid)
+    Set Events = New Collection
 End Sub
-
-' Methods
-
-' Helpers
-Private Function GotoEntity()
-    This.frm.Filter = "EntityFK = " & Entity & " AND ValidUntil = #9999/12/31#"
-    This.frm.FilterOn = True
-    Call This.frm.Recordset.FindLast("EntityFK = " & Entity & " AND ValidUntil = #9999/12/31#")
-    
-    Log "GotoEntity #" & Entity
-End Function
-
-Private Function GetControlByName(controls As controls, name As String)
-    Dim ctl As control
-    For Each ctl In controls
-        If ctl.name = name Then
-            Set GetControlByName = ctl
-            Exit Function
-        End If
-    Next ctl
-    Err.Raise 5, , "Cannot find GetControlByName '" & name & "'"
-End Function
-
-Private Function CheckForExistingRecords() As Boolean
-    If TableName = "" Then Exit Function
-    If Entity = 0 Then Exit Function
-    
-    Dim results As Integer
-    Dim rs As Recordset
-    Dim sql As String
-    
-    sql = "SELECT Count(*) AS TotalCount FROM " & TableName & " WHERE EntityFK = " & Entity & ";"
-    Set rs = CurrentDb.OpenRecordset(sql)
-    results = rs!TotalCount
-    
-    Log "CheckForExistingRecords = " & CStr(results)
-    
-    CheckForExistingRecords = results > 0
-End Function
 
 ' Mode functions
 Private Function ChangeToViewNewMode()
-    With This.frm
-        .AllowAdditions = True
-        .AllowEdits = False
-        .AllowDeletions = False
-        .DataEntry = True
-    End With
+    SetFormEditState True, False, False, True
     
     This.frm.controls("ValidFrom").SetFocus
     This.frm.controls("ValidFrom").Locked = True
@@ -138,6 +110,7 @@ Private Function ChangeToViewNewMode()
             ctl.Visible = False
          ElseIf ctl.name Like "lblSuffix*" Then
             ctl.Properties("Left") = 4394
+            ctl.Visible = False
         End If
     Next ctl
     
@@ -145,12 +118,7 @@ Private Function ChangeToViewNewMode()
 End Function
 
 Private Function ChangeToEditNewMode()
-    With This.frm
-        .AllowAdditions = True
-        .AllowEdits = True
-        .AllowDeletions = False
-        .DataEntry = True
-    End With
+    SetFormEditState True, True, False, True
     
     Dim ctl As control
     For Each ctl In This.frm.controls
@@ -178,12 +146,7 @@ Private Function ChangeToEditNewMode()
 End Function
 
 Private Function ChangeToViewExistingMode()
-    With This.frm
-        .AllowAdditions = False
-        .AllowEdits = False
-        .AllowDeletions = False
-        .DataEntry = False
-    End With
+    SetFormEditState False, False, False, False
     
     GotoEntity
         
@@ -197,6 +160,7 @@ Private Function ChangeToViewExistingMode()
             ctl.Visible = False
         ElseIf ctl.name Like "lblSuffix*" Then
             ctl.Properties("Left") = 4394 '4394 or 6804
+            ctl.Visible = True
         End If
     Next ctl
     
@@ -206,13 +170,8 @@ Private Function ChangeToViewExistingMode()
 End Function
 
 Private Function ChangeToEditExistingMode()
-    With This.frm
-        .AllowAdditions = False
-        .AllowEdits = True
-        .AllowDeletions = False
-        .DataEntry = False
-    End With
-    
+    SetFormEditState False, True, False, False
+
     GotoEntity
         
     Dim ctl As control
@@ -235,10 +194,57 @@ Private Function ChangeToEditExistingMode()
     Log "Now in Edit Existing Mode"
 End Function
 
-' More State stuff
-Public Function TrySetState(newState As DetailState3) As Boolean
-    If This.state = newState Then Exit Function
+Private Function ChangeToSaveEdits()
+    Dim rs As Recordset
+    Dim ctl As control
     
+    If This.State = EditExisting Then
+        This.frm.Recordset.Edit
+        This.frm.Recordset!ValidUntil = Now()
+        This.frm.Recordset.Update
+        
+        ChangeToEditNewMode
+        
+        For Each ctl In This.frm.controls
+            If ctl.name Like "???LHS*" Then
+                ctl = GetControlByName(This.frm.controls, Replace(ctl.name, "LHS", "RHS"))
+            End If
+        Next ctl
+    End If
+    
+    DoCmd.Save
+    
+    StopEditing
+    
+    Log "ChangeToSaveEdits()"
+End Function
+
+Private Function ChangeToCancelEditing()
+    Dim TrackFK As Integer
+    Dim detailID As Integer
+    
+    If This.IsEditing = False Then Exit Function
+    This.IsEditing = False
+    
+    If (This.State = EditNew) And (Not This.frm.NewRecord) Then
+        TrackFK = This.frm.Recordset!TrackFK
+        detailID = This.frm.Recordset.fields("tblDetail.ID")
+        Call RemoveCancelledNewRecord(TrackFK, detailID)
+    End If
+    
+    This.frm.Undo
+    
+    If This.State = EditExisting Then
+        Call TrySetState(ViewExisting)
+    ElseIf This.State = EditNew Then
+        Call TrySetState(ViewNew)
+    End If
+    
+    Log "ChangeToCancelEditing()"
+End Function
+
+' Giant Select Statement
+Public Function TrySetState(newState As DetailState3) As Boolean
     Select Case newState
         Case ready
             If CheckForExistingRecords Then
@@ -249,44 +255,57 @@ Public Function TrySetState(newState As DetailState3) As Boolean
             Exit Function
             
         Case ViewNew
-            If Not CheckForExistingRecords Then
-                TrySetState = True
-                ChangeToViewNewMode
-                DoChangeState ViewNew
-                Exit Function
-            End If
+            TrySetState = True
+            ChangeToViewNewMode
+            DoChangeState ViewNew
+            Exit Function
             
         Case EditNew
-            If Not CheckForExistingRecords Then
-                TrySetState = True
-                ChangeToEditNewMode
-                DoChangeState EditNew
-                Exit Function
-            End If
+            TrySetState = True
+            ChangeToEditNewMode
+            DoChangeState EditNew
+            Exit Function
             
         Case ViewExisting
-            If CheckForExistingRecords Then
-                TrySetState = True
-                ChangeToViewExistingMode
-                DoChangeState ViewExisting
-                Exit Function
-            End If
+            TrySetState = True
+            ChangeToViewExistingMode
+            DoChangeState ViewExisting
+            Exit Function
             
         Case EditExisting
-            If This.state = ViewExisting Then
-                TrySetState = True
-                ChangeToEditExistingMode
-                DoChangeState EditExisting
-                Exit Function
-            End If
+            TrySetState = True
+            ChangeToEditExistingMode
+            DoChangeState EditExisting
+            Exit Function
+        
+        Case SaveExisting
+            TrySetState = True
+            ChangeToSaveEdits
+            Exit Function
+            
+        Case SaveNew
+            TrySetState = True
+            ChangeToSaveEdits
+            Exit Function
+            
+        Case CancelExisting
+            TrySetState = True
+            ChangeToCancelEditing
+            Exit Function
+            
+        Case CancelNew
+            TrySetState = True
+            ChangeToCancelEditing
+            Exit Function
     End Select
     
     DoChangeState Invalid
 End Function
 
 Private Function DoChangeState(newState As DetailState3)
-    This.state = newState
+    This.State = newState
     RaiseEvent StateChanged(newState)
+    UpdateButtonsState
     Log "DoChangeState(" & EnumToState(newState) & ")"
 End Function
 
@@ -294,153 +313,152 @@ End Function
 Public Function StartEditing()
     If This.IsEditing Then Exit Function
     This.IsEditing = True
-    RaiseEvent EditingStarted
+    'RaiseEvent EditingStarted
     Log "StartEditing()"
 End Function
 
 Public Function StopEditing()
     If This.IsEditing = False Then Exit Function
     This.IsEditing = False
-    RaiseEvent EditingStopped
+    'RaiseEvent EditingStopped
     Log "StopEditing() - CHK if saved"
+    TrySetState ready
 End Function
 
 Public Function CancelEditing()
-    Dim trackFK As Integer
-    Dim detailID As Integer
-    
-    If This.IsEditing = False Then Exit Function
-    This.IsEditing = False
-    
-    If (This.state = EditNew) And (Not This.frm.NewRecord) Then
-        trackFK = This.frm.Recordset!trackFK
-        detailID = This.frm.Recordset.fields("tblDetail.ID")
-        Call RemoveCancelledNewRecord(trackFK, detailID)
-        'Call RemoveCancelledNewRecord(This.frm.Recordset!trackFK, This.frm.Recordset.fields("tblDetail.ID"))
-    End If
-    
-    This.frm.Undo
-    
-    If This.state = EditExisting Then
-        Call TrySetState(ViewExisting)
-    ElseIf This.state = EditNew Then
-        'This.frm.Requery
-        Call TrySetState(ViewNew)
-    End If
-    
-    'Call TrySetState(Ready)
-    RaiseEvent EditingCancelled
-    Log "CancelEditing()"
+    MsgBox "NYI"
 End Function
 
-Private Function RemoveCancelledNewRecord(trackFK As Integer, detailID As Integer)
-    Call CurrentDb.Execute("DELETE * FROM tblTrack WHERE ID = " & trackFK & ";")
-    Call CurrentDb.Execute("DELETE * FROM " & This.TableName & " WHERE ID = " & detailID & ";")
+Private Function RemoveCancelledNewRecord(TrackFK As Integer, detailID As Integer)
+    On Error GoTo ErrorHandling
+    Call CurrentDb.Execute("DELETE * FROM tblTrack WHERE ID = " & TrackFK & ";")
+    Call CurrentDb.Execute("DELETE * FROM " & This.tableName & " WHERE ID = " & detailID & ";")
+    Exit Function
+    
+ErrorHandling:
+    Err.Raise 5, , "Error in RemoveCancelledNewRecord()"
 End Function
 
-' SCD2 Saving
-Public Function SaveEdits()
-    'If This.state <> EditExisting Then Exit Function
-    Dim ctl As control
-    
-    If This.state = EditExisting Then
-        SaveEditExisting
-    ElseIf This.state = EditNew Then
-        ' Can't do this here: 3332 cannot enter value into blank field on one side of outer join
-        'This.frm!EntityFK = Entity
-        'This.frm!ValidFrom = Now()
-        'This.frm!CommitFK = 1
-    End If
-    
-    DoCmd.Save
-    
-    'Call TrySetState(ViewExistingMode)
-    StopEditing
-    Log "SaveEdits()"
-End Function
 
-Private Function SaveEditExisting()
-    Dim rs As Recordset
-    Dim ctl As control
-    
-    This.frm.Recordset.Edit
-    This.frm.Recordset!ValidUntil = Now()
-    This.frm.Recordset.Update
-    
-    ChangeToEditNewMode
-    
-    For Each ctl In This.frm.controls
-        If ctl.name Like "???LHS*" Then
-            ctl = GetControlByName(This.frm.controls, Replace(ctl.name, "LHS", "RHS"))
-        End If
-    Next ctl
-    
-    
-End Function
-
-Private Sub frmForEvents_AfterInsert()
-    'Debug.Print "frmForEvents_AfterInsert()"
-End Sub
-
+' Events for Handling
 Private Sub frmForEvents_AfterUpdate()
-    'Debug.Print "frmForEvents_AfterUpdate()"
-    Debug.Print "frmForEvents_AfterUpdate() & state = " & This.state
-    If This.state = EditExisting Then
+    Debug.Print "frmForEvents_AfterUpdate() & state = " & This.State
+    If This.State = EditExisting Then
         StopEditing
     End If
 End Sub
 
-' IAction stuff
-Public Function GetButtonState(actionName As String) As Boolean
-    Select Case actionName
-        Case "New"
-            'GetButtonState = True
-            'Exit Function
-        Case "AddNew"
-            GetButtonState = (This.state = ViewNew)
-            
-        Case "SaveNew"
-            GetButtonState = (This.state = EditNew)
-            
-        Case "CancelNew"
-            GetButtonState = (This.state = EditNew)
-            
-        Case "View"
-            'if (this.IsEditing = False) and (this.
-            GetButtonState = True
-            If This.state = EditNew Then GetButtonState = False
-            If This.state = ViewNew Then GetButtonState = False
-            If This.IsEditing = True Then GetButtonState = False
-            If This.state = ViewExisting Then GetButtonState = False
-            
-        Case "Edit"
-            GetButtonState = (This.state = ViewExisting)
-            
-        Case "SaveEdits"
-            GetButtonState = (This.state = EditExisting)
-            
-        Case "CancelEdit"
-            GetButtonState = (This.state = EditExisting)
-    End Select
-End Function
 
 Private Sub frmForEvents_GotFocus()
     Debug.Assert False
     Log "frmForEvents_GotFocus()"
-    If This.state = NewMode And This.frm!ValidFrom = "" Then
+    If This.State = NewMode And This.frm!ValidFrom = "" Then
         This.frm!EntityFK = Entity
         This.frm!ValidFrom = Now()
         This.frm!CommitFK = 1
     End If
 End Sub
 
-Private Function Log(text As String)
-    'Me.lblLog.Caption = "[" & Format(Now(), "hh:mm:ss") & "] " & text & vbCrLf & Me.lblLog.Caption
-    Debug.Print "[" & Format(Now(), "hh:mm:ss") & "] " & text
+' Helpers
+Private Function GotoEntity()
+    Debug.Assert Entity > 0
+    This.frm.Filter = "EntityFK = " & Entity & " AND ValidUntil = #9999/12/31#"
+    This.frm.FilterOn = True
+    Call This.frm.Recordset.FindLast("EntityFK = " & Entity & " AND ValidUntil = #9999/12/31#")
+    
+    Log "GotoEntity #" & Entity
 End Function
 
-Public Function EnumToState(state As DetailState3)
+Private Function GetControlByName(controls As controls, name As String)
+    Dim ctl As control
+    For Each ctl In controls
+        If ctl.name = name Then
+            Set GetControlByName = ctl
+            Exit Function
+        End If
+    Next ctl
+    Err.Raise 5, , "Cannot find GetControlByName '" & name & "'"
+End Function
+
+Private Function Log(text As String)
+    Dim s As String
+    s = "[" & Format(Now(), "hh:mm:ss") & "] " & text
+    Debug.Print s
+End Function
+
+Public Function EnumToState(State As DetailState3)
     Dim v As Variant
     v = Array("Invalid", "Ready", "ViewNew", "EditNew", "ViewExisting", "EditExisting")
-    EnumToState = CStr(v(state))
+    EnumToState = CStr(v(State))
+End Function
+
+Private Function SetFormEditState(additions As Boolean, edits As Boolean, deletions As Boolean, dataentry As Boolean)
+    With This.frm
+        .AllowAdditions = additions
+        .AllowEdits = edits
+        .AllowDeletions = deletions
+        .dataentry = dataentry
+    End With
+End Function
+
+Private Function CheckForExistingRecords() As Boolean
+    On Error GoTo ErrorHandling
+    If tableName = "" Then Exit Function
+    If Entity = 0 Then Exit Function
+    
+    Dim results As Integer
+    Dim rs As Recordset
+    Dim sql As String
+    
+    sql = "SELECT Count(*) AS TotalCount FROM " & tableName & " WHERE EntityFK = " & Entity & ";"
+    Set rs = CurrentDb.OpenRecordset(sql)
+    results = rs!TotalCount
+    
+    Log "CheckForExistingRecords = " & CStr(results)
+    
+    CheckForExistingRecords = results > 0
+    Exit Function
+    
+ErrorHandling:
+    Err.Raise 5, , "Something went wrong in CheckForExistingRecords()"
+End Function
+
+' Event handlers for CommandButtons
+Public Function AddEvents(cb As CommandButton, State As DetailState3)
+    With New clsEventCommandButton
+        Set .CommandButton = cb
+        Set .ViewModel = Me
+        .ActionState = State
+        Events.Add .Self
+    End With
+End Function
+
+Private Sub UpdateButtonsState()
+    Dim ecb As clsEventCommandButton
+    For Each ecb In Events
+        Select Case ecb.ActionState
+            Case EditNew
+                ecb.Enabled = (This.State = ViewNew)
+            Case SaveNew
+                ecb.Enabled = (This.State = EditNew)
+            Case CancelNew
+                ecb.Enabled = (This.State = EditNew)
+            Case ViewExisting
+                ecb.Enabled = True
+                If This.IsEditing = True Then ecb.Enabled = False
+                If This.State = EditNew Then ecb.Enabled = False
+                If This.State = ViewNew Then ecb.Enabled = False
+                If This.State = ViewExisting Then ecb.Enabled = False
+            Case EditExisting
+                ecb.Enabled = (This.State = ViewExisting)
+            Case SaveExisting
+                ecb.Enabled = (This.State = EditExisting)
+            Case CancelExisting
+                ecb.Enabled = (This.State = EditExisting)
+        End Select
+    Next ecb
+End Sub
+
+Public Function HandleEvent(State As DetailState3)
+    TrySetState State
 End Function
