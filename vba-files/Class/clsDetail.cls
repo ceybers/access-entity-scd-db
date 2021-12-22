@@ -13,9 +13,9 @@ Option Explicit
 Implements IThing
 
 Private Type TDetail
- ID As Double
- name As String
- tableName As String
+    ID As Double
+    name As String
+    tableName As String
 End Type
 Private This As TDetail
 

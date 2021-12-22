@@ -27,6 +27,8 @@ Public Enum DetailState3
     CancelNew
     SaveExisting
     CancelExisting
+    SaveAny
+    CancelAny
 End Enum
 
 Private Type DetailForm3State
@@ -35,6 +37,7 @@ Private Type DetailForm3State
     tableName As String
     SFrmName As String
     EntityID As Integer
+    CommitID As Integer
     State As DetailState3
     IsEditing As Boolean
 End Type
@@ -62,7 +65,7 @@ Public Property Let tableName(tableName As String)
     This.sfrm.SourceObject = This.SFrmName
     Set This.frm = This.sfrm.Form 'Forms(This.SFrmName)
     Set frmForEvents = This.frm
-    Log "Property Let tableName"
+    Log "(Property) Let TableName = '" & tableName & "'"
     If This.EntityID > 0 Then TrySetState ready
 End Property
 
@@ -72,7 +75,11 @@ Public Property Let Entity(RHS As Integer)
     End If
     This.EntityID = RHS
     If This.SFrmName <> "" Then TrySetState ready
-    Log "Changed entity to '" & This.EntityID & "'"
+    Log "(Property) Let Entity = '" & This.EntityID & "'"
+End Property
+
+Public Property Let CommitID(RHS As Integer)
+    This.CommitID = RHS
 End Property
 
 Public Property Get tableName() As String
@@ -90,6 +97,7 @@ End Property
 ' Ctor
 Private Sub Class_Initialize()
     Set Events = New Collection
+    This.CommitID = 1
 End Sub
 
 ' Mode functions
@@ -140,7 +148,7 @@ Private Function ChangeToEditNewMode()
     
     This.frm!EntityFK = Entity
     This.frm!ValidFrom = Now()
-    This.frm!CommitFK = 1
+    This.frm!CommitFK = This.CommitID
     
     Log "Now in Edit New Mode"
 End Function
@@ -245,6 +253,7 @@ End Function
 
 ' Giant Select Statement
 Public Function TrySetState(newState As DetailState3) As Boolean
+    Log "TrySetState(" & EnumToState(newState) & ")"
     Select Case newState
         Case ready
             If CheckForExistingRecords Then
@@ -278,35 +287,26 @@ Public Function TrySetState(newState As DetailState3) As Boolean
             DoChangeState EditExisting
             Exit Function
         
-        Case SaveExisting
+        Case SaveExisting, SaveNew, SaveAny
             TrySetState = True
             ChangeToSaveEdits
             Exit Function
             
-        Case SaveNew
-            TrySetState = True
-            ChangeToSaveEdits
-            Exit Function
-            
-        Case CancelExisting
+        Case CancelExisting, CancelNew, CancelAny
             TrySetState = True
             ChangeToCancelEditing
             Exit Function
-            
-        Case CancelNew
-            TrySetState = True
-            ChangeToCancelEditing
-            Exit Function
+        
     End Select
     
     DoChangeState Invalid
 End Function
 
 Private Function DoChangeState(newState As DetailState3)
+    Log "DoChangeState from " & EnumToState(This.State) & " -> " & EnumToState(newState)
     This.State = newState
     RaiseEvent StateChanged(newState)
     UpdateButtonsState
-    Log "DoChangeState(" & EnumToState(newState) & ")"
 End Function
 
 ' Editing
@@ -349,16 +349,6 @@ Private Sub frmForEvents_AfterUpdate()
 End Sub
 
 
-Private Sub frmForEvents_GotFocus()
-    Debug.Assert False
-    Log "frmForEvents_GotFocus()"
-    If This.State = NewMode And This.frm!ValidFrom = "" Then
-        This.frm!EntityFK = Entity
-        This.frm!ValidFrom = Now()
-        This.frm!CommitFK = 1
-    End If
-End Sub
-
 ' Helpers
 Private Function GotoEntity()
     Debug.Assert Entity > 0
@@ -388,7 +378,7 @@ End Function
 
 Public Function EnumToState(State As DetailState3)
     Dim v As Variant
-    v = Array("Invalid", "Ready", "ViewNew", "EditNew", "ViewExisting", "EditExisting")
+    v = Array("Invalid", "Ready", "ViewNew", "EditNew", "ViewExisting", "EditExisting", "SaveNew", "CancelNew", "SaveExisting", "CancelExisting", "SaveAny", "CancelAny")
     EnumToState = CStr(v(State))
 End Function
 
@@ -434,6 +424,7 @@ Public Function AddEvents(cb As CommandButton, State As DetailState3)
 End Function
 
 Private Sub UpdateButtonsState()
+    Log "UpdateButtonState for " & CStr(Events.Count) & " buttons"
     Dim ecb As clsEventCommandButton
     For Each ecb In Events
         Select Case ecb.ActionState
@@ -455,6 +446,10 @@ Private Sub UpdateButtonsState()
                 ecb.Enabled = (This.State = EditExisting)
             Case CancelExisting
                 ecb.Enabled = (This.State = EditExisting)
+            Case SaveAny
+                ecb.Enabled = (This.State = EditNew) Or (This.State = EditExisting)
+            Case CancelAny
+                ecb.Enabled = (This.State = EditNew) Or (This.State = EditExisting)
         End Select
     Next ecb
 End Sub
