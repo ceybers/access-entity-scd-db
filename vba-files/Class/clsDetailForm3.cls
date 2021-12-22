@@ -11,6 +11,11 @@ Option Compare Database
 Option Explicit
 
 Public Event StateChanged(newState As DetailState3)
+Public Event EditingStarted()
+Public Event EditingStopped()
+
+Private Const BACKCOLOR_YELLOW As Double = 13431551
+Private Const BACKCOLOR_DEFAULT As Double = 16777215
 
 Private WithEvents frmForEvents As Access.Form
 Attribute frmForEvents.VB_VarHelpID = -1
@@ -113,7 +118,7 @@ Private Function ChangeToViewNewMode()
         If ctl.name Like "???LHS*" Then
             ctl.Locked = False
             ctl.Visible = False
-            ctl.Properties("BackColor") = 13431551
+            ctl.Properties("BackColor") = BACKCOLOR_YELLOW
         ElseIf ctl.name Like "???RHS*" Then
             ctl.Visible = False
          ElseIf ctl.name Like "lblSuffix*" Then
@@ -133,7 +138,7 @@ Private Function ChangeToEditNewMode()
         If ctl.name Like "???LHS*" Then
             ctl.Locked = False
             ctl.Visible = True
-            ctl.Properties("BackColor") = 13431551
+            ctl.Properties("BackColor") = BACKCOLOR_YELLOW
         ElseIf ctl.name Like "???RHS*" Then
             ctl.Visible = False
          ElseIf ctl.name Like "lblSuffix*" Then
@@ -163,7 +168,7 @@ Private Function ChangeToViewExistingMode()
         If ctl.name Like "???LHS*" Then
             ctl.Locked = True
             ctl.Visible = True
-            ctl.Properties("BackColor") = 16777215
+            ctl.Properties("BackColor") = BACKCOLOR_DEFAULT
         ElseIf ctl.name Like "???RHS*" Then
             ctl.Visible = False
         ElseIf ctl.name Like "lblSuffix*" Then
@@ -187,10 +192,10 @@ Private Function ChangeToEditExistingMode()
         If ctl.name Like "???LHS*" Then
             ctl.Locked = True
             ctl.Visible = True
-            ctl.Properties("BackColor") = 16777215
+            ctl.Properties("BackColor") = BACKCOLOR_DEFAULT
         ElseIf ctl.name Like "???RHS*" Then
             ctl.Visible = True
-            ctl.Properties("BackColor") = 13431551 '16777215
+            ctl.Properties("BackColor") = BACKCOLOR_YELLOW
             ctl = GetControlByName(This.frm.controls, Replace(ctl.name, "RHS", "LHS"))
         ElseIf ctl.name Like "lblSuffix*" Then ctl.Properties("Left") = 6804
             '4394 or 6804
@@ -247,6 +252,8 @@ Private Function ChangeToCancelEditing()
     ElseIf This.State = EditNew Then
         Call TrySetState(ViewNew)
     End If
+    
+    CancelEditing
     
     Log "ChangeToCancelEditing()"
 End Function
@@ -313,20 +320,21 @@ End Function
 Public Function StartEditing()
     If This.IsEditing Then Exit Function
     This.IsEditing = True
-    'RaiseEvent EditingStarted
+    RaiseEvent EditingStarted
     Log "StartEditing()"
 End Function
 
 Public Function StopEditing()
     If This.IsEditing = False Then Exit Function
     This.IsEditing = False
-    'RaiseEvent EditingStopped
+    RaiseEvent EditingStopped
     Log "StopEditing() - CHK if saved"
     TrySetState ready
 End Function
 
 Public Function CancelEditing()
-    MsgBox "NYI"
+    RaiseEvent EditingStopped
+    'MsgBox "NYI"
 End Function
 
 Private Function RemoveCancelledNewRecord(TrackFK As Integer, detailID As Integer)
@@ -342,12 +350,25 @@ End Function
 
 ' Events for Handling
 Private Sub frmForEvents_AfterUpdate()
-    Debug.Print "frmForEvents_AfterUpdate() & state = " & This.State
+    Log "frmForEvents_AfterUpdate() & State == " & EnumToState(This.State)
     If This.State = EditExisting Then
-        StopEditing
+        ' FIX - use Save button, not Event?
+        'StopEditing
+    ElseIf This.State = DetailState3.EditNew Then
+        'TODO Check if this is necessary
+        'StopEditing
     End If
 End Sub
 
+
+Private Sub frmForEvents_BeforeUpdate(Cancel As Integer)
+    ' TODO This won't work because Save/Cancel buttons are on the main form
+    
+    'Log "frmForEvents_BeforeUpdate and IsDirty == " & This.sfrm.Form.Dirty
+    'If This.sfrm.Form.Dirty = True Then
+    '    Cancel = True
+    'End If
+End Sub
 
 ' Helpers
 Private Function GotoEntity()
@@ -372,7 +393,7 @@ End Function
 
 Private Function Log(text As String)
     Dim s As String
-    s = "[" & Format(Now(), "hh:mm:ss") & "] " & text
+    s = "[" & format(Now(), "hh:mm:ss") & "] " & text
     Debug.Print s
 End Function
 
@@ -457,3 +478,4 @@ End Sub
 Public Function HandleEvent(State As DetailState3)
     TrySetState State
 End Function
+

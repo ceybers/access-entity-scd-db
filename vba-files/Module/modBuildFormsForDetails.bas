@@ -14,6 +14,8 @@ Private Type TControlSet
     width As String
     lookupTable As String
     suffix As String
+    format As String
+    textalign As String
 End Type
 
 Public Sub BuildFormsForDetails()
@@ -21,13 +23,13 @@ Public Sub BuildFormsForDetails()
         Exit Sub
     End If
     
-    'Call BuildFormForDetail("Dimensions")
-    'Call BuildFormForDetail("MaintPlan")
-    'Call BuildFormForDetail("Service")
+    Call BuildFormForDetail("Dimensions")
+    Call BuildFormForDetail("MaintPlan")
+    Call BuildFormForDetail("Service")
     
-    Call BuildFormForDetail("A")
-    Call BuildFormForDetail("B")
-    Call BuildFormForDetail("C")
+    'Call BuildFormForDetail("A")
+    'Call BuildFormForDetail("B")
+    'Call BuildFormForDetail("C")
 End Sub
 
 Private Function BuildFormForDetail(detailName As String)
@@ -36,18 +38,20 @@ Private Function BuildFormForDetail(detailName As String)
     formName = "sfrmDetail" & detailName
     Dim controlSets() As TControlSet
     
+    OpenFormInDesignMode formName
     RemoveAllControls formName
     SetFormProperties formName
     controlSets = GetFields(tableName)
     Call DrawFields(formName, controlSets)
     SetSCDFields formName
+    CloseFormInDesignMode formName
 End Function
 
 Private Function DrawFields(formName As String, fields() As TControlSet)
     Dim i As Integer
     Dim x As Integer
     Dim cs As TControlSet
-    DoCmd.OpenForm formName:=formName, View:=acDesign
+    'DoCmd.OpenForm formName:=formName, View:=acDesign
     
     For i = 1 To UBound(fields)
         cs = fields(i)
@@ -58,8 +62,10 @@ Private Function DrawFields(formName As String, fields() As TControlSet)
         If cs.fieldName = "ValidFrom" Or cs.fieldName = "TrackFK" Or cs.fieldName = "CommitFK" Then
             CreateTextBox formName, cs.fieldName, cs.fieldName, (3.5 * CM_TO_TWIP), x
         ElseIf cs.lookupTable = "" Then
-            CreateTextBox formName, "txtLHS" & cs.fieldName, cs.fieldName, (3.5 * CM_TO_TWIP), x
-            CreateTextBox formName, "txtRHS" & cs.fieldName, "", (7.75 * CM_TO_TWIP), x
+            'CreateTextBox formName, "txtLHS" & cs.fieldName, cs.fieldName, (3.5 * CM_TO_TWIP), x
+            'CreateTextBox formName, "txtRHS" & cs.fieldName, "", (7.75 * CM_TO_TWIP), x
+            CreateTextBox2 formName, "txtLHS", cs, (3.5 * CM_TO_TWIP), x
+            CreateTextBox2 formName, "txtRHS", cs, (7.75 * CM_TO_TWIP), x
         Else
             CreateComboBox formName, "cmbLHS" & cs.fieldName, cs.fieldName, cs.lookupTable, (3.5 * CM_TO_TWIP), x
             CreateComboBox formName, "cmbRHS" & cs.fieldName, "", cs.lookupTable, (7.75 * CM_TO_TWIP), x
@@ -67,7 +73,7 @@ Private Function DrawFields(formName As String, fields() As TControlSet)
         'CreateLabel formName, "lblSuffix" & cs.FieldName, "", (12 * CM_TO_TWIP), x
         
     Next i
-    DoCmd.Close acForm, formName, acSaveYes
+    'DoCmd.Close acForm, formName, acSaveYes
 End Function
 
 Private Function GetFields(tableName As String) As TControlSet()
@@ -127,12 +133,14 @@ Private Function RecordToControlSet(ByRef rs As Recordset) As TControlSet
         .width = rs!caption
         .lookupTable = Nz(rs!lookupTable, "")
         .suffix = Nz(rs!suffix)
+        .format = Nz(rs!format)
+        .textalign = Nz(rs!textalign)
     End With
 End Function
 
 Private Function SetFormProperties(formName As String)
     Dim frm As Form
-    DoCmd.OpenForm formName:=formName, View:=acDesign
+    'DoCmd.OpenForm formName:=formName, View:=acDesign
     Set frm = Forms(formName)
     frm.NavigationButtons = False
     frm.RecordSelectors = False
@@ -144,7 +152,7 @@ Private Function SetFormProperties(formName As String)
     frm.RecordSource = ""
     'frm.RecordSource = Replace(formName, "sfrm", "tbl")
     frm.RecordSource = GetSQL(Replace(formName, "sfrm", "tbl"))
-    DoCmd.Close acForm, formName, acSaveYes
+    'DoCmd.Close acForm, formName, acSaveYes
 End Function
 
 Private Function RemoveAllControls(formName As String)
@@ -152,14 +160,14 @@ Private Function RemoveAllControls(formName As String)
     Dim frm As Form
     Dim i As Integer
     
-    DoCmd.OpenForm formName:=formName, View:=acDesign
+    'DoCmd.OpenForm formName:=formName, View:=acDesign
     
     Set frm = Forms(formName)
     For i = frm.controls.Count To 1 Step -1
         DeleteControl formName, frm.controls(i - 1).name
     Next i
     
-    DoCmd.Close acForm, formName, acSaveYes
+    'DoCmd.Close acForm, formName, acSaveYes
 End Function
 
 Private Function CreateLabel(formName As String, controlName As String, caption As String, left As Integer, top As Integer)
@@ -177,7 +185,22 @@ Private Function CreateTextBox(formName As String, controlName As String, fieldN
     tb.SpecialEffect = 2
     tb.TopMargin = 31
     tb.ControlSource = fieldName
-    tb.TextAlign = 1 'Left
+    tb.textalign = 1 'Left
+End Function
+
+Private Function CreateTextBox2(formName As String, prefix As String, cs As TControlSet, left As Integer, top As Integer)
+    Dim tb As textbox
+    Set tb = CreateControl(formName:=formName, ControlType:=acTextBox, left:=left, top:=top, width:=(4 * CM_TO_TWIP), Height:=DEFAULT_HEIGHT)
+    tb.name = prefix & cs.caption
+    tb.SpecialEffect = 2
+    tb.TopMargin = 31
+    If prefix = "txtLHS" Then
+        tb.ControlSource = cs.fieldName
+    End If
+    tb.textalign = cs.textalign
+    If cs.format <> "" Then
+        tb.format = cs.format
+    End If
 End Function
 
 Private Function CreateComboBox(formName As String, controlName As String, fieldName As String, lookup As String, left As Integer, top As Integer)
@@ -198,18 +221,18 @@ End Function
 
 Private Sub SetSCDFields(formName As String)
     Dim frm As Form
-    DoCmd.OpenForm formName:=formName, View:=acDesign
+    'DoCmd.OpenForm formName:=formName, View:=acDesign
     Set frm = Forms(formName)
     
     frm!lblTrackFK.Visible = False
     frm!TrackFK.Visible = False
     
-    DoCmd.Close acForm, formName, acSaveYes
+    'DoCmd.Close acForm, formName, acSaveYes
 End Sub
 
 Private Function TEST_QueryControl()
     Dim frm As Form
-    DoCmd.OpenForm formName:=FORM_NAME, View:=acDesign
+    'DoCmd.OpenForm formName:=FORM_NAME, View:=acDesign
     Set frm = Forms(FORM_NAME)
     Dim i As Integer
     Dim ctl As control
@@ -227,3 +250,10 @@ Private Function TEST_QueryControl()
     Next i
 End Function
 
+Private Sub OpenFormInDesignMode(formName As String)
+    DoCmd.OpenForm formName:=formName, View:=acDesign
+End Sub
+
+Private Sub CloseFormInDesignMode(formName As String)
+    DoCmd.Close acForm, formName, acSaveYes
+End Sub
