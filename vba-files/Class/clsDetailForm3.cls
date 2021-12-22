@@ -40,6 +40,7 @@ Private Type DetailForm3State
     frm As Form
     sfrm As Subform
     tableName As String
+    FrmName As String
     SFrmName As String
     EntityID As Integer
     CommitID As Integer
@@ -49,6 +50,11 @@ End Type
 Private This As DetailForm3State
 
 ' Properties
+Private Property Get DetailForm() As Form
+    Debug.Assert Not This.sfrm Is Nothing
+    Set DetailForm = This.sfrm.Form
+End Property
+
 Public Property Set Subform(RHS As Subform)
     Set This.sfrm = RHS
 End Property
@@ -67,11 +73,40 @@ End Property
 Public Property Let tableName(tableName As String)
     This.tableName = tableName
     This.SFrmName = Replace(tableName, "tbl", "sfrm")
-    This.sfrm.SourceObject = This.SFrmName
-    Set This.frm = This.sfrm.Form 'Forms(This.SFrmName)
+    
+    'If This.frm Is Nothing Then
+    '    Set This.frm = Forms(This.FrmName) ' This is the detail form reference
+    'End If
+    'TODO FIX
+    ' We are checkign if its loaded before we load it...
+    'If Not CurrentProject.AllForms(This.SFrmName).IsLoaded Then
+        'MsgBox "FAIL"
+        'Exit Property
+    'End If
+    
+    'Debug.Assert CurrentProject.AllForms(This.SFrmName).IsLoaded
+    'If This.sfrm Is Nothing Then
+        ' TODO FIX
+        ' FIX This should fix it... we were trying to ref, but to load it we need to set .Form = formname as string
+        ' Nope, this is still wrong - we lost the reference to the control
+        'This.sfrm.Form = This.SFrmName
+        'Set This.sfrm = Forms(This.SFrmName) ' This is the subform CONTROL reference
+    'End If
+    If This.sfrm Is Nothing Then
+        Set This.sfrm = Forms!frmTest!sfrmDetail
+    End If
+    
+    If Not This.sfrm Is Nothing Then
+        Set This.frm = This.sfrm.Form 'Forms(This.SFrmName)
+        This.sfrm.SourceObject = This.SFrmName
+    End If
     Set frmForEvents = This.frm
     Log "(Property) Let TableName = '" & tableName & "'"
     If This.EntityID > 0 Then TrySetState ready
+End Property
+
+Public Property Let formName(formName As String)
+    This.FrmName = formName
 End Property
 
 Public Property Let Entity(RHS As Integer)
@@ -109,12 +144,14 @@ End Sub
 Private Function ChangeToViewNewMode()
     SetFormEditState True, False, False, True
     
-    This.frm.controls("ValidFrom").SetFocus
-    This.frm.controls("ValidFrom").Locked = True
-    This.frm.controls("CommitFK").Locked = True
+    With DetailForm
+        .controls("ValidFrom").SetFocus
+        .controls("ValidFrom").Locked = True
+        .controls("CommitFK").Locked = True
+    End With
     
     Dim ctl As control
-    For Each ctl In This.frm.controls
+    For Each ctl In DetailForm.controls
         If ctl.name Like "???LHS*" Then
             ctl.Locked = False
             ctl.Visible = False
@@ -134,7 +171,7 @@ Private Function ChangeToEditNewMode()
     SetFormEditState True, True, False, True
     
     Dim ctl As control
-    For Each ctl In This.frm.controls
+    For Each ctl In DetailForm.controls
         If ctl.name Like "???LHS*" Then
             ctl.Locked = False
             ctl.Visible = True
@@ -151,9 +188,9 @@ Private Function ChangeToEditNewMode()
     
     StartEditing
     
-    This.frm!EntityFK = Entity
-    This.frm!ValidFrom = Now()
-    This.frm!CommitFK = This.CommitID
+    DetailForm!EntityFK = Entity
+    DetailForm!ValidFrom = Now()
+    DetailForm!CommitFK = This.CommitID
     
     Log "Now in Edit New Mode"
 End Function
@@ -164,7 +201,7 @@ Private Function ChangeToViewExistingMode()
     GotoEntity
         
     Dim ctl As control
-    For Each ctl In This.frm.controls
+    For Each ctl In DetailForm.controls
         If ctl.name Like "???LHS*" Then
             ctl.Locked = True
             ctl.Visible = True
@@ -188,7 +225,7 @@ Private Function ChangeToEditExistingMode()
     GotoEntity
         
     Dim ctl As control
-    For Each ctl In This.frm.controls
+    For Each ctl In DetailForm.controls
         If ctl.name Like "???LHS*" Then
             ctl.Locked = True
             ctl.Visible = True
@@ -196,7 +233,7 @@ Private Function ChangeToEditExistingMode()
         ElseIf ctl.name Like "???RHS*" Then
             ctl.Visible = True
             ctl.Properties("BackColor") = BACKCOLOR_YELLOW
-            ctl = GetControlByName(This.frm.controls, Replace(ctl.name, "RHS", "LHS"))
+            ctl = GetControlByName(DetailForm.controls, Replace(ctl.name, "RHS", "LHS"))
         ElseIf ctl.name Like "lblSuffix*" Then ctl.Properties("Left") = 6804
             '4394 or 6804
         End If
@@ -212,15 +249,15 @@ Private Function ChangeToSaveEdits()
     Dim ctl As control
     
     If This.State = EditExisting Then
-        This.frm.Recordset.Edit
-        This.frm.Recordset!ValidUntil = Now()
-        This.frm.Recordset.Update
+        DetailForm.Recordset.Edit
+        DetailForm.Recordset!ValidUntil = Now()
+        DetailForm.Recordset.Update
         
         ChangeToEditNewMode
         
-        For Each ctl In This.frm.controls
+        For Each ctl In DetailForm.controls
             If ctl.name Like "???LHS*" Then
-                ctl = GetControlByName(This.frm.controls, Replace(ctl.name, "LHS", "RHS"))
+                ctl = GetControlByName(DetailForm.controls, Replace(ctl.name, "LHS", "RHS"))
             End If
         Next ctl
     End If
@@ -239,13 +276,13 @@ Private Function ChangeToCancelEditing()
     If This.IsEditing = False Then Exit Function
     This.IsEditing = False
     
-    If (This.State = EditNew) And (Not This.frm.NewRecord) Then
-        TrackFK = This.frm.Recordset!TrackFK
-        detailID = This.frm.Recordset.fields("tblDetail.ID")
+    If (This.State = EditNew) And (Not DetailForm.NewRecord) Then
+        TrackFK = DetailForm.Recordset!TrackFK
+        detailID = DetailForm.Recordset.fields("tblDetail.ID")
         Call RemoveCancelledNewRecord(TrackFK, detailID)
     End If
     
-    This.frm.Undo
+    DetailForm.Undo
     
     If This.State = EditExisting Then
         Call TrySetState(ViewExisting)
@@ -373,9 +410,9 @@ End Sub
 ' Helpers
 Private Function GotoEntity()
     Debug.Assert Entity > 0
-    This.frm.Filter = "EntityFK = " & Entity & " AND ValidUntil = #9999/12/31#"
-    This.frm.FilterOn = True
-    Call This.frm.Recordset.FindLast("EntityFK = " & Entity & " AND ValidUntil = #9999/12/31#")
+    DetailForm.Filter = "EntityFK = " & Entity & " AND ValidUntil = #9999/12/31#"
+    DetailForm.FilterOn = True
+    Call DetailForm.Recordset.FindLast("EntityFK = " & Entity & " AND ValidUntil = #9999/12/31#")
     
     Log "GotoEntity #" & Entity
 End Function
@@ -404,7 +441,7 @@ Public Function EnumToState(State As DetailState3)
 End Function
 
 Private Function SetFormEditState(additions As Boolean, edits As Boolean, deletions As Boolean, dataentry As Boolean)
-    With This.frm
+    With DetailForm
         .AllowAdditions = additions
         .AllowEdits = edits
         .AllowDeletions = deletions

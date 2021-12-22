@@ -149,7 +149,8 @@ Public Function ApplyDetailsSourceToListbox(ByRef lb As ListBox)
 End Function
 
 Public Function ApplyCommitsSourceToCombobox(ByRef cmb As ComboBox)
-    cmb.RowSource = "SELECT TOP 3 tblCommits.ID, tblCommits.Title, tblCommits.Modified FROM tblCommits ORDER BY tblCommits.Created DESC;"
+    cmb.RowSource = ""
+    cmb.RowSource = "SELECT TOP 3 ID, Title, Modified FROM tblCommits WHERE Closed Is Null ORDER BY Created DESC;"
 End Function
 
 Public Function SearchEntity(tb As textbox, lb As ListBox)
