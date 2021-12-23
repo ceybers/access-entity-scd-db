@@ -18,7 +18,7 @@ Private Type TControlSet
     textalign As String
 End Type
 
-Public Sub BuildFormsForDetails()
+Private Sub TEST_BuildFormsForDetails()
     If MsgBox("Build forms?", vbYesNo + vbDefaultButton2) = vbNo Then
         Exit Sub
     End If
@@ -32,12 +32,14 @@ Public Sub BuildFormsForDetails()
     'Call BuildFormForDetail("C")
 End Sub
 
-Private Function BuildFormForDetail(detailName As String)
+Public Function BuildFormForDetail(detailName As String)
     Dim tableName As String, formName As String
     tableName = "tblDetail" & detailName
     formName = "sfrmDetail" & detailName
     Dim controlSets() As TControlSet
     
+    DeleteExistingForm formName
+    CreateBlankForm formName
     OpenFormInDesignMode formName
     RemoveAllControls formName
     SetFormProperties formName
@@ -45,6 +47,25 @@ Private Function BuildFormForDetail(detailName As String)
     Call DrawFields(formName, controlSets)
     SetSCDFields formName
     CloseFormInDesignMode formName
+End Function
+
+Private Function CreateBlankForm(formName As String)
+    Dim oldName As String
+    Dim frm As Form
+    Set frm = CreateForm()
+    oldName = frm.name
+    DoCmd.Close acForm, oldName, acSaveYes
+    DoCmd.Rename formName, acForm, oldName
+End Function
+
+Private Function DeleteExistingForm(formName As String)
+    Dim frm As Object
+    For Each frm In CurrentProject.AllForms
+        If frm.name = formName Then
+            DoCmd.DeleteObject acForm, formName
+            Exit Function
+        End If
+    Next frm
 End Function
 
 Private Function DrawFields(formName As String, fields() As TControlSet)
@@ -56,7 +77,7 @@ Private Function DrawFields(formName As String, fields() As TControlSet)
     For i = 1 To UBound(fields)
         cs = fields(i)
         x = ((DEFAULT_HEIGHT + 60) * (i - 1)) + 120
-        CreateLabel formName, "lbl" & cs.fieldName, cs.caption, (0.25 * CM_TO_TWIP), x
+        CreateLabel formName, "lbl" & cs.fieldName, IIf(cs.caption = "", cs.fieldName, cs.caption), (0.25 * CM_TO_TWIP), x
         CreateLabel formName, "lblSuffix" & cs.fieldName, cs.suffix, (7.75 * CM_TO_TWIP), x
         
         If cs.fieldName = "ValidFrom" Or cs.fieldName = "TrackFK" Or cs.fieldName = "CommitFK" Then
@@ -129,8 +150,8 @@ End Function
 Private Function RecordToControlSet(ByRef rs As Recordset) As TControlSet
     With RecordToControlSet
         .fieldName = rs!fieldName
-        .caption = rs!caption
-        .width = rs!caption
+        .caption = Nz(rs!caption, "")
+        .width = Nz(rs!width, "")
         .lookupTable = Nz(rs!lookupTable, "")
         .suffix = Nz(rs!suffix)
         .format = Nz(rs!format)
@@ -163,7 +184,7 @@ Private Function RemoveAllControls(formName As String)
     'DoCmd.OpenForm formName:=formName, View:=acDesign
     
     Set frm = Forms(formName)
-    For i = frm.controls.Count To 1 Step -1
+    For i = frm.controls.count To 1 Step -1
         DeleteControl formName, frm.controls(i - 1).name
     Next i
     
@@ -190,7 +211,9 @@ End Function
 
 Private Function CreateTextBox2(formName As String, prefix As String, cs As TControlSet, left As Integer, top As Integer)
     Dim tb As textbox
-    Set tb = CreateControl(formName:=formName, ControlType:=acTextBox, left:=left, top:=top, width:=(4 * CM_TO_TWIP), Height:=DEFAULT_HEIGHT)
+    MsgBox (CDbl(cs.width) * CM_TO_TWIP)
+    Set tb = CreateControl(formName:=formName, ControlType:=acTextBox, left:=left, top:=top, width:=(CDbl(cs.width) * CM_TO_TWIP), Height:=DEFAULT_HEIGHT)
+    'tb.width = cs.width * CM_TO_TWIP
     tb.name = prefix & cs.fieldName
     tb.SpecialEffect = 2
     tb.TopMargin = 31
@@ -237,7 +260,7 @@ Private Function TEST_QueryControl()
     Dim i As Integer
     Dim ctl As control
     Dim tb As textbox
-    For i = frm.controls.Count To 1 Step -1
+    For i = frm.controls.count To 1 Step -1
         Set ctl = frm.controls(i - 1)
         If ctl.ControlType = acTextBox Then
             Set tb = ctl
