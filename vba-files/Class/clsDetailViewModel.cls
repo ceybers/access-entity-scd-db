@@ -54,6 +54,7 @@ Public Property Set Detail(ByRef RHS As clsDetail)
     Set This.Detail = RHS
     
     This.SubFormControl.SourceObject = Replace(RHS.tableName, "tbl", "sfrm")
+    Log " SubFormControlSourceObject = " & Replace(RHS.tableName, "tbl", "sfrm")
     
     If This.entityID > 0 Then TrySetState Ready
 End Property
@@ -93,7 +94,8 @@ Public Property Get IsEditing() As Boolean
 End Property
 
 Private Property Get DetailForm() As Form
-    Debug.Assert Not This.Detail Is Nothing
+    'Debug.Assert Not This.Detail Is Nothing
+    'Debug.Assert This.SubFormControl Is Nothing
     Set DetailForm = This.SubFormControl.Form
 End Property
 
@@ -462,7 +464,7 @@ Public Function AddEvents(cb As CommandButton, State As DetailStateForSCD)
 End Function
 
 Private Sub UpdateButtonsState()
-    Log "UpdateButtonState for " & CStr(Events.Count) & " buttons"
+    Log "UpdateButtonState for " & CStr(Events.count) & " buttons"
     Dim ecb As clsEventCommandButton
     For Each ecb In Events
         Select Case ecb.ActionState
