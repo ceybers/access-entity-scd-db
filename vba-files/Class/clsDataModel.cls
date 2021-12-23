@@ -17,22 +17,16 @@ Const ENTITYTYPES_TABLE As String = "lkpEntityTypes"
 Const COMMITS_TABLE As String = "tblCommits"
 
 ' Private Variables
-Private Type TModel
+Private Type TDataModel
      Details As Collection
-     entities As Collection
+     Entities As Collection
      EntityTypes As Collection
      Commits As Collection
 End Type
-Private This As TModel
+Private This As TDataModel
 
 ' Ctor
 Private Sub Class_Initialize()
-    'Debug.Print "Model initialised"
-    ' Changed to lazy loading
-    'Set This.entities = LoadThings(ENTITIES_TABLE)
-    'Set This.Details = LoadThings(DETAILS_TABLE)
-    'Set This.EntityTypes = LoadThings(ENTITYTYPES_TABLE)
-    'Set This.Commits = LoadThings(COMMITS_TABLE)
 End Sub
 
 ' Getters
@@ -43,11 +37,11 @@ Public Property Get Details() As Collection
     Set Details = This.Details
 End Property
 
-Public Property Get entities() As Collection
-    If This.entities Is Nothing Then
-        Set This.entities = LoadThings(ENTITIES_TABLE)
+Public Property Get Entities() As Collection
+    If This.Entities Is Nothing Then
+        Set This.Entities = LoadThings(ENTITIES_TABLE)
     End If
-    Set entities = This.entities
+    Set Entities = This.Entities
 End Property
 
 Public Property Get EntityTypes() As Collection

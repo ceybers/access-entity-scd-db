@@ -149,9 +149,9 @@ Private Function SetFormProperties(formName As String)
     frm.AllowAdditions = True
     frm.AllowEdits = True
     frm.AllowDeletions = False
-    frm.RecordSource = ""
+    frm.recordSource = ""
     'frm.RecordSource = Replace(formName, "sfrm", "tbl")
-    frm.RecordSource = GetSQL(Replace(formName, "sfrm", "tbl"))
+    frm.recordSource = GetSQL(Replace(formName, "sfrm", "tbl"))
     'DoCmd.Close acForm, formName, acSaveYes
 End Function
 
@@ -191,7 +191,7 @@ End Function
 Private Function CreateTextBox2(formName As String, prefix As String, cs As TControlSet, left As Integer, top As Integer)
     Dim tb As textbox
     Set tb = CreateControl(formName:=formName, ControlType:=acTextBox, left:=left, top:=top, width:=(4 * CM_TO_TWIP), Height:=DEFAULT_HEIGHT)
-    tb.name = prefix & cs.caption
+    tb.name = prefix & cs.fieldName
     tb.SpecialEffect = 2
     tb.TopMargin = 31
     If prefix = "txtLHS" Then

@@ -95,7 +95,7 @@ Public Function SetDetailByID(idx As Double)
 End Function
 
 Public Function SetEntityByID(idx As Double)
-    Entity = This.Model.GetThingByID(This.Model.entities, idx)
+    Entity = This.Model.GetThingByID(This.Model.Entities, idx)
 End Function
 
 Public Function SetEntityTypeByID(idx As Double)
@@ -138,7 +138,7 @@ Public Function SearchEntity(tb As textbox, lb As ListBox)
     tb.SetFocus
     criteria = tb.text & "*"
     
-    For Each Entity In This.Model.entities
+    For Each Entity In This.Model.Entities
         If Entity.name Like criteria Then
             If (This.SelectedEntityType Is Nothing) Then
                 filteredEntities.Add Entity

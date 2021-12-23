@@ -22,9 +22,9 @@ Attribute frmForEvents.VB_VarHelpID = -1
 Private Events As Collection
 
 Public Enum DetailStateForSCD
-    Invalid
-    ready
-    ViewNew
+    invalid
+    Ready
+    Viewnew
     EditNew
     ViewExisting
     EditExisting
@@ -37,12 +37,8 @@ Public Enum DetailStateForSCD
 End Enum
 
 Private Type TDetailViewModel
-    frm As Form
-    sfrm As Subform
-    tableName As String
-    FrmName As String
-    SFrmName As String
-    EntityID As Integer
+    SubFormControl As SubForm
+    entityID As Integer
     CommitID As Integer
     State As DetailStateForSCD
     IsEditing As Boolean
@@ -57,108 +53,55 @@ Public Property Set Detail(ByRef RHS As clsDetail)
     
     Set This.Detail = RHS
     
-    This.sfrm.SourceObject = Replace(RHS.tableName, "tbl", "sfrm")
+    This.SubFormControl.SourceObject = Replace(RHS.tableName, "tbl", "sfrm")
     
-    If This.EntityID > 0 Then TrySetState ready
+    If This.entityID > 0 Then TrySetState Ready
 End Property
 
 Public Property Get Detail() As clsDetail
     Set Detail = This.Detail
 End Property
 
-' ---
-Private Property Get DetailForm() As Form
-    Debug.Assert Not This.sfrm Is Nothing
-    Set DetailForm = This.sfrm.Form
+Public Property Set SubForm(ByRef RHS As SubForm)
+    Set This.SubFormControl = RHS
 End Property
 
-Public Property Set Subform(RHS As Subform)
-    Set This.sfrm = RHS
-End Property
-
-Public Property Set Form(RHS As Form)
-    MsgBox "DEPREC"
-    Exit Property
-    Set This.frm = RHS
-    This.SFrmName = RHS.name
-    This.tableName = Replace(RHS.name, "sfrm", "tbl")
-    Set frmForEvents = RHS
-    Log "clsDetailViewModel_Form('" & RHS.name & "')"
-    If This.EntityID > 0 Then TrySetState ready
-End Property
-
-' TODO Deprec this
-Public Property Let tableName(tableName As String)
-    'Err.Raise 5, , "DEPREC"
-    If This.sfrm.SourceObject = "" Then Exit Property
-    
-    This.tableName = tableName
-    This.SFrmName = Replace(tableName, "tbl", "sfrm")
-    
-    'If This.frm Is Nothing Then
-    '    Set This.frm = Forms(This.FrmName) ' This is the detail form reference
-    'End If
-    'TODO FIX
-    ' We are checkign if its loaded before we load it...
-    'If Not CurrentProject.AllForms(This.SFrmName).IsLoaded Then
-        'MsgBox "FAIL"
-        'Exit Property
-    'End If
-    
-    'Debug.Assert CurrentProject.AllForms(This.SFrmName).IsLoaded
-    'If This.sfrm Is Nothing Then
-        ' TODO FIX
-        ' FIX This should fix it... we were trying to ref, but to load it we need to set .Form = formname as string
-        ' Nope, this is still wrong - we lost the reference to the control
-        'This.sfrm.Form = This.SFrmName
-        'Set This.sfrm = Forms(This.SFrmName) ' This is the subform CONTROL reference
-    'End If
-    'If This.sfrm Is Nothing Then
-        'Set This.sfrm = Forms!frmTest!sfrmDetail
-    'End If
-    
-    If Not This.sfrm Is Nothing Then
-        Set This.frm = This.sfrm.Form 'Forms(This.SFrmName)
-        This.sfrm.SourceObject = This.SFrmName
-    End If
-    Set frmForEvents = This.frm
-    Log "(Property) Let TableName = '" & tableName & "'"
-    If This.EntityID > 0 Then TrySetState ready
-End Property
-
-Public Property Let formName(formName As String)
-    This.FrmName = formName
-End Property
-
-Public Property Let Entity(RHS As Integer)
-    If This.EntityID = RHS Then
+Public Property Let entityID(RHS As Integer)
+    If This.entityID = RHS Then
         Exit Property
     End If
-    This.EntityID = RHS
-    If This.SFrmName <> "" Then TrySetState ready
-    Log "(Property) Let Entity = '" & This.EntityID & "'"
+    This.entityID = RHS
+    
+    Log "(Property) Let Entity = '" & This.entityID & "'"
+    If Not This.Detail Is Nothing Then TrySetState Ready
 End Property
 
 Public Property Let CommitID(RHS As Integer)
     This.CommitID = RHS
 End Property
 
-Public Property Get tableName() As String
-    tableName = This.tableName
+Public Property Get CommitID() As Integer
+    CommitID = This.CommitID
 End Property
 
-Public Property Get Entity() As Integer
-    Entity = This.EntityID
+Public Property Get entityID() As Integer
+    entityID = This.entityID
 End Property
 
 Public Property Get IsEditing() As Boolean
     IsEditing = This.IsEditing
 End Property
 
+Private Property Get DetailForm() As Form
+    Debug.Assert Not This.Detail Is Nothing
+    Set DetailForm = This.SubFormControl.Form
+End Property
+
 ' Ctor
 Private Sub Class_Initialize()
     Set Events = New Collection
     This.CommitID = 1
+    This.State = invalid
 End Sub
 
 ' Mode functions
@@ -204,21 +147,14 @@ Private Function ChangeToEditNewMode()
         End If
     Next ctl
     
-    ' Do not use - this will throw Runtime 2449
-    'This.frm.SetFocus
-    
     StartEditing
-    
-    DetailForm!EntityFK = Entity
-    DetailForm!ValidFrom = Now()
-    DetailForm!CommitFK = This.CommitID
     
     Log "Now in Edit New Mode"
 End Function
 
 Private Function ChangeToViewExistingMode()
     SetFormEditState False, False, False, False
-    
+
     GotoEntity
         
     Dim ctl As control
@@ -234,8 +170,6 @@ Private Function ChangeToViewExistingMode()
             ctl.Visible = True
         End If
     Next ctl
-    
-    StopEditing
     
     Log "Now in View Existing Mode"
 End Function
@@ -266,28 +200,40 @@ Private Function ChangeToEditExistingMode()
 End Function
 
 Private Function ChangeToSaveEdits()
+    Dim fieldName As String
     Dim rs As Recordset
     Dim ctl As control
     
+    Set rs = DetailForm.Recordset
+    Debug.Assert Not rs.BOF
+    Debug.Assert Not rs.EOF
+    
     If This.State = EditExisting Then
-        DetailForm.Recordset.Edit
-        DetailForm.Recordset!ValidUntil = Now()
-        DetailForm.Recordset.Update
+        rs.Edit
+        rs!ValidUntil = Now()
+        rs.Update
         
-        ChangeToEditNewMode
+        Call SetFormEditState(True, True, False, True)
+        ' Needs to be done again after changing SetFormEditState
+        Set rs = DetailForm.Recordset
+        
+        rs.AddNew
         
         For Each ctl In DetailForm.controls
-            If ctl.name Like "???LHS*" Then
-                ctl = GetControlByName(DetailForm.controls, Replace(ctl.name, "LHS", "RHS"))
+            If ctl.name Like "???RHS*" Then
+                fieldName = Right(ctl.name, Len(ctl.name) - 6)
+                rs.fields(fieldName) = ctl
             End If
         Next ctl
+    ElseIf This.State = EditNew Then
+        rs.Edit
     End If
     
-    DoCmd.Save
+    rs!EntityFK = entityID
+    rs!TrackFK = CreateNewTrackRecord(CommitID)
+    rs.Update
     
     StopEditing
-    
-    Log "ChangeToSaveEdits()"
 End Function
 
 Private Function ChangeToCancelEditing()
@@ -308,7 +254,7 @@ Private Function ChangeToCancelEditing()
     If This.State = EditExisting Then
         Call TrySetState(ViewExisting)
     ElseIf This.State = EditNew Then
-        Call TrySetState(ViewNew)
+        Call TrySetState(Viewnew)
     End If
     
     CancelEditing
@@ -320,18 +266,19 @@ End Function
 Public Function TrySetState(newState As DetailStateForSCD) As Boolean
     Log "TrySetState(" & EnumToState(newState) & ")"
     Select Case newState
-        Case ready
+        Case Ready
+            DoChangeState Ready
             If CheckForExistingRecords Then
                 TrySetState ViewExisting
             Else
-                TrySetState ViewNew
+                TrySetState Viewnew
             End If
             Exit Function
             
-        Case ViewNew
+        Case Viewnew
             TrySetState = True
             ChangeToViewNewMode
-            DoChangeState ViewNew
+            DoChangeState Viewnew
             Exit Function
             
         Case EditNew
@@ -364,7 +311,7 @@ Public Function TrySetState(newState As DetailStateForSCD) As Boolean
         
     End Select
     
-    DoChangeState Invalid
+    DoChangeState invalid
 End Function
 
 Private Function DoChangeState(newState As DetailStateForSCD)
@@ -386,8 +333,8 @@ Public Function StopEditing()
     If This.IsEditing = False Then Exit Function
     This.IsEditing = False
     RaiseEvent EditingStopped
-    Log "StopEditing() - CHK if saved"
-    TrySetState ready
+    Log "StopEditing()"
+    TrySetState Ready
 End Function
 
 Public Function CancelEditing()
@@ -398,44 +345,56 @@ End Function
 Private Function RemoveCancelledNewRecord(TrackFK As Integer, detailID As Integer)
     On Error GoTo ErrorHandling
     Call CurrentDb.Execute("DELETE * FROM tblTrack WHERE ID = " & TrackFK & ";")
-    Call CurrentDb.Execute("DELETE * FROM " & This.tableName & " WHERE ID = " & detailID & ";")
+    Call CurrentDb.Execute("DELETE * FROM " & Detail.tableName & " WHERE ID = " & detailID & ";")
     Exit Function
     
 ErrorHandling:
     Err.Raise 5, , "Error in RemoveCancelledNewRecord()"
 End Function
 
-
-' Events for Handling
-Private Sub frmForEvents_AfterUpdate()
-    Log "frmForEvents_AfterUpdate() & State == " & EnumToState(This.State)
-    If This.State = EditExisting Then
-        ' FIX - use Save button, not Event?
-        'StopEditing
-    ElseIf This.State = DetailStateForSCD.EditNew Then
-        'TODO Check if this is necessary
-        'StopEditing
-    End If
-End Sub
-
-
-Private Sub frmForEvents_BeforeUpdate(Cancel As Integer)
-    ' TODO This won't work because Save/Cancel buttons are on the main form
+Private Function CreateNewTrackRecord(CommitFK As Double) As Integer
+    Dim db As Database
+    Dim rs As Recordset
     
-    'Log "frmForEvents_BeforeUpdate and IsDirty == " & This.sfrm.Form.Dirty
-    'If This.sfrm.Form.Dirty = True Then
-    '    Cancel = True
-    'End If
-End Sub
+    Set db = CurrentDb
+    Set rs = db.OpenRecordset("SELECT * FROM tblTrack", dbOpenDynaset, dbSeeChanges)
+    
+    rs.AddNew
+    CreateNewTrackRecord = rs!ID
+    rs!CommitFK = CommitFK
+    rs!ValidFrom = Now()
+    rs!ValidUntil = #12/31/9999#
+    rs.Update
+    
+    rs.Close
+    Set rs = Nothing
+    Set db = Nothing
+End Function
+
+' Form Events
 
 ' Helpers
 Private Function GotoEntity()
-    Debug.Assert Entity > 0
-    DetailForm.Filter = "EntityFK = " & Entity & " AND ValidUntil = #9999/12/31#"
-    DetailForm.FilterOn = True
-    Call DetailForm.Recordset.FindLast("EntityFK = " & Entity & " AND ValidUntil = #9999/12/31#")
+    Dim recordSource As String
+    Dim frm As Form
+    Dim rs As Recordset
     
-    Log "GotoEntity #" & Entity
+    Debug.Assert entityID > 0
+    
+    Set frm = DetailForm
+    recordSource = frm.recordSource
+    frm.recordSource = ""
+    
+    frm.Filter = "EntityFK = " & entityID & " AND ValidUntil = #9999/12/31#"
+    frm.FilterOn = True
+    frm.recordSource = recordSource
+    
+    Set rs = frm.RecordsetClone
+    Call rs.FindLast("EntityFK = " & entityID & " AND ValidUntil = #9999/12/31#")
+    
+    frm.Bookmark = rs.Bookmark
+    
+    Log "GotoEntity #" & entityID
 End Function
 
 Private Function GetControlByName(controls As controls, name As String)
@@ -472,14 +431,14 @@ End Function
 
 Private Function CheckForExistingRecords() As Boolean
     On Error GoTo ErrorHandling
-    If tableName = "" Then Exit Function
-    If Entity = 0 Then Exit Function
+    If Detail Is Nothing Then Exit Function
+    If entityID = 0 Then Exit Function
     
     Dim results As Integer
     Dim rs As Recordset
     Dim sql As String
     
-    sql = "SELECT Count(*) AS TotalCount FROM " & tableName & " WHERE EntityFK = " & Entity & ";"
+    sql = "SELECT Count(*) AS TotalCount FROM " & Detail.tableName & " WHERE EntityFK = " & entityID & ";"
     Set rs = CurrentDb.OpenRecordset(sql)
     results = rs!TotalCount
     
@@ -508,17 +467,17 @@ Private Sub UpdateButtonsState()
     For Each ecb In Events
         Select Case ecb.ActionState
             Case EditNew
-                ecb.Enabled = (This.State = ViewNew)
+                ecb.Enabled = (This.State = Viewnew)
             Case SaveNew
                 ecb.Enabled = (This.State = EditNew)
             Case CancelNew
                 ecb.Enabled = (This.State = EditNew)
             Case ViewExisting
                 ecb.Enabled = True
-                If This.sfrm.SourceObject = "" Then ecb.Enabled = False
+                If Detail Is Nothing Then ecb.Enabled = False
                 If This.IsEditing = True Then ecb.Enabled = False
                 If This.State = EditNew Then ecb.Enabled = False
-                If This.State = ViewNew Then ecb.Enabled = False
+                If This.State = Viewnew Then ecb.Enabled = False
                 If This.State = ViewExisting Then ecb.Enabled = False
             Case EditExisting
                 ecb.Enabled = (This.State = ViewExisting)
@@ -537,3 +496,4 @@ End Sub
 Public Function HandleEvent(State As DetailStateForSCD)
     TrySetState State
 End Function
+
