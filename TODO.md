@@ -1,5 +1,8 @@
 # TODO
 
+## Export System
+* Since we don't have tblFact, we need to be able to export presets for EntityTypes, including resolving each Detail table's Lookups
+
 ## EntityType Management Interface
 * Initially Listbox
 * TreeView would be nice, to visualise parent-child hierarchy
