@@ -1,4 +1,5 @@
 Attribute VB_Name = "GUID"
+'@Folder "Common"
 Option Compare Database
 Option Explicit
 

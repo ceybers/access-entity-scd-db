@@ -1,0 +1,23 @@
+{
+    "Source" : {
+        "TableName" : "tblUpdRef",
+        "ID" : "ID"
+    },
+    "Destination" : {
+        "TableName" : "tblCommits",
+        "ID" : "ID"
+    },
+    "Fields" : [
+        { "src": "title", "dst": "Title"},
+        { "src": "rcvdFrom", "dst": "RecvdFrom"},
+        { "src": "rcvdDate", "dst": "RecvdDate"},
+        { "src": "", "dst": "Created"},
+        { "src": "", "dst": "Modified"},
+        { "src": "", "dst": "Closed"},
+        { "src": "", "dst": "CommitType"},
+        { "src": "docRef", "dst": "DocReference"},
+        { "src": "docDate", "dst": "DocDate"},
+        { "src": "docSource", "dst": "DocContractor"},
+        { "src": "filename", "dst": "DocFilename"}
+    ]
+}
