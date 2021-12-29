@@ -55,26 +55,26 @@ Private Function LoadMigrateCommit(filename As String) As clsMigrateCommits
     Dim migCom As clsMigrateCommits
     Set migCom = New clsMigrateCommits
     
-    Dim dataLine As String
+    Dim dataline As String
     Open filename For Input As #1
     
-    Line Input #1, dataLine
-    Debug.Assert Split(dataLine, " ")(0) = "SOURCE"
-    migCom.SourceTableName = Split(dataLine, " ")(1)
-    migCom.SourceIDField = Split(dataLine, " ")(2)
+    Line Input #1, dataline
+    Debug.Assert Split(dataline, " ")(0) = "SOURCE"
+    migCom.SourceTableName = Split(dataline, " ")(1)
+    migCom.SourceIDField = Split(dataline, " ")(2)
     
-    Line Input #1, dataLine
-    Debug.Assert Split(dataLine, " ")(0) = "DESTINATION"
-    migCom.DestinationTableName = Split(dataLine, " ")(1)
-    migCom.DestinationIDField = Split(dataLine, " ")(2)
+    Line Input #1, dataline
+    Debug.Assert Split(dataline, " ")(0) = "DESTINATION"
+    migCom.DestinationTableName = Split(dataline, " ")(1)
+    migCom.DestinationIDField = Split(dataline, " ")(2)
     
-    Line Input #1, dataLine
-    Debug.Assert Split(dataLine, " ")(0) = "FIELDS"
+    Line Input #1, dataline
+    Debug.Assert Split(dataline, " ")(0) = "FIELDS"
     Set migCom.Fields = New Collection
     
     Do While Not EOF(1)
-        Line Input #1, dataLine
-        migCom.Fields.Add modFieldPairFactory.CreateFieldPair(Trim(CStr(Split(dataLine, ";")(0))), CStr(Split(dataLine, ";")(1)))
+        Line Input #1, dataline
+        migCom.Fields.Add modFieldPairFactory.CreateFieldPair(Trim(CStr(Split(dataline, ";")(0))), CStr(Split(dataline, ";")(1)))
     Loop
     
     Close #1
