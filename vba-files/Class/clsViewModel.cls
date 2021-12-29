@@ -14,12 +14,14 @@ Option Explicit
 Public Event DetailChanged()
 Public Event EntityChanged()
 Public Event EntityTypeChanged()
+Public Event CommitChanged()
 
 ' Private Variables
 Private Type TViewModel
      SelectedDetail As clsDetail
      SelectedEntity As clsEntity
      SelectedEntityType As clsEntityType
+     SelectedCommit As clsCommit
      Model As clsModel
 End Type
 Private This As TViewModel
@@ -31,6 +33,13 @@ Private Sub Class_Initialize()
 End Sub
 
 ' Getters
+Public Property Get IsValid() As Boolean
+    If This.SelectedDetail Is Nothing Then Exit Property
+    If This.SelectedEntity Is Nothing Then Exit Property
+    If This.SelectedCommit Is Nothing Then Exit Property
+    IsValid = True
+End Property
+
 Public Property Get Detail() As clsDetail
     Debug.Assert Not This.SelectedDetail Is Nothing
     Set Detail = This.SelectedDetail
@@ -44,6 +53,11 @@ End Property
 Public Property Get EntityType() As clsEntityType
     Debug.Assert Not This.SelectedEntityType Is Nothing
     Set EntityType = This.SelectedEntityType
+End Property
+
+Public Property Get Commit() As clsCommit
+    'Debug.Assert Not This.SelectedCommit Is Nothing
+    Set Commit = This.SelectedCommit
 End Property
 
 ' Letters
@@ -83,17 +97,33 @@ Public Property Let EntityType(ByRef vNewValue As clsEntityType)
     RaiseEvent EntityTypeChanged
 End Property
 
+Public Property Let Commit(ByRef vNewValue As clsCommit)
+    If vNewValue Is Nothing Then Exit Property
+    If Not This.SelectedCommit Is Nothing Then
+        If Commit.ID = vNewValue.ID Then
+            Exit Property
+        End If
+    End If
+    
+    Set This.SelectedCommit = vNewValue
+    RaiseEvent CommitChanged
+End Property
+
 ' Methods
 Public Function SetDetailByID(idx As Double)
-    Detail = GetThingByID(This.Model.Details, idx)
+    Detail = This.Model.GetThingByID(This.Model.Details, idx)
 End Function
 
 Public Function SetEntityByID(idx As Double)
-    Entity = GetThingByID(This.Model.entities, idx)
+    Entity = This.Model.GetThingByID(This.Model.entities, idx)
 End Function
 
 Public Function SetEntityTypeByID(idx As Double)
-    EntityType = GetThingByID(This.Model.EntityTypes, idx)
+    EntityType = This.Model.GetThingByID(This.Model.EntityTypes, idx)
+End Function
+
+Public Function SetCommitByID(idx As Double)
+    Commit = This.Model.GetThingByID(This.Model.Commits, idx)
 End Function
 
 Public Function ReplaceSubform(ByRef sfrm As Subform)
@@ -116,6 +146,11 @@ End Function
 
 Public Function ApplyDetailsSourceToListbox(ByRef lb As ListBox)
     lb.RowSource = "SELECT DetailTableFK,DetailTable FROM qryEntityTypeToDetail WHERE EntityTypeFK = " & EntityType.ID & ";"
+End Function
+
+Public Function ApplyCommitsSourceToCombobox(ByRef cmb As ComboBox)
+    cmb.RowSource = ""
+    cmb.RowSource = "SELECT TOP 3 ID, Title, Modified FROM tblCommits WHERE Closed Is Null ORDER BY Created DESC;"
 End Function
 
 Public Function SearchEntity(tb As textbox, lb As ListBox)
@@ -154,16 +189,4 @@ Public Function SearchEntity(tb As textbox, lb As ListBox)
     For Each Entity In filteredEntities
         lb.AddItem CStr(Entity.ID) & ";" & Entity.name
     Next Entity
-End Function
-
-' Private Methods
-Private Function GetThingByID(thingCollection As Collection, idx As Double) As IThing
-    Dim thisThing As IThing
-    For Each thisThing In thingCollection
-        If thisThing.ID = idx Then
-            Set GetThingByID = thisThing
-            Exit Function
-        End If
-    Next thisThing
-    Err.Raise 5, , "GetThingByID failed!"
 End Function

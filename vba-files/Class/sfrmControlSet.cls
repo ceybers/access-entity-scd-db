@@ -11,9 +11,9 @@ Option Compare Database
 Option Explicit
 
 Public index As Integer
-Public FieldName As String
-Public Caption As String
+Public fieldName As String
+Public caption As String
 Public lookup As String
-Public Suffix As String
+Public suffix As String
 Public defaultValue As String
 

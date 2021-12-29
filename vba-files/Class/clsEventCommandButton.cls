@@ -14,12 +14,12 @@ Private WithEvents cmdBtn As Access.CommandButton
 Attribute cmdBtn.VB_VarHelpID = -1
 
 Private Type TEventCommandButton
-    State As DetailState3
-    context As clsDetailForm3
+    State As DetailStateForSCD
+    context As clsDetailViewModel
 End Type
 Private This As TEventCommandButton
 
-Public Property Set ViewModel(context As clsDetailForm3)
+Public Property Set ViewModel(context As clsDetailViewModel)
     Set This.context = context
 End Property
 
@@ -28,11 +28,11 @@ Public Property Set CommandButton(textbox As Access.CommandButton)
     cmdBtn.OnClick = "[Event Procedure]"
 End Property
 
-Public Property Let ActionState(State As DetailState3)
+Public Property Let ActionState(State As DetailStateForSCD)
     This.State = State
 End Property
 
-Public Property Get ActionState() As DetailState3
+Public Property Get ActionState() As DetailStateForSCD
     ActionState = This.State
 End Property
 
