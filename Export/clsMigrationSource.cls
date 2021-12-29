@@ -17,6 +17,7 @@ Private Type TClsMigrationSource
     parentField As String
     parentTableName As String
     entityTypeID As Double
+    parentPK As String
 End Type
 
 Private this As TClsMigrationSource
@@ -45,12 +46,15 @@ Public Property Get entityTypeID() As Double
     entityTypeID = this.entityTypeID
 End Property
 
+Public Property Get parentPK() As String
+    parentPK = this.parentPK
+End Property
 
 Public Function Self() As clsMigrationSource
     Set Self = Me
 End Function
 
-Public Function SetValues(tableName As String, idField As String, nameField As String, parentField As String, parentTableName As String, entityTypeID As Double)
+Public Function SetValues(tableName As String, idField As String, nameField As String, entityTypeID As Double, Optional parentField As String = "", Optional parentTableName As String = "", Optional parentPK As String = "")
     With this
         .tableName = tableName
         .idField = idField
@@ -58,6 +62,7 @@ Public Function SetValues(tableName As String, idField As String, nameField As S
         .parentField = parentField
         .parentTableName = parentTableName
         .entityTypeID = entityTypeID
+        .parentPK = parentPK
     End With
 End Function
     
