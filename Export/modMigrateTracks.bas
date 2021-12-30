@@ -5,7 +5,7 @@ Option Explicit
 
 Public Sub MigrateTracks()
     Dim migCom As clsMigrateCommits
-    Set migCom = LoadMigrateCommit("C:\Users\User\Documents\access-entity-scd-db\MigrateTracks.txt")
+    Set migCom = LoadMigrateCommit(MIGRATE_TRACKS_FN)
     MigrateCommitTable migCom
 End Sub
 

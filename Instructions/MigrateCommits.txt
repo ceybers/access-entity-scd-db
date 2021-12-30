@@ -1,0 +1,10 @@
+SOURCE tblUpdRef ID
+DESTINATION tblCommits ID
+FIELDS
+    title;Title
+    rcvdFrom;RecvdFrom
+    rcvdDate;RecvdDate
+    docRef;DocReference
+    docDate;DocDate
+    docSource;DocContractor
+    filename;DocFilename

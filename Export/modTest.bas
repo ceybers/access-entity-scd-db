@@ -2,9 +2,9 @@ Attribute VB_Name = "modTest"
 Option Compare Database
 Option Explicit
 
-Private Sub AAA()
+Private Sub aaa()
     Dim migCom As clsMigrateCommits
-    Set migCom = LoadMigrateCommit("C:\Users\User\Documents\access-entity-scd-db\MigrateCommits.txt")
+    Set migCom = LoadMigrateCommit(MIGRATE_COMMITS_FN)
     Call PrintMigrateCommit(migCom)
 End Sub
 

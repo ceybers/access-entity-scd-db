@@ -14,6 +14,7 @@ Option Explicit
 Private Type TClsFieldPair
     Source As String
     Destination As String
+    Lookup As String
 End Type
 
 Private this As TClsFieldPair
@@ -32,6 +33,14 @@ End Property
 
 Public Property Let Destination(ByVal RHS As String)
     this.Destination = RHS
+End Property
+
+Public Property Get Lookup() As String
+    Lookup = this.Lookup
+End Property
+
+Public Property Let Lookup(ByVal RHS As String)
+    this.Lookup = RHS
 End Property
 
 Public Function Self() As clsFieldPair
