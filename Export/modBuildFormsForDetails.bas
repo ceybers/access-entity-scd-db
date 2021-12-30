@@ -3,7 +3,7 @@ Attribute VB_Name = "modBuildFormsForDetails"
 Option Compare Database
 Option Explicit
 
-Const FILENAME As String = "C:\Users\User\Documents\xvba-access-test\schema.csv"
+Const FILENAME As String = "C:\Users\User\Documents\access-entity-scd-db\Schema\schema.csv"
 Dim FORM_NAME As String
 Dim TABLE_NAME As String
 Const CM_TO_TWIP As Integer = 567
