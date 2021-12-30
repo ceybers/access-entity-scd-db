@@ -3,7 +3,7 @@ Attribute VB_Name = "modBuildTablesForDetails"
 Option Compare Database
 Option Explicit
 
-Private Const BE_DATABASE_FILENAME As String = "C:\Users\User\Documents\xvba-access-test\index_BE.accdb"
+Private Const BE_DATABASE_FILENAME As String = "C:\Users\User\Documents\access-entity-scd-db\index_BE.accdb"
 Private Const LINKED_DB_CONNECT As String = ";DATABASE="
 Dim FORM_NAME As String
 Dim TABLE_NAME As String
@@ -126,7 +126,7 @@ End Sub
 Private Function AddFieldToTableDefFromMetaSchema(tblDef As TableDef, rs As Recordset)
     Dim fldType As Integer
     Dim prop As DAO.Property
-    Dim fld As Field
+    Dim fld As field
     
     fldType = dbText
     Select Case rs!fieldType
@@ -154,13 +154,13 @@ Private Function AddFieldToTableDefFromMetaSchema(tblDef As TableDef, rs As Reco
 End Function
 
 Private Function CreateGenericField(tbl As TableDef, fieldName As String, Optional fieldType As Integer = dbText)
-    Dim fld As Field
+    Dim fld As field
     Set fld = tbl.CreateField(fieldName, fieldType)
     tbl.fields.Append fld
 End Function
 
 Private Function CreateIDField(tbl As TableDef, Optional fieldName As String = "ID")
-    Dim fld As DAO.Field
+    Dim fld As DAO.field
     Dim idx As DAO.index
     
     Set fld = CreateAutoNumberField(tbl, fieldName)
@@ -177,7 +177,7 @@ Private Function CreateIDField(tbl As TableDef, Optional fieldName As String = "
     tbl.Indexes.Append idx
 End Function
 
-Private Function CreateAutoNumberField(tbl As TableDef, fieldName As String) As Field
+Private Function CreateAutoNumberField(tbl As TableDef, fieldName As String) As field
     Set CreateAutoNumberField = tbl.CreateField(fieldName, dbLong, 4)
     With CreateAutoNumberField
          .Attributes = dbAutoIncrField
@@ -187,7 +187,7 @@ End Function
 Private Function LinkTable(tableName As String) As Boolean
     Dim db As Database
     Dim tbl As TableDef
-    Dim fld As Field
+    Dim fld As field
     
     Set db = CurrentDb
     
