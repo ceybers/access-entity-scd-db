@@ -3,14 +3,11 @@ Attribute VB_Name = "modMigrateLookups"
 Option Compare Database
 Option Explicit
 
-Private Const BE_DATABASE_FILENAME As String = "C:\Users\User\Documents\access-entity-scd-db\index_BE.accdb"
-Private Const LINKED_DB_CONNECT As String = ";DATABASE="
-
 Public Sub MigrateLookups()
     Dim filename As String
     Dim dataline As String
     
-    filename = "C:\Users\User\Documents\access-entity-scd-db\MigrateLookups.txt"
+    filename = MIGRATE_LOOKUPS_FN
     
     Open filename For Input As #1
     Do While Not EOF(1)

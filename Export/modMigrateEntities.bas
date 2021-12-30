@@ -1,4 +1,5 @@
 Attribute VB_Name = "modMigrateEntities"
+'@Folder "MigrateEntities"
 Option Compare Database
 Option Explicit
 

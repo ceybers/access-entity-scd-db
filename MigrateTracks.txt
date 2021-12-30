@@ -1,5 +1,0 @@
-SOURCE tblTracking ID
-DESTINATION tblTrack ID
-FIELDS
-    ValidFrom;ValidFrom
-    ValidUntil;ValidUntil

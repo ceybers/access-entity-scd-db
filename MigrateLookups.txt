@@ -1,2 +1,0 @@
-lkpDesignElevation;lkpTankDesignElevation;Elevation
-lkpDesignFloating;lkpTankDesignFloatingRoof;FloatingRoof
