@@ -1,0 +1,74 @@
+﻿Option Compare Database
+Option Explicit
+
+Private Const NEW_COMMIT_FORM As String = "fdlgCommitNew"
+Private WithEvents commitModel As clsCommitViewModel
+
+' Props
+Public Property Get ViewModel() As clsCommitViewModel
+    If commitModel Is Nothing Then
+        Set commitModel = New clsCommitViewModel
+    End If
+    Set ViewModel = commitModel
+End Property
+
+' Ctor
+Private Sub Form_Load()
+    ReloadCommits
+    TEST_PrepopulateInput
+End Sub
+
+' Control Events
+Private Sub btnCreateCommit_Click()
+    CreateNewCommit
+End Sub
+
+Private Sub btnRefreshCommit_Click()
+    ReloadCommits
+End Sub
+
+Private Sub btnCloseCommit_Click()
+    CloseCommit
+End Sub
+
+Private Sub btnTest_Click()
+    Debug.Assert False
+End Sub
+
+Private Sub cmbCommit_Change()
+    Dim CommitID As Double
+    CommitID = Me.cmbCommit.Value
+    Call ViewModel.SetCommitByID(CommitID)
+End Sub
+
+' Events
+Private Sub commitModel_RecordIDChanged()
+    ReloadCommits
+End Sub
+
+' Methods
+Private Sub CreateNewCommit()
+    Dim frm As Form
+      
+    If CurrentProject.AllForms(NEW_COMMIT_FORM).IsLoaded Then
+        DoCmd.Close acForm, NEW_COMMIT_FORM, acSaveNo
+    End If
+    
+    DoCmd.OpenForm formName:=NEW_COMMIT_FORM, View:=acNormal
+    Set frm = Forms(NEW_COMMIT_FORM)
+    Set frm.ViewModel = ViewModel
+End Sub
+
+Private Sub ReloadCommits()
+    ViewModel.ApplyCommitsSourceToCombobox Me.cmbCommit
+    Me.cmbCommit = Me.cmbCommit.ItemData(1)
+End Sub
+
+Private Sub CloseCommit()
+    Debug.Assert False
+End Sub
+
+Private Sub TEST_PrepopulateInput()
+    Me.cmbCommit = Me.cmbCommit.ItemData(1)
+    cmbCommit_Change
+End Sub
