@@ -3,9 +3,6 @@ Attribute VB_Name = "modBuildQueriesForDetails"
 Option Compare Database
 Option Explicit
 
-Private Const QUERY_TRACK_LATEST As String = "qryTrack_Latest"
-Private Const SCHEMA_TABLE As String = "metaSchema"
-
 Public Sub AAA_TEST()
     Dim sql As String
     sql = GenerateSQLforDetailTable("tblDetailMaintPlan")
@@ -22,7 +19,7 @@ Private Function GetFieldsFromSchema(ByVal tableName As String) As Variant
     fields.Add "TrackFK," & QUERY_TRACK_LATEST
     
     sql = "SELECT * FROM " & SCHEMA_TABLE & " WHERE TableName = '" & tableName & "';"
-    Set rs = CurrentDb.OpenRecordset(sql)
+    Set rs = CurrentDB.OpenRecordset(sql)
     
     If Not rs.BOF And Not rs.EOF Then
         Do While Not rs.EOF
@@ -75,7 +72,7 @@ Private Function GetValueFieldFromLookupTable(ByVal lookupTableName As String) A
         Exit Function
     End If
     Dim rs As Recordset
-    Set rs = CurrentDb.OpenRecordset(lookupTableName, dbOpenSnapshot, dbReadOnly)
+    Set rs = CurrentDB.OpenRecordset(lookupTableName, dbOpenSnapshot, dbReadOnly)
     GetValueFieldFromLookupTable = lookupTableName & "." & rs.fields(1).name
     rs.Close
     Set rs = Nothing

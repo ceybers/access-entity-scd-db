@@ -15,9 +15,6 @@ Public Event StateChanged(newState As DetailStateForSCD)
 Public Event EditingStarted()
 Public Event EditingStopped()
 
-Private Const BACKCOLOR_YELLOW As Double = 13431551
-Private Const BACKCOLOR_DEFAULT As Double = 16777215
-
 Private WithEvents frmForEvents As Access.Form
 Attribute frmForEvents.VB_VarHelpID = -1
 Private Events As Collection
@@ -347,8 +344,8 @@ End Function
 
 Private Function RemoveCancelledNewRecord(TrackFK As Integer, detailID As Integer)
     On Error GoTo ErrorHandling
-    Call CurrentDb.Execute("DELETE * FROM tblTrack WHERE ID = " & TrackFK & ";")
-    Call CurrentDb.Execute("DELETE * FROM " & Detail.tableName & " WHERE ID = " & detailID & ";")
+    Call CurrentDB.Execute("DELETE * FROM tblTrack WHERE ID = " & TrackFK & ";")
+    Call CurrentDB.Execute("DELETE * FROM " & Detail.tableName & " WHERE ID = " & detailID & ";")
     Exit Function
     
 ErrorHandling:
@@ -359,7 +356,7 @@ Private Function CreateNewTrackRecord(CommitFK As Double) As Integer
     Dim db As Database
     Dim rs As Recordset
     
-    Set db = CurrentDb
+    Set db = CurrentDB
     Set rs = db.OpenRecordset("SELECT * FROM tblTrack", dbOpenDynaset, dbSeeChanges)
     
     rs.AddNew
@@ -442,7 +439,7 @@ Private Function CheckForExistingRecords() As Boolean
     Dim sql As String
     
     sql = "SELECT Count(*) AS TotalCount FROM " & Detail.tableName & " WHERE EntityFK = " & entityID & ";"
-    Set rs = CurrentDb.OpenRecordset(sql)
+    Set rs = CurrentDB.OpenRecordset(sql)
     results = rs!TotalCount
     
     Log "CheckForExistingRecords = " & CStr(results)

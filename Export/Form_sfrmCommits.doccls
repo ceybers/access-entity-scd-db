@@ -1,7 +1,6 @@
 ﻿Option Compare Database
 Option Explicit
 
-Private Const NEW_COMMIT_FORM As String = "fdlgCommitNew"
 Private WithEvents commitModel As clsCommitViewModel
 
 ' Props
