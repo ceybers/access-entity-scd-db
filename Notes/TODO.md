@@ -34,3 +34,15 @@
 
 ## Data Migration
 * Need Squash/Split for when the tables in TankDB3 don't match in SCE DB5, e.g. `Service` + `Dims.OpCapacity` -> `NewService`
+
+## MVVM
+
+View (UserForm) -> Model, Commands
+Model -> Nothing
+Commands -> Model
+Presenter -> View, Model
+
+## Dependency Injection
+
+Concrete: Get Thing, Set Thing
+Interface: Get Thing, DoSomething()
