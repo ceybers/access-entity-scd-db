@@ -18,8 +18,9 @@ Private Type TORM
     EntityTypes As EntityTypes
     Entities As Entities
     Commits As Commits
+    Tracks As Tracks ' Do we need these here? They are under Commits anyway
     LookupTables As LookupTables
-    Tracks As Tracks
+    DetailTables As DetailTables
     IsReady As Boolean
 End Type
 
@@ -46,6 +47,10 @@ Public Property Get LookupTables() As LookupTables
     Set LookupTables = this.LookupTables
 End Property
 
+Public Property Get DetailTables() As DetailTables
+    Set DetailTables = this.DetailTables
+End Property
+
 Public Property Get IsReady() As Boolean
     IsReady = this.IsReady
 End Property
@@ -57,6 +62,7 @@ Public Sub Class_Initialize()
     LoadCommits
     LoadTracks
     LoadLookupTables
+    LoadDetailTables
     this.IsReady = True
 End Sub
 
@@ -107,3 +113,15 @@ Private Sub LoadLookupTables()
         'this.Commits.MapRefs .Self
     End With
 End Sub
+
+Private Sub LoadDetailTables()
+    With New DetailTables
+        Set this.DetailTables = .Self
+        .TableName = modConstants.DETAILS_TABLE
+        .Load
+        .MapRefsEntities this.Entities
+        .MapRefsTracks this.Tracks
+        'this.Commits.MapRefs .Self
+    End With
+End Sub
+

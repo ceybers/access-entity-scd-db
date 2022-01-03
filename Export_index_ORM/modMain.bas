@@ -1,5 +1,7 @@
 Attribute VB_Name = "modMain"
 '@Folder "Main"
+'@IgnoreModule
+
 Option Compare Database
 Option Explicit
 
@@ -13,8 +15,33 @@ Public Sub Main()
     
     'TestEntityType ORM
     'TestCommits ORM
-    TestLookups ORM
+    'TestLookups ORM
+    TestDetails ORM
+    
     Debug.Print "."
+End Sub
+
+Private Sub TestDetails(ByRef ORM As ORM)
+    Dim detTbl As DetailTable
+    Dim detVal As DetailValue
+    
+    Debug.Print "Listing Detail Tables:"
+    For Each detTbl In ORM.DetailTables
+        Debug.Print "   " & detTbl.ToString
+    Next detTbl
+    Debug.Print " "
+    
+    Set detTbl = ORM.DetailTables.GetByName("tblDetailDimensions")
+    
+    Debug.Print "Detail Table Name: " & detTbl.Name
+    Debug.Print detTbl.ToString
+    For Each detVal In detTbl.DetailValues
+        Debug.Print "   " & detVal.ToString
+    Next detVal
+    Debug.Print " "
+    
+    Set detVal = detTbl.DetailValues(1)
+    Debug.Print detVal.ToString
 End Sub
 
 Private Sub TestLookups(ByRef ORM As ORM)

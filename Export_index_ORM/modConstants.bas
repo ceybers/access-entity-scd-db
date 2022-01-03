@@ -15,6 +15,7 @@ Public Const ENTITY_FIELDNAME As String = "Entity"
 Public Const TRACK_FIELDNAME As String = "ID" ' No name/title field in this table
 Public Const COMMIT_FIELDNAME As String = "Title"
 Public Const LOOKUPTABLE_FIELDNAME As String = "TableName"
+Public Const DETAILTABLE_FIELDNAME As String = "TableName"
 
 Public Const TRACK_COMMITFK_FIELDNAME As String = "CommitFK"
 Public Const TRACK_VALIDFROM_FIELDNAME As String = "ValidFrom"

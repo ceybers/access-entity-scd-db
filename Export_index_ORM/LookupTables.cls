@@ -80,7 +80,6 @@ End Sub
 
 ' Methods
 Public Sub Load()
-    Debug.Print "X"
     LoadFromRecordset this.Items, LOOKUPS_TABLE, LookupTable
 End Sub
 

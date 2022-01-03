@@ -98,7 +98,10 @@ Private Sub IRecordCollection_Clear()
 End Sub
 
 Private Function IRecordCollection_GetByID(ByVal ID As Double) As IRecord
-    Dim ent As IRecord
+    Set IRecordCollection_GetByID = this.Items(COLLECTION_INDEX_PREFIX & ID)
+    Exit Function
+    ' TODO Remove
+    Dim ent As Entity
     For Each ent In this.Items
         If ent.ID = ID Then
             Set IRecordCollection_GetByID = ent
@@ -117,7 +120,7 @@ Public Function GetByEntityType(ByRef EntityType As EntityType) As IRecordCollec
     Dim ent As Entity
     For Each ent In this.Items
         If ent.EntityType Is EntityType Then
-            GetByEntityType.Items.Add ent
+            GetByEntityType.Items.Add ent, COLLECTION_INDEX_PREFIX & ent.ID
         End If
     Next ent
 
@@ -144,7 +147,9 @@ Private Sub LinkParents()
     
     For Each ent In this.Items
         parentFK = GetFieldValue(ENTITIES_TABLE, ent.ID, "ParentFK")
-        Set ent.Parent = IRecordCollection_GetByID(parentFK)
+        If parentFK > 0 Then
+            Set ent.Parent = IRecordCollection_GetByID(parentFK)
+        End If
     Next ent
 End Sub
 
