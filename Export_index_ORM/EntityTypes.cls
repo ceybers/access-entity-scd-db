@@ -16,7 +16,7 @@ Implements IRecordCollection
 ' Variables
 Private Type TEntityTypes
     Items As Collection
-    TableName As String
+    tableName As String
 End Type
 
 Private this As TEntityTypes
@@ -38,12 +38,12 @@ Public Property Get Count() As Long
     Count = this.Items.Count
 End Property
 
-Public Property Get TableName() As String
-    TableName = this.TableName
+Public Property Get tableName() As String
+    tableName = this.tableName
 End Property
 
-Public Property Let TableName(ByVal TableName As String)
-    this.TableName = TableName
+Public Property Let tableName(ByVal tableName As String)
+    this.tableName = tableName
 End Property
 
 Public Property Get Self() As EntityTypes
@@ -89,6 +89,10 @@ End Sub
 Private Sub IRecordCollection_Load()
     Load
 End Sub
+
+Private Property Get IRecordCollection_Count() As Long
+    IRecordCollection_Count = Count
+End Property
 
 Private Sub IRecordCollection_Clear()
     Clear

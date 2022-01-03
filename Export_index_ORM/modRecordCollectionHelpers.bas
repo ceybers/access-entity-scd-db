@@ -3,14 +3,14 @@ Attribute VB_Name = "modRecordCollectionHelpers"
 Option Compare Database
 Option Explicit
 
-Public Sub LoadFromRecordset(ByRef coll As Collection, ByVal TableName As String, ByRef recordClass As IRecord)
+Public Sub LoadFromRecordset(ByRef coll As Collection, ByVal tableName As String, ByRef recordClass As IRecord)
     Dim db As Database
     Dim rs As Recordset
     On Error GoTo Catch
     
 'Try
     Set db = CurrentDb
-    Set rs = db.OpenRecordset(TableName, dbOpenSnapshot, dbReadOnly)
+    Set rs = db.OpenRecordset(tableName, dbOpenSnapshot, dbReadOnly)
     
     If Not rs.BOF And Not rs.EOF Then
         Do While Not rs.EOF

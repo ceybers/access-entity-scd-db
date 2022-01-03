@@ -18,10 +18,10 @@ End Property
 Public Property Get Count() As Long
 End Property
 
-Public Property Get TableName() As String
+Public Property Get tableName() As String
 End Property
 
-Public Property Let TableName(ByVal TableName As String)
+Public Property Let tableName(ByVal tableName As String)
 End Property
 
 Public Property Get Self() As IRecordCollection

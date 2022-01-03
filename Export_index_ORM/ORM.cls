@@ -47,7 +47,7 @@ End Sub
 Private Sub LoadEntityTypes()
     With New EntityTypes
         Set this.EntityTypes = .Self
-        .TableName = modConstants.ENTITYTYPES_TABLE
+        .tableName = modConstants.ENTITYTYPES_TABLE
         .Load
     End With
 End Sub
