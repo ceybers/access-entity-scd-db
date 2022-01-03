@@ -17,7 +17,8 @@ Option Explicit
 Private Type TORM
     EntityTypes As EntityTypes
     Entities As Entities
-    
+    Commits As Commits
+
     IsReady As Boolean
 End Type
 
@@ -32,6 +33,10 @@ Public Property Get Entities() As Entities
     Set Entities = this.Entities
 End Property
 
+Public Property Get Commits() As Commits
+    Set Commits = this.Commits
+End Property
+
 Public Property Get IsReady() As Boolean
     IsReady = this.IsReady
 End Property
@@ -40,6 +45,8 @@ End Property
 Public Sub Class_Initialize()
     LoadEntityTypes
     LoadEntities
+    LoadCommits
+    LoadTracks
     this.IsReady = True
 End Sub
 
@@ -47,7 +54,7 @@ End Sub
 Private Sub LoadEntityTypes()
     With New EntityTypes
         Set this.EntityTypes = .Self
-        .tableName = modConstants.ENTITYTYPES_TABLE
+        .TableName = modConstants.ENTITYTYPES_TABLE
         .Load
     End With
 End Sub
@@ -60,5 +67,17 @@ Private Sub LoadEntities()
         .MapRefs this.EntityTypes
         this.EntityTypes.MapRefs .Self
     End With
+    
+End Sub
+
+Private Sub LoadCommits()
+    With New Commits
+        Set this.Commits = .Self
+        .TableName = modConstants.COMMITS_TABLE
+        .Load
+    End With
+End Sub
+
+Private Sub LoadTracks()
     
 End Sub

@@ -2,24 +2,24 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "EntityTypes"
+Attribute VB_Name = "Commits"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'@Folder "ORM.EntityTypes"
+'@Folder "ORM.Commits"
 Option Compare Database
 Option Explicit
 
 Implements IRecordCollection
 
 ' Variables
-Private Type TEntityTypes
+Private Type TCommits
     Items As Collection
     TableName As String
 End Type
 
-Private this As TEntityTypes
+Private this As TCommits
 
 ' Properties
 '@DefaultMember
@@ -29,8 +29,10 @@ Attribute Items.VB_UserMemId = 0
 End Property
 
 '@Enumerator
+'@MemberAttribute VB_MemberFlags, "40"
 Public Property Get NewEnum() As IUnknown
 Attribute NewEnum.VB_UserMemId = -4
+Attribute NewEnum.VB_MemberFlags = "40"
     Set NewEnum = this.Items.[_NewEnum]
 End Property
 
@@ -46,7 +48,7 @@ Public Property Let TableName(ByVal TableName As String)
     this.TableName = TableName
 End Property
 
-Public Property Get Self() As EntityTypes
+Public Property Get Self() As Commits
     Set Self = Me
 End Property
 
@@ -78,7 +80,7 @@ End Sub
 
 ' Methods
 Public Sub Load()
-    LoadFromRecordset this.Items, ENTITYTYPES_TABLE, EntityType
+    LoadFromRecordset this.Items, COMMITS_TABLE, Commit
 End Sub
 
 Public Sub Clear()
@@ -94,39 +96,25 @@ Private Sub IRecordCollection_Clear()
     Clear
 End Sub
 
+Private Function IRecordCollection_GetByID(ByVal ID As Double) As IRecord
+    Dim cmt As IRecord
+    For Each cmt In this.Items
+        If cmt.ID = ID Then
+            Set IRecordCollection_GetByID = cmt
+            Exit Function
+        End If
+    Next cmt
+End Function
+
 ' Public Methods
-Public Function GetByID(ByVal ID As Double) As EntityType
+Public Function GetByID(ByVal ID As Double) As Commit
     Set GetByID = IRecordCollection_GetByID(ID)
 End Function
 
-Public Function GetByName(ByVal Name As String) As EntityType
-    Dim et As EntityType
-    For Each et In this.Items
-        If et.Name = Name Then
-            Set GetByName = et
-            Exit Function
-        End If
-    Next et
-End Function
-
 Public Sub MapRefs(ByRef externalCollection As IRecordCollection)
-    Dim et As EntityType
-    Dim Entities As Entities
-    Set Entities = externalCollection
-    For Each et In this.Items
-        Set et.Entities = Entities.GetByEntityType(et)
-    Next et
+    
 End Sub
 
 ' Private Methods
-Private Function IRecordCollection_GetByID(ByVal ID As Double) As IRecord
-    Dim ent As IRecord
-    For Each ent In this.Items
-        If ent.ID = ID Then
-            Set IRecordCollection_GetByID = ent
-            Exit Function
-        End If
-    Next ent
-End Function
 
 

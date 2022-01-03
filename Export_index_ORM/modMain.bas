@@ -12,6 +12,17 @@ Public Sub Main()
     Debug.Print "---"
     
     Set ORM = New ORM
+    
+    'TestEntityType ORM
+    TestCommits ORM
+    Debug.Print "."
+End Sub
+
+Private Sub TestCommits(ByRef ORM As ORM)
+    Debug.Print ORM.Commits(1).Name
+End Sub
+
+Private Sub TestEntityType(ByRef ORM As ORM)
     'Set et = ORM.EntityTypes.GetByName("Depot")
     Set et = ORM.EntityTypes.GetByID(3)
     
@@ -20,6 +31,4 @@ Public Sub Main()
     For Each ent In et.Entities
         Debug.Print "   " & ent.ToString
     Next ent
-    
-    Debug.Print "."
 End Sub

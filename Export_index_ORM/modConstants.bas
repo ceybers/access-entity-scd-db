@@ -11,6 +11,9 @@ Public Const TRACKS_TABLE As String = "tblTrack"
 ' metaLookupTables
 
 Public Const ENTITYTYPE_FIELDNAME As String = "EntityType"
+Public Const ENTITY_FIELDNAME As String = "Entity"
+Public Const TRACK_FIELDNAME As String = "ID" ' No name/title field in this table
+Public Const COMMIT_FIELDNAME As String = "Title"
 
 Public Const BE_DATABASE_FILENAME As String = "C:\Users\User\Documents\access-entity-scd-db\index_BE.accdb"
 Public Const LINKED_DB_CONNECT As String = ";DATABASE="
