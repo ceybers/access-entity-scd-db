@@ -15,5 +15,12 @@ Public Const ENTITY_FIELDNAME As String = "Entity"
 Public Const TRACK_FIELDNAME As String = "ID" ' No name/title field in this table
 Public Const COMMIT_FIELDNAME As String = "Title"
 
+Public Const TRACK_COMMITFK_FIELDNAME As String = "CommitFK"
+Public Const TRACK_VALIDFROM_FIELDNAME As String = "ValidFrom"
+Public Const TRACK_VALIDUNTIL_FIELDNAME As String = "ValidUntil"
+Public Const COMMIT_CLOSED_FIELDNAME As String = "Closed"
+
+Public Const COLLECTION_INDEX_PREFIX As String = "ID#"
+
 Public Const BE_DATABASE_FILENAME As String = "C:\Users\User\Documents\access-entity-scd-db\index_BE.accdb"
 Public Const LINKED_DB_CONNECT As String = ";DATABASE="

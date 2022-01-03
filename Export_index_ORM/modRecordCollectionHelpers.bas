@@ -6,6 +6,7 @@ Option Explicit
 Public Sub LoadFromRecordset(ByRef coll As Collection, ByVal TableName As String, ByRef recordClass As IRecord)
     Dim db As Database
     Dim rs As Recordset
+    Dim key As String
     On Error GoTo Catch
     
 'Try
@@ -14,7 +15,8 @@ Public Sub LoadFromRecordset(ByRef coll As Collection, ByVal TableName As String
     
     If Not rs.BOF And Not rs.EOF Then
         Do While Not rs.EOF
-            coll.Add recordClass.Create(rs)
+            key = COLLECTION_INDEX_PREFIX & rs.Fields("ID")
+            coll.Add recordClass.Create(rs), key
             rs.MoveNext
         Loop
     End If

@@ -2,43 +2,52 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "Commit"
+Attribute VB_Name = "Track"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '@PredeclaredId
-'@Folder "ORM.Commits"
+'@Folder "ORM.Tracks"
 Option Compare Database
 Option Explicit
 
 Implements IRecord
 
 ' Variables
-Private Type TCommit
+Private Type TTrack
     ID As Double
     Name As String
-    IsClosed As Boolean
-    Tracks As Tracks
+    ValidFrom As Date
+    ValidUntil As Date
+    Commit As Commit
 End Type
 
-Private this As TCommit
+Private this As TTrack
 
 ' Unique Properties
-Public Property Get IsClosed() As Boolean
-    IsClosed = this.IsClosed
+Public Property Get ValidFrom() As Date
+    ValidFrom = this.ValidFrom
 End Property
 
-Public Property Let IsClosed(RHS As Boolean)
-    this.IsClosed = RHS
+Public Property Let ValidFrom(RHS As Date)
+    this.ValidFrom = RHS
 End Property
 
-Public Property Get Tracks() As Tracks
-    Set Tracks = this.Tracks
+Public Property Get ValidUntil() As Date
+    ValidUntil = this.ValidUntil
 End Property
 
-Public Property Set Tracks(RHS As Tracks)
-    Set this.Tracks = RHS
+Public Property Let ValidUntil(RHS As Date)
+    this.ValidUntil = RHS
+End Property
+
+Public Property Get Commit() As Commit
+    Set Commit = this.Commit
+End Property
+
+Public Property Set Commit(RHS As Commit)
+    Set this.Commit = RHS
 End Property
 
 ' Common Properties
@@ -79,22 +88,23 @@ End Property
 
 ' Methods
 Private Function IRecord_Create(ByRef rs As Recordset) As IRecord
-    Dim result As Commit
-    Set result = New Commit
+    Dim result As Track
+    Set result = New Track
+    
     With result
         .ID = rs.Fields("ID")
-        .Name = rs.Fields(COMMIT_FIELDNAME)
-        .IsClosed = IsNull(rs.Fields(COMMIT_CLOSED_FIELDNAME))
+        .Name = rs.Fields(TRACK_FIELDNAME)
+        .ValidFrom = rs.Fields(TRACK_VALIDFROM_FIELDNAME)
+        .ValidUntil = rs.Fields(TRACK_VALIDUNTIL_FIELDNAME)
     End With
+    
     Set IRecord_Create = result
 End Function
 
 Public Function ToString() As String
-    ToString = this.ID & "# " & this.Name
-    'If Not this.Parent Is Nothing Then
-    '    ToString = ToString & ", Parent = " & this.Parent.Name
-    'End If
-    If Not this.Tracks Is Nothing Then
-        ToString = ToString & ", Tracks = " & this.Tracks.Count
+    ToString = this.ID & "# "
+    ToString = ToString & ", Valid<" & Format$(this.ValidFrom, "yyyy/mm/dd") & ";" & Format$(this.ValidUntil, "yyyy/mm/dd") & ">"
+    If Not this.Commit Is Nothing Then
+        ToString = ToString & ", Commit = " & this.Commit.ToString
     End If
 End Function

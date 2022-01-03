@@ -18,7 +18,7 @@ Private Type TORM
     EntityTypes As EntityTypes
     Entities As Entities
     Commits As Commits
-
+    Tracks As Tracks
     IsReady As Boolean
 End Type
 
@@ -35,6 +35,10 @@ End Property
 
 Public Property Get Commits() As Commits
     Set Commits = this.Commits
+End Property
+
+Public Property Get Tracks() As Tracks
+    Set Tracks = this.Tracks
 End Property
 
 Public Property Get IsReady() As Boolean
@@ -79,5 +83,11 @@ Private Sub LoadCommits()
 End Sub
 
 Private Sub LoadTracks()
-    
+    With New Tracks
+        Set this.Tracks = .Self
+        .TableName = modConstants.TRACKS_TABLE
+        .Load
+        .MapRefs this.Commits
+        this.Commits.MapRefs .Self
+    End With
 End Sub
