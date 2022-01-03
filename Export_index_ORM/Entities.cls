@@ -2,25 +2,24 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "EntityTypes"
+Attribute VB_Name = "Entities"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'@Folder "ORM.EntityTypes"
-'@Folder "ORM.EntityTypes"
+'@Folder "ORM.Entities"
 Option Compare Database
 Option Explicit
 
 Implements IRecordCollection
 
 ' Variables
-Private Type TEntityTypes
+Private Type TEntities
     Items As Collection
     tableName As String
 End Type
 
-Private this As TEntityTypes
+Private this As TEntities
 
 ' Properties
 '@DefaultMember
@@ -47,7 +46,7 @@ Public Property Let tableName(ByVal tableName As String)
     this.tableName = tableName
 End Property
 
-Public Property Get Self() As EntityTypes
+Public Property Get Self() As Entities
     Set Self = Me
 End Property
 
@@ -58,7 +57,8 @@ End Sub
 
 ' Methods
 Public Sub Load()
-    LoadFromRecordset this.Items, ENTITYTYPES_TABLE, EntityType
+    LoadFromRecordset this.Items, ENTITIES_TABLE, Entity
+    LinkParents
 End Sub
 
 Public Sub Clear()
@@ -104,3 +104,23 @@ Public Function IRecordCollection_GetByID(ID As Double) As IRecord
         End If
     Next ent
 End Function
+
+Private Sub LinkParents()
+    Dim ent As Entity
+    Dim parentFK As Double
+    
+    For Each ent In this.Items
+        parentFK = GetFieldValue(ENTITIES_TABLE, ent.ID, "ParentFK")
+        Set ent.parent = IRecordCollection_GetByID(parentFK)
+    Next ent
+End Sub
+
+Public Sub MapRefs(externalCollection As IRecordCollection)
+    Dim ent As Entity
+    Dim parentFK As Double
+    
+    For Each ent In this.Items
+        parentFK = GetFieldValue(ENTITIES_TABLE, ent.ID, "EntityType")
+        Set ent.EntityType = externalCollection.GetByID(parentFK)
+    Next ent
+End Sub

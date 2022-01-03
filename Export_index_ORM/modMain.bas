@@ -11,20 +11,17 @@ Public Sub Main()
     Debug.Print "ORM"
     Debug.Print "---"
     
-    Dim i As Double
-    For i = 1 To ORM.EntityTypes.Count
-        Debug.Print ORM.EntityTypes(i).ID & "# " & ORM.EntityTypes(i).Name
-    Next i
+    'Dim i As Double
+    'For i = 1 To ORM.EntityTypes.Count
+    '    Debug.Print ORM.EntityTypes(i).ID & "# " & ORM.EntityTypes(i).Name
+    'Next i
     
-    Dim et As EntityType
-    For Each et In ORM.EntityTypes
-        Debug.Print et.ID & "# " & et.Name
-    Next et
+    'Debug.Print " "
+     
+    Dim ent As Entity
+    For Each ent In ORM.Entities
+        Debug.Print ent.ToString
+    Next ent
     
-    Debug.Print vbNullString
-End Sub
-
-Public Sub LinkToBackEnd()
-    LinkTable ENTITYTYPES_TABLE
-    LinkTable ENTITIES_TABLE
+    Debug.Print " "
 End Sub

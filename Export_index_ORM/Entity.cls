@@ -2,25 +2,27 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "EntityType"
+Attribute VB_Name = "Entity"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '@PredeclaredId
-'@Folder "ORM.EntityTypes"
+'@Folder "ORM.Entities"
 Option Compare Database
 Option Explicit
 
 Implements IRecord
 
 ' Variables
-Private Type TEntityType
+Private Type TEntity
     ID As Double
     Name As String
+    parent As Entity
+    EntityType As EntityType
 End Type
 
-Private this As TEntityType
+Private this As TEntity
 
 ' Properties
 '@DefaultMember
@@ -38,6 +40,22 @@ End Property
 
 Public Property Let ID(ByVal RHS As Double)
     this.ID = RHS
+End Property
+
+Public Property Get parent() As Entity
+     parent = this.parent
+End Property
+
+Public Property Set parent(ByVal parent As Entity)
+    Set this.parent = parent
+End Property
+
+Public Property Get EntityType() As EntityType
+     EntityType = this.EntityType
+End Property
+
+Public Property Set EntityType(ByVal EntityType As EntityType)
+    Set this.EntityType = EntityType
 End Property
 
 ' Interface
@@ -59,9 +77,19 @@ End Property
 
 ' Methods
 Public Function IRecord_Create(ByRef rs As Recordset) As IRecord
-    Set IRecord_Create = New EntityType
+    Set IRecord_Create = New Entity
     With IRecord_Create
         .ID = rs.Fields("ID")
-        .Name = rs.Fields(ENTITYTYPE_FIELDNAME)
+        .Name = rs.Fields("Entity") ' TODO Const this
     End With
+End Function
+
+Public Function ToString() As String
+    ToString = this.ID & "# " & this.Name
+    If Not this.parent Is Nothing Then
+        ToString = ToString & ", Parent = " & this.parent.Name
+    End If
+    If Not this.EntityType Is Nothing Then
+        ToString = ToString & ", EntityType = " & this.EntityType.Name
+    End If
 End Function
