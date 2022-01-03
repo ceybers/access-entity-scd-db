@@ -115,15 +115,6 @@ Public Function GetByID(ByVal ID As Double) As Commit
     Set GetByID = IRecordCollection_GetByID(ID)
 End Function
 
-Public Sub MapRefs(ByRef externalCollection As IRecordCollection)
-    'Dim cmt As Commit
-    'Dim LookupTables As LookupValues
-    'Set LookupTables = externalCollection
-    'For Each cmt In this.Items
-    '    'Set cmt.Tracks = Tracks.GetByCommit(cmt)
-    'Next cmt
-End Sub
-
 Public Sub LoadValues()
     LinkTable this.TableName
     LoadFromRecordset this.Items, this.TableName, LookupValue

@@ -39,20 +39,21 @@ Public Function GetFieldValue(ByVal TableName As String, ByVal ID As Double, ByV
     On Error GoTo Catch
     
 'Try
+    GetFieldValue = -1
     sql = "SELECT " & fieldName & " FROM " & TableName & " WHERE ID = " & ID
     Set db = CurrentDb
     Set rs = db.OpenRecordset(sql, dbOpenSnapshot, dbReadOnly)
 
     If Not rs.BOF And Not rs.EOF Then
         Do While Not rs.EOF
-            GetFieldValue = rs.Fields(fieldName).Value
+            GetFieldValue = Nz(rs.Fields(fieldName).Value, -1)
             rs.MoveNext
         Loop
     End If
     GoTo Finally
     
 Catch:
-    Err.Raise Err.Number, Err.Source, Err.Description
+    Err.Raise Err.Number, , Err.Description
     
 Finally:
     rs.Close

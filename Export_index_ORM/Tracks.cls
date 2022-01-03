@@ -97,13 +97,13 @@ Private Sub IRecordCollection_Clear()
 End Sub
 
 Private Function IRecordCollection_GetByID(ByVal ID As Double) As IRecord
-    Dim cmt As IRecord
-    For Each cmt In this.Items
-        If cmt.ID = ID Then
-            Set IRecordCollection_GetByID = cmt
+    Dim trk As Track
+    For Each trk In this.Items
+        If trk.ID = ID Then
+            Set IRecordCollection_GetByID = trk
             Exit Function
         End If
-    Next cmt
+    Next trk
 End Function
 
 ' Public Methods
