@@ -1,0 +1,71 @@
+﻿Option Compare Database
+Option Explicit
+
+Dim WithEvents entityModel As clsEntityViewModel
+
+' Properties
+Public Property Get ViewModel() As clsEntityViewModel
+    If entityModel Is Nothing Then
+        Debug.Print "Recreating clsEntityViewModel"
+        Set entityModel = New clsEntityViewModel
+    End If
+    Set ViewModel = entityModel
+End Property
+
+' Ctor
+Private Sub Form_Load()
+    Set entityModel = New clsEntityViewModel
+    
+    Me.lstEntities.Enabled = False
+    Me.lstDetails.Enabled = False
+   
+    TEST_PrepopulateInput
+End Sub
+
+' Control Events
+Private Sub cmbEntityType_Change()
+    Call ViewModel.SetEntityTypeByID(Me.cmbEntityType.Value)
+    Call ViewModel.ApplyDetailsSourceToListbox(Me.lstDetails)
+End Sub
+
+Private Sub lstEntities_Click()
+    Call ViewModel.SetEntityByID(Me.lstEntities.Value)
+End Sub
+
+Private Sub lstDetails_Click()
+    Call ViewModel.SetDetailByID(Me.lstDetails.Value)
+End Sub
+
+Private Sub txtSearch_Change()
+    Call ViewModel.SearchEntity(Me.txtSearch, Me.lstEntities)
+End Sub
+
+' VM Events
+Private Sub entityModel_EntityTypeChanged()
+    Call ViewModel.SearchEntity(Me.txtSearch, Me.lstEntities)
+    Me.lstEntities.Enabled = True
+End Sub
+
+Private Sub entityModel_EntityChanged()
+    Call ViewModel.SetEntityByID(Me.lstEntities.Value)
+    Me.lstDetails.Enabled = True
+End Sub
+
+Private Sub entityModel_DetailChanged()
+    Call ViewModel.SetDetailByID(Me.lstDetails.Value)
+End Sub
+
+' Test
+Private Sub TEST_PrepopulateInput()
+    Me.cmbEntityType = Me.cmbEntityType.ItemData(3)
+    Call cmbEntityType_Change
+    
+    Me.txtSearch.Value = "NY"
+    Call txtSearch_Change
+
+    Me.lstEntities = Me.lstEntities.ItemData(2)
+    lstEntities_Click
+    
+    Me.lstDetails = Me.lstDetails.ItemData(0)
+    lstDetails_Click
+End Sub
