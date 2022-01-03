@@ -146,7 +146,8 @@ Private Sub LinkParents()
     Dim parentFK As Double
     
     For Each ent In this.Items
-        parentFK = GetFieldValue(ENTITIES_TABLE, ent.ID, "ParentFK")
+        'parentFK = GetFieldValue(ENTITIES_TABLE, ent.ID, "ParentFK")
+        parentFK = ent.EntityType.ID * -1
         If parentFK > 0 Then
             Set ent.Parent = IRecordCollection_GetByID(parentFK)
         End If

@@ -130,7 +130,8 @@ Public Sub MapRefs(ByRef externalCollection As IRecordCollection)
     Dim foreignKey As Double
     
     For Each trk In this.Items
-        foreignKey = GetFieldValue(TRACKS_TABLE, trk.ID, TRACK_COMMITFK_FIELDNAME)
+        'foreignKey = GetFieldValue(TRACKS_TABLE, trk.ID, TRACK_COMMITFK_FIELDNAME)
+        foreignKey = trk.Commit.ID * -1
         Set trk.Commit = externalCollection.GetByID(foreignKey)
     Next trk
 End Sub

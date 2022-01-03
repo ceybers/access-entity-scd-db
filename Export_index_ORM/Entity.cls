@@ -79,11 +79,15 @@ End Property
 
 ' Methods
 Private Function IRecord_Create(ByRef rs As Recordset) As IRecord
-    Set IRecord_Create = New Entity
-    With IRecord_Create
+    Dim result As Entity
+    Set result = New Entity
+    With result
         .ID = rs.Fields("ID")
         .Name = rs.Fields(ENTITY_FIELDNAME)
+        Set .EntityType = New EntityType
+        .EntityType.ID = CDbl(rs.Fields(modConstants.ENTITYTYPE_FIELDNAME)) * -1
     End With
+    Set IRecord_Create = result
 End Function
 
 Public Function ToString() As String

@@ -135,7 +135,8 @@ Public Sub MapRefsEntities(ByRef externalCollection As IRecordCollection)
     Dim parentFK As Long
     Dim ent As Entity
     For Each detVal In this.Items
-        parentFK = GetFieldValue(this.TableName, detVal.ID, "EntityFK")
+        'parentFK = GetFieldValue(this.TableName, detVal.ID, "EntityFK")
+        parentFK = detVal.Entity.ID * -1
         If parentFK > 0 Then
             Set ent = externalCollection.GetByID(parentFK)
             Set detVal.Entity = ent
@@ -149,7 +150,8 @@ Public Sub MapRefsTracks(ByRef externalCollection As IRecordCollection)
     Dim trk As Track
     
     For Each detVal In this.Items
-        parentFK = GetFieldValue(this.TableName, detVal.ID, "TrackFK")
+        'parentFK = GetFieldValue(this.TableName, detVal.ID, "TrackFK")
+        parentFK = detVal.Track.ID * -1
         If parentFK > 0 Then
             Set trk = externalCollection.GetByID(parentFK)
             Set detVal.Track = trk

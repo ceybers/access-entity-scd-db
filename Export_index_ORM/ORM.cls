@@ -57,12 +57,24 @@ End Property
 
 ' Ctor
 Public Sub Class_Initialize()
+    Dim start As Long
+    start = VBA.DateTime.Timer
+    Debug.Print "Loading ORM..."
+    Debug.Print Format(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadEntityTypes"
     LoadEntityTypes
+    Debug.Print Format(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadEntityTypes"
     LoadEntities
+    Debug.Print Format(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadEntities"
     LoadCommits
+    Debug.Print Format(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadCommits"
     LoadTracks
+    Debug.Print Format(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadTracks"
     LoadLookupTables
+    Debug.Print Format(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadLookupTables"
     LoadDetailTables
+    Debug.Print Format(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadDetailTables"
+    
+    Debug.Print "ORM loaded."
     this.IsReady = True
 End Sub
 

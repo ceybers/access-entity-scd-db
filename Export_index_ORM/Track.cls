@@ -96,6 +96,8 @@ Private Function IRecord_Create(ByRef rs As Recordset) As IRecord
         .Name = rs.Fields(TRACK_FIELDNAME)
         .ValidFrom = rs.Fields(TRACK_VALIDFROM_FIELDNAME)
         .ValidUntil = rs.Fields(TRACK_VALIDUNTIL_FIELDNAME)
+        Set .Commit = New Commit
+        .Commit.ID = CDbl(rs.Fields("CommitFK")) * -1
     End With
     
     Set IRecord_Create = result

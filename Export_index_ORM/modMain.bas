@@ -5,18 +5,25 @@ Attribute VB_Name = "modMain"
 Option Compare Database
 Option Explicit
 
+Public Function GetORM() As ORM
+    Static ORM As ORM
+    'If ORM Is Nothing Then
+        Set ORM = New ORM
+    'End If
+    Set GetORM = ORM
+End Function
+
 Public Sub Main()
     Dim ORM As ORM
+    Set ORM = GetORM
     
     Debug.Print "ORM"
     Debug.Print "---"
-    
-    Set ORM = New ORM
-    
+        
     'TestEntityType ORM
     'TestCommits ORM
     'TestLookups ORM
-    TestDetails ORM
+    'TestDetails ORM
     
     Debug.Print "."
 End Sub
