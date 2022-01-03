@@ -12,8 +12,29 @@ Public Sub Main()
     Set ORM = New ORM
     
     'TestEntityType ORM
-    TestCommits ORM
+    'TestCommits ORM
+    TestLookups ORM
     Debug.Print "."
+End Sub
+
+Private Sub TestLookups(ByRef ORM As ORM)
+    Dim lkpt As LookupTable
+    Dim lkpv As LookupValue
+    
+    Debug.Print "List all lookup tables:"
+    For Each lkpt In ORM.LookupTables
+        Debug.Print "   " & lkpt.ToString
+    Next lkpt
+    Debug.Print " "
+    
+    Set lkpt = ORM.LookupTables.GetByName("lkpService")
+    'Debug.Print "Null check: " & (Not lkpt.LookupValues Is Nothing)
+    Debug.Print "LookupTable Name: " & lkpt.Name
+    Debug.Print "LookupTable Name: " & lkpt.ToString
+    Debug.Print "Values:"
+    For Each lkpv In lkpt.LookupValues
+        Debug.Print "   " & lkpv.ToString
+    Next lkpv
 End Sub
 
 Private Sub TestCommits(ByRef ORM As ORM)
@@ -42,3 +63,4 @@ Private Sub TestEntityType(ByRef ORM As ORM)
         Debug.Print "   " & ent.ToString
     Next ent
 End Sub
+

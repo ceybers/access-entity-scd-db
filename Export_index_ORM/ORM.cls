@@ -18,6 +18,7 @@ Private Type TORM
     EntityTypes As EntityTypes
     Entities As Entities
     Commits As Commits
+    LookupTables As LookupTables
     Tracks As Tracks
     IsReady As Boolean
 End Type
@@ -41,6 +42,10 @@ Public Property Get Tracks() As Tracks
     Set Tracks = this.Tracks
 End Property
 
+Public Property Get LookupTables() As LookupTables
+    Set LookupTables = this.LookupTables
+End Property
+
 Public Property Get IsReady() As Boolean
     IsReady = this.IsReady
 End Property
@@ -51,6 +56,7 @@ Public Sub Class_Initialize()
     LoadEntities
     LoadCommits
     LoadTracks
+    LoadLookupTables
     this.IsReady = True
 End Sub
 
@@ -89,5 +95,15 @@ Private Sub LoadTracks()
         .Load
         .MapRefs this.Commits
         this.Commits.MapRefs .Self
+    End With
+End Sub
+
+Private Sub LoadLookupTables()
+    With New LookupTables
+        Set this.LookupTables = .Self
+        .TableName = modConstants.LOOKUPS_TABLE
+        .Load
+        '.MapRefs this.Commits
+        'this.Commits.MapRefs .Self
     End With
 End Sub

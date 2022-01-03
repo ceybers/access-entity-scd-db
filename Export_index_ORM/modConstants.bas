@@ -5,15 +5,16 @@ Option Explicit
 
 Public Const ENTITYTYPES_TABLE As String = "lkpEntityTypes"
 Public Const ENTITIES_TABLE As String = "tblEntities"
-Public Const DETAILS_TABLE As String = "tblDetailTables" ' TODO rename to metaDetailTables
 Public Const COMMITS_TABLE As String = "tblCommits"
 Public Const TRACKS_TABLE As String = "tblTrack"
-' metaLookupTables
+Public Const LOOKUPS_TABLE As String = "metaLookupTables"
+Public Const DETAILS_TABLE As String = "metaDetailTables"
 
 Public Const ENTITYTYPE_FIELDNAME As String = "EntityType"
 Public Const ENTITY_FIELDNAME As String = "Entity"
 Public Const TRACK_FIELDNAME As String = "ID" ' No name/title field in this table
 Public Const COMMIT_FIELDNAME As String = "Title"
+Public Const LOOKUPTABLE_FIELDNAME As String = "TableName"
 
 Public Const TRACK_COMMITFK_FIELDNAME As String = "CommitFK"
 Public Const TRACK_VALIDFROM_FIELDNAME As String = "ValidFrom"
