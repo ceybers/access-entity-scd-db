@@ -11,12 +11,6 @@ Attribute VB_Exposed = False
 Option Compare Database
 Option Explicit
 
-' Constants
-Const DETAILS_TABLE As String = "tblDetailTables"
-Const ENTITIES_TABLE As String = "tblEntities"
-Const ENTITYTYPES_TABLE As String = "lkpEntityTypes"
-Const COMMITS_TABLE As String = "tblCommits"
-
 ' Private Variables
 Private Type TDataModel
      Details As Collection
@@ -76,7 +70,7 @@ Private Function LoadThings(tableName As String) As Collection
     Dim rs As DAO.Recordset
     Set LoadThings = New Collection
 
-    Set rs = CurrentDb.OpenRecordset("SELECT * FROM " & tableName)
+    Set rs = CurrentDB.OpenRecordset(tableName, dbOpenSnapshot, dbReadOnly)
     
     If Not rs.BOF And Not rs.EOF Then
         Do Until rs.EOF = True

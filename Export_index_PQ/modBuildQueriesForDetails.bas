@@ -1,13 +1,22 @@
 Attribute VB_Name = "modBuildQueriesForDetails"
-'@Folder("Provisioning")
+'@Folder("index_PQ")
 Option Compare Database
 Option Explicit
 
-Public Sub AAA_TEST()
+Public Sub BuildQueriesForDetailTables()
+    Dim tables As Variant, table As Variant
+    Dim queryName As String
     Dim sql As String
-    sql = GenerateSQLforDetailTable("tblDetailMaintPlan")
-    Debug.Print "[" & format(Now(), "hh:mm:ss") & "] " & sql
-    'Debug.Print sql
+    
+    Set tables = GetListOfTablesInLinkedDatabase
+    
+    For Each table In tables
+        If table Like "tblDetail*" Then
+            queryName = Replace(table, "tbl", "qry")
+            sql = GenerateSQLforDetailTable(table)
+            Call CreateQuery(queryName, sql)
+        End If
+    Next table
 End Sub
 
 Private Function GetFieldsFromSchema(ByVal tableName As String) As Variant
@@ -17,9 +26,10 @@ Private Function GetFieldsFromSchema(ByVal tableName As String) As Variant
     
     Set fields = New Collection
     fields.Add "TrackFK," & QUERY_TRACK_LATEST
+    fields.Add "EntityFK,"
     
     sql = "SELECT * FROM " & SCHEMA_TABLE & " WHERE TableName = '" & tableName & "';"
-    Set rs = CurrentDB.OpenRecordset(sql)
+    Set rs = CurrentDb.OpenRecordset(sql)
     
     If Not rs.BOF And Not rs.EOF Then
         Do While Not rs.EOF
@@ -45,13 +55,17 @@ Private Function GenerateSQLforDetailTable(ByVal tableName As String) As String
     sql = "SELECT"
     
     For Each field In fields
+        Debug.Print field
         If Right$(field, 1) = "," Then
             sql = sql & " " & tableName & "." & field
         Else
-            sql = sql & " " & GetValueFieldFromLookupTable(split(field, ",")(1)) & ","
+            ' TODO FIX
+            If field <> "TrackFK,qryTrack_Latest" Then
+                sql = sql & " " & GetValueFieldFromLookupTable(Split(field, ",")(1)) & ","
+            End If
         End If
     Next field
-    sql = left$(sql, Len(sql) - 1)
+    sql = Left$(sql, Len(sql) - 1)
     
     sql = sql & " FROM"
     
@@ -67,26 +81,37 @@ Private Function GenerateSQLforDetailTable(ByVal tableName As String) As String
 End Function
 
 Private Function GetValueFieldFromLookupTable(ByVal lookupTableName As String) As String
+    On Error GoTo HandleError
     If lookupTableName = QUERY_TRACK_LATEST Then
         GetValueFieldFromLookupTable = QUERY_TRACK_LATEST & ".ID"
         Exit Function
     End If
     Dim rs As Recordset
-    Set rs = CurrentDB.OpenRecordset(lookupTableName, dbOpenSnapshot, dbReadOnly)
-    GetValueFieldFromLookupTable = lookupTableName & "." & rs.fields(1).name
+    Set rs = CurrentDb.OpenRecordset(lookupTableName, dbOpenSnapshot, dbReadOnly)
+    GetValueFieldFromLookupTable = lookupTableName & "." & rs.fields(1).Name
     rs.Close
+    
+ExitHere:
     Set rs = Nothing
+    Exit Function
+
+HandleError:
+    If Err.Number = 3078 Then
+        GetValueFieldFromLookupTable = lookupTableName & "." & "ID"
+        GoTo ExitHere
+    End If
 End Function
 
 Private Function ConcatenateJoin(ByVal previous As String, ByVal tableName As String, ByVal payload As String) As String
     Dim s As String
-    Dim joinTable As String
+    Dim JoinTable As String
     If Right$(payload, 1) = "," Then
         ConcatenateJoin = previous
         Exit Function
     End If
     payload = tableName & "." & Replace(payload, ",", " = ") & ".ID"
-    joinTable = split(Replace(payload, " ", "."), ".")(3)
-    s = " (" & previous & " INNER JOIN " & joinTable & " ON " & payload & ")"
+    JoinTable = Split(Replace(payload, " ", "."), ".")(3)
+    s = " (" & previous & " INNER JOIN " & JoinTable & " ON " & payload & ")"
     ConcatenateJoin = s
 End Function
+

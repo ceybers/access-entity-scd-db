@@ -3,8 +3,6 @@ Attribute VB_Name = "modBuildTablesForDetails"
 Option Compare Database
 Option Explicit
 
-Private Const BE_DATABASE_FILENAME As String = "C:\Users\User\Documents\access-entity-scd-db\index_BE.accdb"
-Private Const LINKED_DB_CONNECT As String = ";DATABASE="
 Dim FORM_NAME As String
 Dim TABLE_NAME As String
 
@@ -37,7 +35,7 @@ Public Sub BuildTablesForDetails()
     
     Dim dropResult As Integer
     Debug.Print "Removing tables with 0 records..."
-    dropResult = DropTables(tables2)
+    dropResult = DropTables(tables2, OpenDatabase(BE_DATABASE_FILENAME, False, False))
     Debug.Print " " & dropResult & " table(s) dropped"
     Debug.Print
         
@@ -107,8 +105,8 @@ Private Sub AddFieldsToTableDefFromMetaSchema(tblDef As TableDef, tableName As S
     Dim rs As Recordset
     Dim sql As String
     
-    sql = "SELECT * FROM metaSchema WHERE TableName = '" & tableName & "';"
-    Set db = CurrentDb
+    sql = "SELECT * FROM " & SCHEMA_TABLE & " WHERE TableName = '" & tableName & "';"
+    Set db = CurrentDB
     Set rs = db.OpenRecordset(sql)
     
     If Not rs.BOF And Not rs.EOF Then
@@ -189,9 +187,9 @@ Private Function LinkTable(tableName As String) As Boolean
     Dim tbl As TableDef
     Dim fld As field
     
-    Set db = CurrentDb
+    Set db = CurrentDB
     
-    If DoesTableExist(db, tableName) Then Exit Function
+    If DoesTableExist(tableName, db) Then Exit Function
     
     Set tbl = db.CreateTableDef(tableName)
     
@@ -206,32 +204,13 @@ Private Function LinkTable(tableName As String) As Boolean
     LinkTable = True
 End Function
 
-Private Function DropTables(tables As Collection) As Integer
-    Dim tbl As Variant
-    Dim db As Database
-    DropTables = 0
-    
-    'Set db = CurrentDb
-    Set db = OpenDatabase(BE_DATABASE_FILENAME, False, False)
-    For Each tbl In tables
-        Debug.Print " Deleting table '" & tbl & "'"
-        If DoesTableExist(db, CStr(tbl)) Then
-            db.Execute "DROP TABLE " & CStr(tbl), dbFailOnError
-            DropTables = DropTables + 1
-        End If
-    Next tbl
-    
-    db.Close
-    Set db = Nothing
-End Function
-
 Private Function GetListOfTablesFromSchema() As Collection
     Dim rs As Recordset
     Dim sql As String
     
     Set GetListOfTablesFromSchema = New Collection
     sql = "SELECT DISTINCT TableName FROM metaSchema;"
-    Set rs = CurrentDb.OpenRecordset(sql)
+    Set rs = CurrentDB.OpenRecordset(sql)
     
     If Not rs.BOF And Not rs.EOF Then
         Do While Not rs.EOF
@@ -255,8 +234,8 @@ Private Function FilterEmptyTablesOnly(tables As Collection) As Collection
     
     For Each tbl In tables
         tableName = CStr(tbl)
-        If DoesTableExist(db, tableName) Then
-            If IsTableEmpty(db, tableName) Then
+        If DoesTableExist(tableName, db) Then
+            If IsTableEmpty(tableName, db) Then
                 FilterEmptyTablesOnly.Add tbl
             End If
         Else
@@ -268,37 +247,4 @@ Private Function FilterEmptyTablesOnly(tables As Collection) As Collection
     Set db = Nothing
 End Function
 
-Private Function IsTableEmpty(db, tableName As String) As Boolean
-    Dim result As Boolean
-    Dim sql As String
-    Dim rs As Recordset
-    
-    sql = "SELECT Count(*) AS TotalCount FROM " & tableName & ";"
-    Set rs = db.OpenRecordset(sql)
-    result = rs!TotalCount
-    
-    rs.Close
-    Set rs = Nothing
-    
-    IsTableEmpty = (result = 0)
-End Function
 
-Private Function DoesTableExist(ByRef db As Database, ByVal tableName As String) As Boolean
-    Dim tbl As TableDef
-    For Each tbl In db.TableDefs
-        If tbl.name = tableName Then
-            DoesTableExist = True
-            Exit Function
-        End If
-    Next tbl
-End Function
-
-Private Function DoesFormExist(formName As String) As Boolean
-    Dim frm As Form
-    For Each frm In Application.CurrentProject.AllForms
-        If frm.name = formName Then
-            DoesFormExist = True
-            Exit Function
-        End If
-    Next frm
-End Function

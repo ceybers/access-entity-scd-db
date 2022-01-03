@@ -120,7 +120,7 @@ Private Function LoadTablesToListbox()
     
     Dim db As DAO.Database
     Dim tdf As DAO.TableDef
-    Set db = CurrentDb
+    Set db = CurrentDB
     For Each tdf In db.TableDefs
         If (tdf.name Like "lkp*") Then
             Me.lstTables.AddItem tdf.name
@@ -172,7 +172,7 @@ Private Function LoadItemsFromTableToListbox()
 End Function
 
 Private Function RebindForm()
-    ActiveFieldName = CurrentDb.OpenRecordset(ActiveTableName).fields(1).name
+    ActiveFieldName = CurrentDB.OpenRecordset(ActiveTableName).fields(1).name
     
     Me.recordSource = ActiveTableName
     Me.txtID.ControlSource = "ID"

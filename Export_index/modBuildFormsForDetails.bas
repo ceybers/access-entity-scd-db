@@ -3,11 +3,8 @@ Attribute VB_Name = "modBuildFormsForDetails"
 Option Compare Database
 Option Explicit
 
-Const FILENAME As String = "C:\Users\User\Documents\access-entity-scd-db\Schema\schema.csv"
 Dim FORM_NAME As String
 Dim TABLE_NAME As String
-Const CM_TO_TWIP As Integer = 567
-Const DEFAULT_HEIGHT As Integer = 360
 
 Private Type TControlSet
     fieldName As String
@@ -104,8 +101,8 @@ Private Function GetFields(tableName As String) As TControlSet()
     Dim results() As TControlSet
     Dim i As Integer
     
-    Set db = CurrentDb
-    Set rs = db.OpenRecordset("SELECT * FROM metaSchema WHERE TableName = '" & tableName & "';")
+    Set db = CurrentDB
+    Set rs = db.OpenRecordset("SELECT * FROM " & SCHEMA_TABLE & " WHERE TableName = '" & tableName & "';")
     i = 1
     
     If Not rs.BOF And Not rs.EOF Then
