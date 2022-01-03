@@ -1,0 +1,9 @@
+DETAIL
+ SOURCE tblDesign
+ DESTINATION tblDetailTankDesign
+ ID tankID;EntityFK;
+ TRACK trackFK;TrackFK;
+ FIELDS
+  elevation;Elevation;lkpDesignElevation
+  floatingRoof;FloatingRoof;lkpDesignFloating
+END
