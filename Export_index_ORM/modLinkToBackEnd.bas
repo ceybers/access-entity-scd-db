@@ -3,18 +3,7 @@ Attribute VB_Name = "modLinkToBackEnd"
 Option Compare Database
 Option Explicit
 
-Public Sub Main()
-    LinkToBackEnd
-End Sub
-
-Public Sub LinkToBackEnd()
-    Dim db As Database
-    Set db = CreateBackEndConnection()
-    
-    LinkTable ENTITYTYPES_TABLE, db
-    LinkTable ENTITIES_TABLE, db
-    LinkTable "Not exist", db
-    
-    db.Close
-    Set db = Nothing
+Public Sub ZZZ_LinkToBackEnd()
+    LinkTable ENTITYTYPES_TABLE
+    LinkTable ENTITIES_TABLE
 End Sub

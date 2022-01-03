@@ -9,13 +9,10 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-'@Folder("index_ORM")
+'@Folder "ORM.Interfaces"
 '@Interface
 
 Public Property Get Items() As Collection
-End Property
-
-Public Property Get NewEnum() As IUnknown
 End Property
 
 Public Property Get Count() As Long
@@ -27,7 +24,7 @@ End Property
 Public Property Let TableName(ByVal TableName As String)
 End Property
 
-Public Property Get Self() As EntityTypes
+Public Property Get Self() As IRecordCollection
 End Property
 
 Public Sub Load()
@@ -35,3 +32,6 @@ End Sub
 
 Public Sub Clear()
 End Sub
+
+Public Function GetByID(ByVal ID As Double) As IRecord
+End Function

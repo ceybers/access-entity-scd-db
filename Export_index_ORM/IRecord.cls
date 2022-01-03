@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-'@Folder("index_ORM")
+'@Folder "ORM.Interfaces"
 '@Interface
 
 Public Property Get ID() As Double

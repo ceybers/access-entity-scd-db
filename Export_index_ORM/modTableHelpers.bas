@@ -1,4 +1,5 @@
 Attribute VB_Name = "modTableHelpers"
+'@IgnoreModule ProcedureCanBeWrittenAsFunction
 '@Folder "Helpers"
 Option Compare Database
 Option Explicit

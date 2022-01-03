@@ -2,34 +2,43 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "EntityType"
+Attribute VB_Name = "Entity"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '@PredeclaredId
-'@Folder "ORM.EntityTypes"
+'@Folder "ORM.Entities"
 Option Compare Database
 Option Explicit
 
 Implements IRecord
 
 ' Variables
-Private Type TEntityType
+Private Type TEntity
     ID As Double
     Name As String
-    Entities As Entities
+    Parent As Entity
+    EntityType As EntityType
 End Type
 
-Private this As TEntityType
+Private this As TEntity
 
 ' Unique Properties
-Public Property Get Entities() As Entities
-    Set Entities = this.Entities
+Public Property Get Parent() As Entity
+     Set Parent = this.Parent
 End Property
 
-Public Property Set Entities(ByVal RHS As Entities)
-    Set this.Entities = RHS
+Public Property Set Parent(ByVal Parent As Entity)
+    Set this.Parent = Parent
+End Property
+
+Public Property Get EntityType() As EntityType
+     Set EntityType = this.EntityType
+End Property
+
+Public Property Set EntityType(ByVal EntityType As EntityType)
+    Set this.EntityType = EntityType
 End Property
 
 ' Common Properties
@@ -70,16 +79,19 @@ End Property
 
 ' Methods
 Private Function IRecord_Create(ByRef rs As Recordset) As IRecord
-    Set IRecord_Create = New EntityType
+    Set IRecord_Create = New Entity
     With IRecord_Create
         .ID = rs.Fields("ID")
-        .Name = rs.Fields(ENTITYTYPE_FIELDNAME)
+        .Name = rs.Fields("Entity") ' TODO Const this
     End With
 End Function
 
 Public Function ToString() As String
     ToString = this.ID & "# " & this.Name
-    If Not this.Entities Is Nothing Then
-        ToString = ToString & ", Entities = " & this.Entities.Count
+    If Not this.Parent Is Nothing Then
+        ToString = ToString & ", Parent = " & this.Parent.Name
+    End If
+    If Not this.EntityType Is Nothing Then
+        ToString = ToString & ", EntityType = " & this.EntityType.Name
     End If
 End Function

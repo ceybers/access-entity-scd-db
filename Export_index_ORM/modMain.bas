@@ -4,27 +4,22 @@ Option Compare Database
 Option Explicit
 
 Public Sub Main()
-    'LinkToBackEnd
-    
     Dim ORM As ORM
-    Set ORM = New ORM
+    Dim et As EntityType
+    Dim ent As Entity
+    
     Debug.Print "ORM"
     Debug.Print "---"
     
-    Dim i As Double
-    For i = 1 To ORM.EntityTypes.Count
-        Debug.Print ORM.EntityTypes(i).ID & "# " & ORM.EntityTypes(i).Name
-    Next i
+    Set ORM = New ORM
+    'Set et = ORM.EntityTypes.GetByName("Depot")
+    Set et = ORM.EntityTypes.GetByID(3)
     
-    Dim et As EntityType
-    For Each et In ORM.EntityTypes
-        Debug.Print et.ID & "# " & et.Name
-    Next et
-    
-    Debug.Print vbNullString
-End Sub
+    Debug.Print "Entity Type = " & et.ToString
 
-Public Sub LinkToBackEnd()
-    LinkTable ENTITYTYPES_TABLE
-    LinkTable ENTITIES_TABLE
+    For Each ent In et.Entities
+        Debug.Print "   " & ent.ToString
+    Next ent
+    
+    Debug.Print "."
 End Sub
