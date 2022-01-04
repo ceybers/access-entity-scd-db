@@ -1,10 +1,8 @@
 Attribute VB_Name = "modBuildTablesForDetails"
+
 '@Folder "Provisioning"
 Option Compare Database
 Option Explicit
-
-Dim FORM_NAME As String
-Dim TABLE_NAME As String
 
 Private Type TControlSet
     fieldName As String
@@ -35,7 +33,7 @@ Public Sub BuildTablesForDetails()
     
     Dim dropResult As Integer
     Debug.Print "Removing tables with 0 records..."
-    dropResult = DropTables(tables2, OpenDatabase(BE_DATABASE_FILENAME, False, False))
+    dropResult = DropTables(tables2)
     Debug.Print " " & dropResult & " table(s) dropped"
     Debug.Print
         
@@ -59,7 +57,7 @@ End Sub
 Private Function CreateForms(tables As Collection) As Integer
     Dim tbl As Variant
     For Each tbl In tables
-        If BuildFormForDetail(Replace(tbl, "tblDetail", "")) Then
+        If BuildFormForDetail(Replace(tbl, "tblDetail", vbNullString)) Then ' TODO Const this
             CreateForms = CreateForms + 1
         End If
     Next tbl
@@ -76,20 +74,20 @@ Private Function CreateTables(tables As Collection) As Integer
     Next tbl
 End Function
 
-Private Function CreateTable(tableName As String) As Boolean
+Private Function CreateTable(TableName As String) As Boolean
     Dim db As Database
     Dim tbl As TableDef
     
     Set db = OpenDatabase(BE_DATABASE_FILENAME, False, False)
     
-    Set tbl = db.CreateTableDef(tableName)
+    Set tbl = db.CreateTableDef(TableName)
 
-    Call CreateIDField(tbl)
+    CreateIDField tbl
     
-    CreateGenericField tbl, "EntityFK", dbLong
-    CreateGenericField tbl, "TrackFK", dbLong
+    CreateGenericField tbl, "EntityFK", dbLong ' TODO Const this
+    CreateGenericField tbl, "TrackFK", dbLong ' TODO Const this
     
-    AddFieldsToTableDefFromMetaSchema tbl, tableName
+    AddFieldsToTableDefFromMetaSchema tbl, TableName
     
     db.TableDefs.Append tbl
     db.TableDefs.Refresh
@@ -100,18 +98,18 @@ Private Function CreateTable(tableName As String) As Boolean
     CreateTable = True
 End Function
 
-Private Sub AddFieldsToTableDefFromMetaSchema(tblDef As TableDef, tableName As String)
+Private Sub AddFieldsToTableDefFromMetaSchema(tblDef As TableDef, TableName As String)
     Dim db As Database
     Dim rs As Recordset
     Dim sql As String
     
-    sql = "SELECT * FROM " & SCHEMA_TABLE & " WHERE TableName = '" & tableName & "';"
-    Set db = CurrentDB
+    sql = "SELECT * FROM " & SCHEMA_TABLE & " WHERE TableName = '" & TableName & "';"
+    Set db = CurrentDb
     Set rs = db.OpenRecordset(sql)
     
     If Not rs.BOF And Not rs.EOF Then
         Do While Not rs.EOF
-            Call AddFieldToTableDefFromMetaSchema(tblDef, rs)
+            AddFieldToTableDefFromMetaSchema tblDef, rs
             rs.MoveNext
         Loop
     End If
@@ -124,7 +122,7 @@ End Sub
 Private Function AddFieldToTableDefFromMetaSchema(tblDef As TableDef, rs As Recordset)
     Dim fldType As Integer
     Dim prop As DAO.Property
-    Dim fld As field
+    Dim fld As Field
     
     fldType = dbText
     Select Case rs!fieldType
@@ -138,13 +136,13 @@ Private Function AddFieldToTableDefFromMetaSchema(tblDef As TableDef, rs As Reco
     
     Set fld = tblDef.CreateField(rs!fieldName, fldType)
     
-    If Nz(rs!format) <> "" Then
+    If Nz(rs!format) <> vbNullString Then
         Set prop = fld.CreateProperty("Format", dbText)
         prop.Value = rs!format
         'fld.Properties.Append prop
     End If
     
-    If Nz(rs!defaultValue) <> "" Then
+    If Nz(rs!defaultValue) <> vbNullString Then
         fld.defaultValue = rs!defaultValue
     End If
     
@@ -152,13 +150,13 @@ Private Function AddFieldToTableDefFromMetaSchema(tblDef As TableDef, rs As Reco
 End Function
 
 Private Function CreateGenericField(tbl As TableDef, fieldName As String, Optional fieldType As Integer = dbText)
-    Dim fld As field
+    Dim fld As Field
     Set fld = tbl.CreateField(fieldName, fieldType)
     tbl.fields.Append fld
 End Function
 
 Private Function CreateIDField(tbl As TableDef, Optional fieldName As String = "ID")
-    Dim fld As DAO.field
+    Dim fld As DAO.Field
     Dim idx As DAO.index
     
     Set fld = CreateAutoNumberField(tbl, fieldName)
@@ -175,33 +173,11 @@ Private Function CreateIDField(tbl As TableDef, Optional fieldName As String = "
     tbl.Indexes.Append idx
 End Function
 
-Private Function CreateAutoNumberField(tbl As TableDef, fieldName As String) As field
+Private Function CreateAutoNumberField(tbl As TableDef, fieldName As String) As Field
     Set CreateAutoNumberField = tbl.CreateField(fieldName, dbLong, 4)
     With CreateAutoNumberField
          .Attributes = dbAutoIncrField
     End With
-End Function
-
-Private Function LinkTable(tableName As String) As Boolean
-    Dim db As Database
-    Dim tbl As TableDef
-    Dim fld As field
-    
-    Set db = CurrentDB
-    
-    If DoesTableExist(tableName, db) Then Exit Function
-    
-    Set tbl = db.CreateTableDef(tableName)
-    
-    tbl.Connect = LINKED_DB_CONNECT & BE_DATABASE_FILENAME
-    tbl.SourceTableName = tableName
-
-    db.TableDefs.Append tbl
-    db.TableDefs.Refresh
-    
-    Set db = Nothing
-    
-    LinkTable = True
 End Function
 
 Private Function GetListOfTablesFromSchema() As Collection
@@ -209,12 +185,12 @@ Private Function GetListOfTablesFromSchema() As Collection
     Dim sql As String
     
     Set GetListOfTablesFromSchema = New Collection
-    sql = "SELECT DISTINCT TableName FROM metaSchema;"
-    Set rs = CurrentDB.OpenRecordset(sql)
+    sql = "SELECT DISTINCT TableName FROM " & SCHEMA_TABLE & ";"
+    Set rs = CurrentDb.OpenRecordset(sql)
     
     If Not rs.BOF And Not rs.EOF Then
         Do While Not rs.EOF
-            GetListOfTablesFromSchema.Add CStr(rs!tableName)
+            GetListOfTablesFromSchema.Add CStr(rs!TableName)
             rs.MoveNext
         Loop
     End If
@@ -224,7 +200,7 @@ Private Function GetListOfTablesFromSchema() As Collection
 End Function
 
 Private Function FilterEmptyTablesOnly(tables As Collection) As Collection
-    Dim tableName As String
+    Dim TableName As String
     Dim tbl As Variant
     Dim db As Database
     
@@ -233,9 +209,9 @@ Private Function FilterEmptyTablesOnly(tables As Collection) As Collection
     Set FilterEmptyTablesOnly = New Collection
     
     For Each tbl In tables
-        tableName = CStr(tbl)
-        If DoesTableExist(tableName, db) Then
-            If IsTableEmpty(tableName, db) Then
+        TableName = CStr(tbl)
+        If DoesTableExist(TableName, db) Then
+            If IsTableEmpty(TableName, db) Then
                 FilterEmptyTablesOnly.Add tbl
             End If
         Else
@@ -246,5 +222,3 @@ Private Function FilterEmptyTablesOnly(tables As Collection) As Collection
     db.Close
     Set db = Nothing
 End Function
-
-

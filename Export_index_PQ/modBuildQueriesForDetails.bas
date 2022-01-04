@@ -19,7 +19,7 @@ Public Sub BuildQueriesForDetailTables()
     Next table
 End Sub
 
-Private Function GetFieldsFromSchema(ByVal tableName As String) As Variant
+Private Function GetFieldsFromSchema(ByVal TableName As String) As Variant
     Dim fields As Collection
     Dim rs As Recordset
     Dim sql As String
@@ -28,7 +28,7 @@ Private Function GetFieldsFromSchema(ByVal tableName As String) As Variant
     fields.Add "TrackFK," & QUERY_TRACK_LATEST
     fields.Add "EntityFK,"
     
-    sql = "SELECT * FROM " & SCHEMA_TABLE & " WHERE TableName = '" & tableName & "';"
+    sql = "SELECT * FROM " & SCHEMA_TABLE & " WHERE TableName = '" & TableName & "';"
     Set rs = CurrentDb.OpenRecordset(sql)
     
     If Not rs.BOF And Not rs.EOF Then
@@ -44,20 +44,20 @@ Private Function GetFieldsFromSchema(ByVal tableName As String) As Variant
     Set GetFieldsFromSchema = fields
 End Function
 
-Private Function GenerateSQLforDetailTable(ByVal tableName As String) As String
+Private Function GenerateSQLforDetailTable(ByVal TableName As String) As String
     Dim sql As String
     Dim joins As String
     Dim fields As Collection
     Dim field As Variant
     
-    Set fields = GetFieldsFromSchema(tableName)
+    Set fields = GetFieldsFromSchema(TableName)
     
     sql = "SELECT"
     
     For Each field In fields
         Debug.Print field
         If Right$(field, 1) = "," Then
-            sql = sql & " " & tableName & "." & field
+            sql = sql & " " & TableName & "." & field
         Else
             ' TODO FIX
             If field <> "TrackFK,qryTrack_Latest" Then
@@ -69,10 +69,10 @@ Private Function GenerateSQLforDetailTable(ByVal tableName As String) As String
     
     sql = sql & " FROM"
     
-    joins = tableName
+    joins = TableName
     
     For Each field In fields
-        joins = ConcatenateJoin(joins, tableName, field)
+        joins = ConcatenateJoin(joins, TableName, field)
     Next field
     
     sql = sql & joins
@@ -102,14 +102,14 @@ HandleError:
     End If
 End Function
 
-Private Function ConcatenateJoin(ByVal previous As String, ByVal tableName As String, ByVal payload As String) As String
+Private Function ConcatenateJoin(ByVal previous As String, ByVal TableName As String, ByVal payload As String) As String
     Dim s As String
     Dim JoinTable As String
     If Right$(payload, 1) = "," Then
         ConcatenateJoin = previous
         Exit Function
     End If
-    payload = tableName & "." & Replace(payload, ",", " = ") & ".ID"
+    payload = TableName & "." & Replace(payload, ",", " = ") & ".ID"
     JoinTable = Split(Replace(payload, " ", "."), ".")(3)
     s = " (" & previous & " INNER JOIN " & JoinTable & " ON " & payload & ")"
     ConcatenateJoin = s

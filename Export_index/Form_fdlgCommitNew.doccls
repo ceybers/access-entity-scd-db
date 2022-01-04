@@ -1,4 +1,6 @@
-﻿Option Compare Database
+﻿
+'@Folder "Forms"
+Option Compare Database
 Option Explicit
 
 Private Type TFrmCommits
@@ -22,7 +24,7 @@ End Property
 ' Events
 Private Sub Form_AfterUpdate()
     'Model.RecordID = Me.Recordset!ID
-    Call ViewModel.SetCommitByID(Me.Recordset!ID)
+    ViewModel.SetCommitByID Me.Recordset!ID
     DoCmd.Close acForm, "frmCommits", acSaveNo
 End Sub
 
@@ -40,7 +42,7 @@ Private Sub TryAutofill()
     ViewModel.AutofillType = Nz(Me.cmbAutofillType)
     
     If ViewModel.CanAutofill Then
-        Call modCommitAutofill.DoAutofill(ViewModel, Me)
+        modCommitAutofill.DoAutofill ViewModel, Me
     End If
 End Sub
 

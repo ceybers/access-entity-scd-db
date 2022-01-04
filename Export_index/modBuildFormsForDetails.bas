@@ -3,9 +3,6 @@ Attribute VB_Name = "modBuildFormsForDetails"
 Option Compare Database
 Option Explicit
 
-Dim FORM_NAME As String
-Dim TABLE_NAME As String
-
 Private Type TControlSet
     fieldName As String
     caption As String
@@ -22,7 +19,7 @@ Private Sub TEST_BuildFormsForDetails()
     End If
     
     'Call BuildFormForDetail("Dimensions")
-    Call BuildFormForDetail("MaintPlan")
+    BuildFormForDetail "MaintPlan"
     'Call BuildFormForDetail("Service")
     
     'Call BuildFormForDetail("A")
@@ -31,8 +28,8 @@ Private Sub TEST_BuildFormsForDetails()
 End Sub
 
 Public Function BuildFormForDetail(detailName As String)
-    Dim tableName As String, formName As String
-    tableName = "tblDetail" & detailName
+    Dim TableName As String, formName As String
+    TableName = "tblDetail" & detailName
     formName = "sfrmDetail" & detailName
     Dim controlSets() As TControlSet
     
@@ -41,8 +38,8 @@ Public Function BuildFormForDetail(detailName As String)
     OpenFormInDesignMode formName
     RemoveAllControls formName
     SetFormProperties formName
-    controlSets = GetFields(tableName)
-    Call DrawFields(formName, controlSets)
+    controlSets = GetFields(TableName)
+    DrawFields formName, controlSets
     SetSCDFields formName
     CloseFormInDesignMode formName
 End Function
@@ -75,19 +72,19 @@ Private Function DrawFields(formName As String, fields() As TControlSet)
     For i = 1 To UBound(fields)
         cs = fields(i)
         x = ((DEFAULT_HEIGHT + 60) * (i - 1)) + 120
-        CreateLabel formName, "lbl" & cs.fieldName, IIf(cs.caption = "", cs.fieldName, cs.caption), (0.25 * CM_TO_TWIP), x
+        CreateLabel formName, "lbl" & cs.fieldName, IIf(cs.caption = vbNullString, cs.fieldName, cs.caption), (0.25 * CM_TO_TWIP), x
         CreateLabel formName, "lblSuffix" & cs.fieldName, cs.suffix, (7.75 * CM_TO_TWIP), x
         
-        If cs.fieldName = "ValidFrom" Or cs.fieldName = "TrackFK" Or cs.fieldName = "CommitFK" Then
+        If cs.fieldName = TRACK_VALIDFROM_FIELDNAME Or cs.fieldName = "TrackFK" Or cs.fieldName = TRACK_COMMITFK_FIELDNAME Then
             CreateTextBox formName, cs.fieldName, cs.fieldName, (3.5 * CM_TO_TWIP), x
-        ElseIf cs.lookupTable = "" Then
+        ElseIf cs.lookupTable = vbNullString Then
             'CreateTextBox formName, "txtLHS" & cs.fieldName, cs.fieldName, (3.5 * CM_TO_TWIP), x
             'CreateTextBox formName, "txtRHS" & cs.fieldName, "", (7.75 * CM_TO_TWIP), x
             CreateTextBox2 formName, "txtLHS", cs, (3.5 * CM_TO_TWIP), x
             CreateTextBox2 formName, "txtRHS", cs, (7.75 * CM_TO_TWIP), x
         Else
             CreateComboBox formName, "cmbLHS" & cs.fieldName, cs.fieldName, cs.lookupTable, (3.5 * CM_TO_TWIP), x
-            CreateComboBox formName, "cmbRHS" & cs.fieldName, "", cs.lookupTable, (7.75 * CM_TO_TWIP), x
+            CreateComboBox formName, "cmbRHS" & cs.fieldName, vbNullString, cs.lookupTable, (7.75 * CM_TO_TWIP), x
         End If
         'CreateLabel formName, "lblSuffix" & cs.FieldName, "", (12 * CM_TO_TWIP), x
         
@@ -95,14 +92,14 @@ Private Function DrawFields(formName As String, fields() As TControlSet)
     'DoCmd.Close acForm, formName, acSaveYes
 End Function
 
-Private Function GetFields(tableName As String) As TControlSet()
+Private Function GetFields(TableName As String) As TControlSet()
     Dim db As DAO.Database
     Dim rs As DAO.Recordset
     Dim results() As TControlSet
     Dim i As Integer
     
-    Set db = CurrentDB
-    Set rs = db.OpenRecordset("SELECT * FROM " & SCHEMA_TABLE & " WHERE TableName = '" & tableName & "';")
+    Set db = CurrentDb
+    Set rs = db.OpenRecordset("SELECT * FROM " & SCHEMA_TABLE & " WHERE TableName = '" & TableName & "';")
     i = 1
     
     If Not rs.BOF And Not rs.EOF Then
@@ -119,9 +116,9 @@ Private Function GetFields(tableName As String) As TControlSet()
     End If
     
     ' Add SCD common fields
-    results = AppendToControlSet(results, CreateControlSet("TrackFK", "Track ID"))
-    results = AppendToControlSet(results, CreateControlSet("ValidFrom", "Valid From"))
-    results = AppendToControlSet(results, CreateControlSet("CommitFK", "Commit ID"))
+    results = AppendToControlSet(results, CreateControlSet("TrackFK", "Track ID")) ' TODO Const this
+    results = AppendToControlSet(results, CreateControlSet(TRACK_VALIDFROM_FIELDNAME, "Valid From"))
+    results = AppendToControlSet(results, CreateControlSet(TRACK_COMMITFK_FIELDNAME, "Commit ID"))
     
     rs.Close
     Set rs = Nothing
@@ -148,9 +145,9 @@ End Function
 Private Function RecordToControlSet(ByRef rs As Recordset) As TControlSet
     With RecordToControlSet
         .fieldName = rs!fieldName
-        .caption = Nz(rs!caption, "")
-        .width = Nz(rs!width, "")
-        .lookupTable = Nz(rs!lookupTable, "")
+        .caption = Nz(rs!caption, vbNullString)
+        .width = Nz(rs!width, vbNullString)
+        .lookupTable = Nz(rs!lookupTable, vbNullString)
         .suffix = Nz(rs!suffix)
         .format = Nz(rs!format)
         .textalign = Nz(rs!textalign)
@@ -168,7 +165,7 @@ Private Function SetFormProperties(formName As String)
     frm.AllowAdditions = True
     frm.AllowEdits = True
     frm.AllowDeletions = False
-    frm.recordSource = ""
+    frm.recordSource = vbNullString
     'frm.RecordSource = Replace(formName, "sfrm", "tbl")
     frm.recordSource = GetSQL(Replace(formName, "sfrm", "tbl"))
     'DoCmd.Close acForm, formName, acSaveYes
@@ -217,7 +214,7 @@ Private Function CreateTextBox2(formName As String, prefix As String, cs As TCon
         tb.ControlSource = cs.fieldName
     End If
     tb.textalign = cs.textalign
-    If cs.format <> "" Then
+    If cs.format <> vbNullString Then
         tb.format = cs.format
     End If
 End Function
@@ -234,8 +231,8 @@ Private Function CreateComboBox(formName As String, controlName As String, field
     cb.ColumnCount = 2
 End Function
 
-Private Function GetSQL(tableName As String)
-     GetSQL = "SELECT * FROM ((" & tableName & " AS tblDetail LEFT JOIN tblEntities ON tblDetail.EntityFK = tblEntities.ID) LEFT JOIN tblTrack ON tblDetail.TrackFK = tblTrack.ID) LEFT JOIN tblCommits ON tblTrack.CommitFK = tblCommits.ID;"
+Private Function GetSQL(TableName As String)
+     GetSQL = "SELECT * FROM ((" & TableName & " AS tblDetail LEFT JOIN " & ENTITIES_TABLE & " ON tblDetail.EntityFK = " & ENTITIES_TABLE & ".ID) LEFT JOIN " & TRACKS_TABLE & " ON tblDetail.TrackFK = " & TRACKS_TABLE & ".ID) LEFT JOIN " & COMMITS_TABLE & " ON " & TRACKS_TABLE & "." & TRACK_COMMITFK_FIELDNAME & " = " & COMMITS_TABLE & ".ID;"
 End Function
 
 Private Sub SetSCDFields(formName As String)
@@ -249,30 +246,3 @@ Private Sub SetSCDFields(formName As String)
     'DoCmd.Close acForm, formName, acSaveYes
 End Sub
 
-Private Function TEST_QueryControl()
-    Dim frm As Form
-    'DoCmd.OpenForm formName:=FORM_NAME, View:=acDesign
-    Set frm = Forms(FORM_NAME)
-    Dim i As Integer
-    Dim ctl As control
-    Dim tb As textbox
-    For i = frm.controls.count To 1 Step -1
-        Set ctl = frm.controls(i - 1)
-        If ctl.ControlType = acTextBox Then
-            Set tb = ctl
-            Debug.Print "Layout: " & ctl.Layout
-            Debug.Print "Top Margin: " & tb.TopMargin '31
-            Debug.Print "Special Effect: " & tb.SpecialEffect '2
-            Debug.Print "Width: " & tb.width '2268 = 4cm
-            Debug.Print "Height: " & tb.Height ' 360 = 0.635cm
-        End If
-    Next i
-End Function
-
-Private Sub OpenFormInDesignMode(formName As String)
-    DoCmd.OpenForm formName:=formName, View:=acDesign
-End Sub
-
-Private Sub CloseFormInDesignMode(formName As String)
-    DoCmd.Close acForm, formName, acSaveYes
-End Sub

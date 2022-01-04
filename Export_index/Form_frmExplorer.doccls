@@ -1,5 +1,10 @@
-﻿Option Compare Database
+﻿'@Folder "Forms"
+Option Compare Database
 Option Explicit
+
+Private Const COMMIT_FORMNAME As String = "sfrmCommits"
+Private Const DETAIL_FORMNAME As String = "sfrmDetails"
+Private Const ENTITY_FORMNAME As String = "sfrmEntities"
 
 Private WithEvents commitModel As clsCommitViewModel
 Private WithEvents entityModel As clsEntityViewModel

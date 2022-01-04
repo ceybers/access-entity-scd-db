@@ -7,6 +7,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+
 '@Folder "ViewModels"
 Option Compare Database
 Option Explicit
@@ -105,7 +106,7 @@ End Function
 
 ' Apply Functions for Form Controls
 Public Function ApplyEntitiesSourceToListbox(ByRef lb As ListBox)
-    lb.RowSource = "SELECT * FROM tblEntities WHERE EntityType = " & EntityType.ID & ";"
+    lb.RowSource = "SELECT * FROM " & ENTITIES_TABLE & " WHERE EntityType = " & EntityType.ID & ";"
     lb.RowSourceType = "Table/Query"
 End Function
 
@@ -115,8 +116,8 @@ End Function
 
 Public Function ApplyCommitsSourceToCombobox(ByRef cmb As ComboBox)
     Err.Raise 5, , "DEPREC"
-    cmb.RowSource = ""
-    cmb.RowSource = "SELECT TOP 3 ID, Title, Modified FROM tblCommits WHERE Closed Is Null ORDER BY Created DESC;"
+    cmb.RowSource = vbNullString
+    cmb.RowSource = "SELECT TOP 3 ID, Title, Modified FROM " & COMMITS_TABLE & " WHERE Closed Is Null ORDER BY Created DESC;"
 End Function
 
 Public Function SearchEntity(tb As textbox, lb As ListBox)
@@ -126,12 +127,12 @@ Public Function SearchEntity(tb As textbox, lb As ListBox)
     Dim criteria As String
     
     If IsNull(tb) Then
-        Call ApplyEntitiesSourceToListbox(lb)
+        ApplyEntitiesSourceToListbox lb
         Exit Function
     End If
     
-    If tb.Value = "" Then
-        Call ApplyEntitiesSourceToListbox(lb)
+    If tb.Value = vbNullString Then
+        ApplyEntitiesSourceToListbox lb
         Exit Function
     End If
     
@@ -149,11 +150,11 @@ Public Function SearchEntity(tb As textbox, lb As ListBox)
         End If
     Next Entity
     
-    lb.RowSource = ""
+    lb.RowSource = vbNullString
     lb.RowSourceType = "Value List"
     
     For i = lb.ListCount - 1 To 0 Step -1
-        Call lb.RemoveItem(i)
+        lb.RemoveItem i
     Next i
     
     For Each Entity In filteredEntities

@@ -4,10 +4,9 @@ Option Compare Database
 Option Explicit
 
 Private Sub TEST_GetLinkedTables()
-    Debug.Print "hi"
+    Debug.Print "TEST_GetLinkedTables()"
     Dim tables As Variant
     
-    'Set tables = GetTestListOfTables
     Set tables = GetListOfTablesInLinkedDatabase
     
     'PrintCollection tables
@@ -24,8 +23,8 @@ Private Sub LinkTables(tables As Variant)
         End If
     Next tbl
     
-    LinkTable modConstants.SCHEMA_TABLE
-    LinkTable modConstants.QUERY_TRACK_LATEST
+    LinkTable SCHEMA_TABLE
+    LinkTable QUERY_TRACK_LATEST
 End Sub
 
 Private Sub PrintCollection(ByRef coll As Variant)

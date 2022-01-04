@@ -1,6 +1,9 @@
-﻿Option Compare Database
+﻿
+'@Folder "Subforms"
+Option Compare Database
 Option Explicit
 
+Private Const NEW_COMMIT_FORM As String = "fdlgCommitNew"
 Private WithEvents commitModel As clsCommitViewModel
 
 ' Props
@@ -37,7 +40,7 @@ End Sub
 Private Sub cmbCommit_Change()
     Dim CommitID As Double
     CommitID = Me.cmbCommit.Value
-    Call ViewModel.SetCommitByID(CommitID)
+    ViewModel.SetCommitByID CommitID
 End Sub
 
 ' Events

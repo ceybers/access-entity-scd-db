@@ -25,8 +25,7 @@ Private Sub BuildPerspective(ByVal perspectiveName As String)
     
     queryName = "per" & perspectiveName
     sql = GenerateSQLforPerspective(perspectiveName)
-    Call modDBHelpers.CreateQuery(queryName, sql)
-    'DoCmd.OpenQuery queryName, acViewNormal, acReadOnly
+    Call CreateQuery(queryName, sql)
 End Sub
 
 Private Function GenerateSQLforPerspective(ByVal perspectiveName As String) As String

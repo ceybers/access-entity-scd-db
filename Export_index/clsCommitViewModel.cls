@@ -7,6 +7,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+
 '@Folder "ViewModels"
 Option Compare Database
 Option Explicit
@@ -73,6 +74,6 @@ Public Function SetCommitByID(idx As Double)
 End Function
 
 Public Function ApplyCommitsSourceToCombobox(ByRef cmb As ComboBox)
-    cmb.RowSource = ""
-    cmb.RowSource = "SELECT TOP " & COMMITS_TO_DISPLAY & " ID, Title, Modified FROM tblCommits WHERE Closed Is Null ORDER BY Created DESC;"
+    cmb.RowSource = vbNullString
+    cmb.RowSource = "SELECT TOP " & COMMITS_TO_DISPLAY & " ID, Title, Modified FROM " & COMMITS_TABLE & " WHERE Closed Is Null ORDER BY Created DESC;"
 End Function

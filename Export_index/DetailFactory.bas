@@ -3,11 +3,11 @@ Attribute VB_Name = "DetailFactory"
 Option Compare Database
 Option Explicit
 
-Public Function Create(ID As Double, name As String, tableName As String) As clsDetail
+Public Function Create(ID As Double, name As String, TableName As String) As clsDetail
     With New clsDetail
         .ID = ID
         .name = name
-        .tableName = tableName
+        .TableName = TableName
         Set Create = .Self
     End With
 End Function
@@ -16,7 +16,7 @@ Public Function CreateFromRecordset(ByRef rs As DAO.Recordset) As clsDetail
     With New clsDetail
         .ID = rs!ID
         .name = rs!DetailTable
-        .tableName = rs!tableName
+        .TableName = rs!TableName
         Set CreateFromRecordset = .Self
     End With
 End Function

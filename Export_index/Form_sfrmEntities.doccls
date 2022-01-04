@@ -1,7 +1,9 @@
-﻿Option Compare Database
+﻿
+'@Folder "Subforms"
+Option Compare Database
 Option Explicit
 
-Dim WithEvents entityModel As clsEntityViewModel
+Private WithEvents entityModel As clsEntityViewModel
 
 ' Properties
 Public Property Get ViewModel() As clsEntityViewModel
@@ -24,44 +26,44 @@ End Sub
 
 ' Control Events
 Private Sub cmbEntityType_Change()
-    Call ViewModel.SetEntityTypeByID(Me.cmbEntityType.Value)
-    Call ViewModel.ApplyDetailsSourceToListbox(Me.lstDetails)
+    ViewModel.SetEntityTypeByID Me.cmbEntityType.Value
+    ViewModel.ApplyDetailsSourceToListbox Me.lstDetails
 End Sub
 
 Private Sub lstEntities_Click()
-    Call ViewModel.SetEntityByID(Me.lstEntities.Value)
+    ViewModel.SetEntityByID Me.lstEntities.Value
 End Sub
 
 Private Sub lstDetails_Click()
-    Call ViewModel.SetDetailByID(Me.lstDetails.Value)
+    ViewModel.SetDetailByID Me.lstDetails.Value
 End Sub
 
 Private Sub txtSearch_Change()
-    Call ViewModel.SearchEntity(Me.txtSearch, Me.lstEntities)
+    ViewModel.SearchEntity Me.txtSearch, Me.lstEntities
 End Sub
 
 ' VM Events
 Private Sub entityModel_EntityTypeChanged()
-    Call ViewModel.SearchEntity(Me.txtSearch, Me.lstEntities)
+    ViewModel.SearchEntity Me.txtSearch, Me.lstEntities
     Me.lstEntities.Enabled = True
 End Sub
 
 Private Sub entityModel_EntityChanged()
-    Call ViewModel.SetEntityByID(Me.lstEntities.Value)
+    ViewModel.SetEntityByID Me.lstEntities.Value
     Me.lstDetails.Enabled = True
 End Sub
 
 Private Sub entityModel_DetailChanged()
-    Call ViewModel.SetDetailByID(Me.lstDetails.Value)
+    ViewModel.SetDetailByID Me.lstDetails.Value
 End Sub
 
 ' Test
 Private Sub TEST_PrepopulateInput()
     Me.cmbEntityType = Me.cmbEntityType.ItemData(3)
-    Call cmbEntityType_Change
+    cmbEntityType_Change
     
     Me.txtSearch.Value = "NY"
-    Call txtSearch_Change
+    txtSearch_Change
 
     Me.lstEntities = Me.lstEntities.ItemData(2)
     lstEntities_Click

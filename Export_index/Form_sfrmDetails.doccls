@@ -1,7 +1,8 @@
-﻿Option Compare Database
+﻿'@Folder "Subforms"
+Option Compare Database
 Option Explicit
 
-Dim WithEvents detailModel As clsDetailViewModel
+Private WithEvents detailModel As clsDetailViewModel
 
 ' Properties
 Public Property Get ViewModel() As clsDetailViewModel
@@ -23,7 +24,7 @@ End Sub
 
 ' Ctor
 Private Sub Form_Load()
-    Me.sfrmDetail.SourceObject = ""
+    Me.sfrmDetail.SourceObject = vbNullString
     Set ViewModel.SubForm = Me.sfrmDetail
     MapButtonsToStates ViewModel
 End Sub

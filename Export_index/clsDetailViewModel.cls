@@ -7,6 +7,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+
 '@Folder "ViewModels"
 Option Compare Database
 Option Explicit
@@ -15,6 +16,7 @@ Public Event StateChanged(newState As DetailStateForSCD)
 Public Event EditingStarted()
 Public Event EditingStopped()
 
+'@MemberAttribute VB_VarHelpID, -1
 Private WithEvents frmForEvents As Access.Form
 Attribute frmForEvents.VB_VarHelpID = -1
 Private Events As Collection
@@ -47,12 +49,12 @@ Private This As TDetailViewModel
 ' Properties
 Public Property Set Detail(ByRef RHS As clsDetail)
     Debug.Assert Not RHS Is Nothing
-    Log "(Property) Set Detail = '" & RHS.tableName & "'"
+    Log "(Property) Set Detail = '" & RHS.TableName & "'"
     
     Set This.Detail = RHS
     
-    This.SubFormControl.SourceObject = Replace(RHS.tableName, "tbl", "sfrm")
-    Log " SubFormControlSourceObject = " & Replace(RHS.tableName, "tbl", "sfrm")
+    This.SubFormControl.SourceObject = Replace(RHS.TableName, "tbl", "sfrm")
+    Log " SubFormControlSourceObject = " & Replace(RHS.TableName, "tbl", "sfrm")
     
     If This.entityID > 0 Then TrySetState Ready
 End Property
@@ -109,9 +111,9 @@ Private Function ChangeToViewNewMode()
     SetFormEditState True, False, False, True
     
     With DetailForm
-        .controls("ValidFrom").SetFocus
-        .controls("ValidFrom").Locked = True
-        .controls("CommitFK").Locked = True
+        .controls(TRACK_VALIDFROM_FIELDNAME).SetFocus
+        .controls(TRACK_VALIDFROM_FIELDNAME).Locked = True
+        .controls(TRACK_COMMITFK_FIELDNAME).Locked = True
     End With
     
     Dim ctl As control
@@ -119,7 +121,7 @@ Private Function ChangeToViewNewMode()
         If ctl.name Like "???LHS*" Then
             ctl.Locked = False
             ctl.Visible = False
-            ctl.Properties("BackColor") = BACKCOLOR_YELLOW
+            ctl.Properties("BackColor") = RAGColors.Yellow
         ElseIf ctl.name Like "???RHS*" Then
             ctl.Visible = False
          ElseIf ctl.name Like "lblSuffix*" Then
@@ -139,7 +141,7 @@ Private Function ChangeToEditNewMode()
         If ctl.name Like "???LHS*" Then
             ctl.Locked = False
             ctl.Visible = True
-            ctl.Properties("BackColor") = BACKCOLOR_YELLOW
+            ctl.Properties("BackColor") = RAGColors.Yellow
         ElseIf ctl.name Like "???RHS*" Then
             ctl.Visible = False
          ElseIf ctl.name Like "lblSuffix*" Then
@@ -162,7 +164,7 @@ Private Function ChangeToViewExistingMode()
         If ctl.name Like "???LHS*" Then
             ctl.Locked = True
             ctl.Visible = True
-            ctl.Properties("BackColor") = BACKCOLOR_DEFAULT
+            ctl.Properties("BackColor") = RAGColors.Default
         ElseIf ctl.name Like "???RHS*" Then
             ctl.Visible = False
         ElseIf ctl.name Like "lblSuffix*" Then
@@ -184,11 +186,11 @@ Private Function ChangeToEditExistingMode()
         If ctl.name Like "???LHS*" Then
             ctl.Locked = True
             ctl.Visible = True
-            ctl.Properties("BackColor") = BACKCOLOR_DEFAULT
+            ctl.Properties("BackColor") = RAGColors.Default
         ElseIf ctl.name Like "???RHS*" Then
             ctl.Visible = True
-            ctl.Properties("BackColor") = BACKCOLOR_YELLOW
-            ctl = GetControlByName(DetailForm.controls, Replace(ctl.name, "RHS", "LHS"))
+            ctl.Properties("BackColor") = RAGColors.Yellow
+            Set ctl = GetControlByName(DetailForm.controls, Replace(ctl.name, "RHS", "LHS"))
         ElseIf ctl.name Like "lblSuffix*" Then ctl.Properties("Left") = 6804
             '4394 or 6804
         End If
@@ -213,7 +215,7 @@ Private Function ChangeToSaveEdits()
         rs!ValidUntil = Now()
         rs.Update
         
-        Call SetFormEditState(True, True, False, True)
+        SetFormEditState True, True, False, True
         ' Needs to be done again after changing SetFormEditState
         Set rs = DetailForm.Recordset
         
@@ -221,7 +223,7 @@ Private Function ChangeToSaveEdits()
         
         For Each ctl In DetailForm.controls
             If ctl.name Like "???RHS*" Then
-                fieldName = Right(ctl.name, Len(ctl.name) - 6)
+                fieldName = Right$(ctl.name, Len(ctl.name) - 6)
                 rs.fields(fieldName) = ctl
             End If
         Next ctl
@@ -246,15 +248,15 @@ Private Function ChangeToCancelEditing()
     If (This.State = EditNew) And (Not DetailForm.NewRecord) Then
         TrackFK = DetailForm.Recordset!TrackFK
         detailID = DetailForm.Recordset.fields("tblDetail.ID")
-        Call RemoveCancelledNewRecord(TrackFK, detailID)
+        RemoveCancelledNewRecord TrackFK, detailID
     End If
     
     DetailForm.Undo
     
     If This.State = EditExisting Then
-        Call TrySetState(ViewExisting)
+        TrySetState ViewExisting
     ElseIf This.State = EditNew Then
-        Call TrySetState(Viewnew)
+        TrySetState Viewnew
     End If
     
     CancelEditing
@@ -344,8 +346,8 @@ End Function
 
 Private Function RemoveCancelledNewRecord(TrackFK As Integer, detailID As Integer)
     On Error GoTo ErrorHandling
-    Call CurrentDB.Execute("DELETE * FROM tblTrack WHERE ID = " & TrackFK & ";")
-    Call CurrentDB.Execute("DELETE * FROM " & Detail.tableName & " WHERE ID = " & detailID & ";")
+    CurrentDb.Execute "DELETE * FROM " & TRACKS_TABLE & " WHERE ID = " & TrackFK & ";"
+    CurrentDb.Execute "DELETE * FROM " & Detail.TableName & " WHERE ID = " & detailID & ";"
     Exit Function
     
 ErrorHandling:
@@ -356,14 +358,14 @@ Private Function CreateNewTrackRecord(CommitFK As Double) As Integer
     Dim db As Database
     Dim rs As Recordset
     
-    Set db = CurrentDB
-    Set rs = db.OpenRecordset("SELECT * FROM tblTrack", dbOpenDynaset, dbSeeChanges)
+    Set db = CurrentDb
+    Set rs = db.OpenRecordset("SELECT * FROM " & TRACKS_TABLE, dbOpenDynaset, dbSeeChanges)
     
     rs.AddNew
     CreateNewTrackRecord = rs!ID
-    rs!CommitFK = CommitFK
-    rs!ValidFrom = Now()
-    rs!ValidUntil = #12/31/9999#
+    rs.fields(TRACK_COMMITFK_FIELDNAME) = CommitFK
+    rs.fields(TRACK_VALIDFROM_FIELDNAME) = Now()
+    rs.fields(TRACK_VALIDUNTIL_FIELDNAME) = #12/31/9999#
     rs.Update
     
     rs.Close
@@ -383,14 +385,14 @@ Private Function GotoEntity()
     
     Set frm = DetailForm
     recordSource = frm.recordSource
-    frm.recordSource = ""
+    frm.recordSource = vbNullString
     
-    frm.Filter = "EntityFK = " & entityID & " AND ValidUntil = #9999/12/31#"
+    frm.Filter = "EntityFK = " & entityID & " AND " & TRACK_VALIDUNTIL_FIELDNAME & " = #9999/12/31#"
     frm.FilterOn = True
     frm.recordSource = recordSource
     
     Set rs = frm.RecordsetClone
-    Call rs.FindLast("EntityFK = " & entityID & " AND ValidUntil = #9999/12/31#")
+    rs.FindLast "EntityFK = " & entityID & " AND " & TRACK_VALIDUNTIL_FIELDNAME & " = #9999/12/31#"
     
     frm.Bookmark = rs.Bookmark
     
@@ -438,8 +440,8 @@ Private Function CheckForExistingRecords() As Boolean
     Dim rs As Recordset
     Dim sql As String
     
-    sql = "SELECT Count(*) AS TotalCount FROM " & Detail.tableName & " WHERE EntityFK = " & entityID & ";"
-    Set rs = CurrentDB.OpenRecordset(sql)
+    sql = "SELECT Count(*) AS TotalCount FROM " & Detail.TableName & " WHERE EntityFK = " & entityID & ";"
+    Set rs = CurrentDb.OpenRecordset(sql)
     results = rs!TotalCount
     
     Log "CheckForExistingRecords = " & CStr(results)

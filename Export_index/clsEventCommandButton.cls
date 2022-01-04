@@ -7,9 +7,11 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+
 Option Compare Database
 Option Explicit
 
+'@MemberAttribute VB_VarHelpID, -1
 Private WithEvents cmdBtn As Access.CommandButton
 Attribute cmdBtn.VB_VarHelpID = -1
 
@@ -53,5 +55,4 @@ End Property
 Private Sub cmdBtn_Click()
     This.context.HandleEvent This.State
 End Sub
-
 

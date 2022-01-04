@@ -7,6 +7,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+
 '@Folder "DataModels"
 Option Compare Database
 Option Explicit
@@ -66,15 +67,15 @@ Public Function GetThingByID(thingCollection As Collection, idx As Double) As IT
 End Function
 
 ' Private Methods
-Private Function LoadThings(tableName As String) As Collection
+Private Function LoadThings(TableName As String) As Collection
     Dim rs As DAO.Recordset
     Set LoadThings = New Collection
 
-    Set rs = CurrentDB.OpenRecordset(tableName, dbOpenSnapshot, dbReadOnly)
+    Set rs = CurrentDb.OpenRecordset("SELECT * FROM " & TableName)
     
     If Not rs.BOF And Not rs.EOF Then
         Do Until rs.EOF = True
-            Select Case tableName
+            Select Case TableName
                 Case DETAILS_TABLE
                     LoadThings.Add DetailFactory.CreateFromRecordset(rs)
                 Case ENTITIES_TABLE

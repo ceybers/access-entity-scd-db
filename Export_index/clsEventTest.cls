@@ -7,25 +7,21 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+
 Option Compare Database
 Option Explicit
 
+'@MemberAttribute VB_VarHelpID, -1
 Private WithEvents tb As Access.textbox
 Attribute tb.VB_VarHelpID = -1
 
-Public Sub Class_Initialize()
-    Err.Raise 5, , "DEPREC"
-End Sub
-
 Public Property Set SetTextbox(textbox As Access.textbox)
-    Err.Raise 5, , "DEPREC"
     Set tb = textbox
-    tb.OnChange = "" '"[Event Procedure]"
+    tb.OnChange = vbNullString '"[Event Procedure]"
     tb.OnExit = "[Event Procedure]"
 End Property
 
 Private Sub tb_Change()
-    Err.Raise 5, , "DEPREC"
     Debug.Print tb.Parent.name & "!" & tb.name & "_Change()"
     Dim tbBefore As textbox
     Set tbBefore = tb.Parent.controls(Replace(tb.name, "txtAfter", "txtBefore"))
@@ -41,13 +37,12 @@ End Sub
 
 
 Private Sub tb_Exit(Cancel As Integer)
-    Err.Raise 5, , "DEPREC"
     Debug.Print tb.Parent.name & "!" & tb.name & "_Exit()"
     Dim tbBefore As textbox
     Set tbBefore = tb.Parent.controls(Replace(tb.name, "txtRHS", "txtLHS"))
     If CStr(tbBefore) <> CStr(Nz(tb)) Then
         tb.BackColor = RAGColors.Red
     Else
-        tb.BackColor = RAGColors.green
+        tb.BackColor = RAGColors.Green
     End If
 End Sub
