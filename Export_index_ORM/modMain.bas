@@ -5,11 +5,13 @@ Attribute VB_Name = "modMain"
 Option Compare Database
 Option Explicit
 
-Public Function GetORM() As ORM
+Public Function GetORM(Optional Force As Boolean = False) As ORM
     Static ORM As ORM
-    'If ORM Is Nothing Then
+    If Force = True Then
         Set ORM = New ORM
-    'End If
+    ElseIf ORM Is Nothing Then
+        Set ORM = New ORM
+    End If
     Set GetORM = ORM
 End Function
 
@@ -20,12 +22,19 @@ Public Sub Main()
     Debug.Print "ORM"
     Debug.Print "---"
         
-    'TestEntityType ORM
-    'TestCommits ORM
-    'TestLookups ORM
-    'TestDetails ORM
-    
+    TestEntityType ORM
+    TestCommits ORM
+    TestLookups ORM
+    TestDetails ORM
+    TestDetailFields ORM
     Debug.Print "."
+End Sub
+
+Private Sub TestDetailFields(ByRef ORM As ORM)
+    Dim detFld As DetailField
+    For Each detFld In ORM.DetailFields
+        Debug.Print detFld.ToString
+    Next detFld
 End Sub
 
 Private Sub TestDetails(ByRef ORM As ORM)

@@ -94,13 +94,15 @@ Private Function IRecord_Create(ByRef rs As Recordset) As IRecord
     With result
         .ID = rs.Fields("ID")
         .Name = vbNullString ' These do not have name fields
-        Set .Entity = New Entity
-        .Entity.ID = CDbl(Nz(rs.Fields("EntityFK"), 0)) * -1
-        Set .Track = New Track
-        .Track.ID = CDbl(Nz(rs.Fields("TrackFK"), 0)) * -1
+        Set .Entity = modPlaceholderRecords.CreateEntity(Nz(rs.Fields("EntityFK"), 0))
+        Set .Track = modPlaceholderRecords.CreateTrack(Nz(rs.Fields("TrackFK"), 0))
+        '.Entity.ID = CDbl(Nz(rs.Fields("EntityFK"), 0)) * -1
+        'Set .Track = New Track
+        '.Track.ID = CDbl(Nz(rs.Fields("TrackFK"), 0)) * -1
     End With
     Set IRecord_Create = result
 End Function
+
 
 Public Function ToString() As String
     ToString = this.ID & "#"

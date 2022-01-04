@@ -109,7 +109,7 @@ Public Function GetByName(ByVal Name As String) As EntityType
     Next et
 End Function
 
-Public Sub MapRefs(ByRef externalCollection As IRecordCollection)
+Public Sub MapRefsEntities(ByRef externalCollection As IRecordCollection)
     Dim et As EntityType
     Dim Entities As Entities
     Set Entities = externalCollection

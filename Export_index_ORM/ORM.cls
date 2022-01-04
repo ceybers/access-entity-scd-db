@@ -21,6 +21,7 @@ Private Type TORM
     Tracks As Tracks ' Do we need these here? They are under Commits anyway
     LookupTables As LookupTables
     DetailTables As DetailTables
+    DetailFields As DetailFields
     IsReady As Boolean
 End Type
 
@@ -51,31 +52,51 @@ Public Property Get DetailTables() As DetailTables
     Set DetailTables = this.DetailTables
 End Property
 
+Public Property Get DetailFields() As DetailFields
+    Set DetailFields = this.DetailFields
+End Property
+
 Public Property Get IsReady() As Boolean
     IsReady = this.IsReady
 End Property
 
 ' Ctor
 Public Sub Class_Initialize()
+    'InitializeWithTimers
+    InitializeWithoutTimers
+    Debug.Print "ORM loaded."
+    this.IsReady = True
+End Sub
+
+Private Sub InitializeWithTimers()
     Dim start As Long
     start = VBA.DateTime.Timer
     Debug.Print "Loading ORM..."
-    Debug.Print Format(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadEntityTypes"
+    Debug.Print Format$(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadEntityTypes"
     LoadEntityTypes
-    Debug.Print Format(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadEntityTypes"
+    Debug.Print Format$(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadEntityTypes"
     LoadEntities
-    Debug.Print Format(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadEntities"
+    Debug.Print Format$(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadEntities"
     LoadCommits
-    Debug.Print Format(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadCommits"
+    Debug.Print Format$(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadCommits"
     LoadTracks
-    Debug.Print Format(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadTracks"
+    Debug.Print Format$(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadTracks"
     LoadLookupTables
-    Debug.Print Format(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadLookupTables"
+    Debug.Print Format$(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadLookupTables"
     LoadDetailTables
-    Debug.Print Format(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadDetailTables"
-    
-    Debug.Print "ORM loaded."
-    this.IsReady = True
+    Debug.Print Format$(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadDetailTables"
+    LoadDetailFields
+    Debug.Print Format$(VBA.DateTime.Timer - start, " 0.0000000 ") '& "LoadDetailTables"
+End Sub
+
+Private Sub InitializeWithoutTimers()
+    LoadEntityTypes
+    LoadEntities
+    LoadCommits
+    LoadTracks
+    LoadLookupTables
+    LoadDetailTables
+    LoadDetailFields
 End Sub
 
 ' Private methods
@@ -92,8 +113,8 @@ Private Sub LoadEntities()
         Set this.Entities = .Self
         .TableName = modConstants.ENTITIES_TABLE
         .Load
-        .MapRefs this.EntityTypes
-        this.EntityTypes.MapRefs .Self
+        .MapRefsEntityTypes this.EntityTypes
+        this.EntityTypes.MapRefsEntities .Self
     End With
     
 End Sub
@@ -111,8 +132,8 @@ Private Sub LoadTracks()
         Set this.Tracks = .Self
         .TableName = modConstants.TRACKS_TABLE
         .Load
-        .MapRefs this.Commits
-        this.Commits.MapRefs .Self
+        .MapRefsCommits this.Commits
+        this.Commits.MapRefsTracks .Self
     End With
 End Sub
 
@@ -121,8 +142,6 @@ Private Sub LoadLookupTables()
         Set this.LookupTables = .Self
         .TableName = modConstants.LOOKUPS_TABLE
         .Load
-        '.MapRefs this.Commits
-        'this.Commits.MapRefs .Self
     End With
 End Sub
 
@@ -133,7 +152,17 @@ Private Sub LoadDetailTables()
         .Load
         .MapRefsEntities this.Entities
         .MapRefsTracks this.Tracks
-        'this.Commits.MapRefs .Self
+    End With
+End Sub
+
+Private Sub LoadDetailFields()
+    With New DetailFields
+        Set this.DetailFields = .Self
+        .TableName = modConstants.DETAILFIELDS_TABLE
+        .Load
+        .MapRefsDetailTables this.DetailTables
+        .MapRefsLookupTables this.LookupTables
+        this.DetailTables.MapRefsFields .Self
     End With
 End Sub
 

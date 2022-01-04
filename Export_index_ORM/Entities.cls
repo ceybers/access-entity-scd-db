@@ -130,7 +130,7 @@ Public Function GetByID(ByVal ID As Double) As Entity
     Set GetByID = IRecordCollection_GetByID(ID)
 End Function
 
-Public Sub MapRefs(ByRef externalCollection As IRecordCollection)
+Public Sub MapRefsEntityTypes(ByRef externalCollection As IRecordCollection)
     Dim ent As Entity
     Dim parentFK As Double
     
