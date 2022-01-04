@@ -90,6 +90,7 @@ End Property
 Private Function IRecord_Create(ByRef rs As Recordset) As IRecord
     Dim result As Entity
     Set result = New Entity
+    Dim et As EntityType
     With result
         .ID = rs.Fields("ID")
         .Name = rs.Fields(ENTITY_FIELDNAME)
