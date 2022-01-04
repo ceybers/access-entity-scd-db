@@ -18,18 +18,27 @@ Implements IRecord
 Private Type TDetailTable
     ID As Double
     Name As String
+    DetailFields As DetailFields
     DetailValues As DetailValues
 End Type
 
 Private this As TDetailTable
 
 ' Unique Properties
+Public Property Get DetailFields() As DetailFields
+    Set DetailFields = this.DetailFields
+End Property
+
+Public Property Set DetailFields(DetailFields As DetailFields)
+    Set this.DetailFields = DetailFields
+End Property
+
 Public Property Get DetailValues() As DetailValues
     Set DetailValues = this.DetailValues
 End Property
 
-Public Property Set DetailValues(RHS As DetailValues)
-    Set this.DetailValues = RHS
+Public Property Set DetailValues(DetailValues As DetailValues)
+    Set this.DetailValues = DetailValues
 End Property
 
 ' Common Properties
@@ -89,6 +98,7 @@ End Function
 
 Public Function ToString() As String
     ToString = this.ID & "# " & this.Name
+    ToString = ToString & ", Fields = " & this.DetailFields.Count
     If Not this.DetailValues Is Nothing Then
         ToString = ToString & ", Values = " & this.DetailValues.Count
     End If

@@ -89,11 +89,10 @@ Private Function IRecord_Create(ByRef rs As Recordset) As IRecord
     Set IRecord_Create = result
 End Function
 
+
 Public Function ToString() As String
     ToString = this.ID & "# " & this.Name
-    'If Not this.Parent Is Nothing Then
-    '    ToString = ToString & ", Parent = " & this.Parent.Name
-    'End If
+    ToString = ToString & ", IsClosed = " & Iif(IsClosed, "Yes", "No")
     If Not this.Tracks Is Nothing Then
         ToString = ToString & ", Tracks = " & this.Tracks.Count
     End If

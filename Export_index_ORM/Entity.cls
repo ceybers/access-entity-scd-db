@@ -20,11 +20,20 @@ Private Type TEntity
     Name As String
     Parent As Entity
     EntityType As EntityType
+    Details As DetailValues
 End Type
 
 Private this As TEntity
 
 ' Unique Properties
+Public Property Get Details() As DetailValues
+     Set Details = this.Details
+End Property
+
+Public Property Set Details(ByRef DetailValues As DetailValues)
+    Set this.Details = DetailValues
+End Property
+
 Public Property Get Parent() As Entity
      Set Parent = this.Parent
 End Property
@@ -84,11 +93,11 @@ Private Function IRecord_Create(ByRef rs As Recordset) As IRecord
     With result
         .ID = rs.Fields("ID")
         .Name = rs.Fields(ENTITY_FIELDNAME)
-        Set .EntityType = New EntityType
-        .EntityType.ID = CDbl(rs.Fields(modConstants.ENTITYTYPE_FIELDNAME)) * -1
+        Set .EntityType = CreateEntityType(rs.Fields(modConstants.ENTITYTYPE_FIELDNAME))
     End With
     Set IRecord_Create = result
 End Function
+
 
 Public Function ToString() As String
     ToString = this.ID & "# " & this.Name

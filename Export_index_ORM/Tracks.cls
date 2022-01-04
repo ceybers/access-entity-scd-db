@@ -107,16 +107,16 @@ Private Function IRecordCollection_GetByID(ByVal ID As Double) As IRecord
 End Function
 
 ' Public Methods
-Public Function GetByCommit(ByRef Commit As Commit) As IRecordCollection
-    Set GetByCommit = New Tracks
-    With GetByCommit
+Public Function Filter(ByRef Commit As Commit) As IRecordCollection
+    Set Filter = New Tracks
+    With Filter
         .TableName = Me.TableName
     End With
     
     Dim trk As Track
     For Each trk In this.Items
         If trk.Commit Is Commit Then
-            GetByCommit.Items.Add trk
+            Filter.Items.Add trk
         End If
     Next trk
 End Function
@@ -125,17 +125,12 @@ Public Function GetByID(ByVal ID As Double) As Track
     Set GetByID = IRecordCollection_GetByID(ID)
 End Function
 
-Public Sub MapRefs(ByRef externalCollection As IRecordCollection)
+Public Sub MapRefsCommits(ByRef externalCollection As IRecordCollection)
     Dim trk As Track
-    Dim foreignKey As Double
-    
+
     For Each trk In this.Items
-        'foreignKey = GetFieldValue(TRACKS_TABLE, trk.ID, TRACK_COMMITFK_FIELDNAME)
-        foreignKey = trk.Commit.ID * -1
-        Set trk.Commit = externalCollection.GetByID(foreignKey)
+        Set trk.Commit = externalCollection.GetByID(trk.Commit.ID)
     Next trk
 End Sub
 
 ' Private Methods
-
-

@@ -128,4 +128,14 @@ Public Sub MapRefsTracks(ByRef externalCollection As IRecordCollection)
         DetailTable.MapRefsTracks externalCollection
     Next DetailTable
 End Sub
+
+Public Sub MapRefsFields(ByRef externalCollection As IRecordCollection)
+    Dim DetailFields As DetailFields
+    Dim DetailTable As DetailTable
+    
+    Set DetailFields = externalCollection
+    For Each DetailTable In this.Items
+        Set DetailTable.DetailFields = DetailFields.Filter(DetailTable)
+    Next DetailTable
+End Sub
 ' Private Methods

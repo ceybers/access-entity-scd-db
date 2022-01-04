@@ -111,16 +111,16 @@ Private Function IRecordCollection_GetByID(ByVal ID As Double) As IRecord
 End Function
 
 ' Public Methods
-Public Function GetByEntityType(ByRef EntityType As EntityType) As IRecordCollection
-    Set GetByEntityType = New Entities
-    With GetByEntityType
+Public Function Filter(ByRef EntityType As EntityType) As IRecordCollection
+    Set Filter = New Entities
+    With Filter
         .TableName = Me.TableName
     End With
     
     Dim ent As Entity
     For Each ent In this.Items
         If ent.EntityType Is EntityType Then
-            GetByEntityType.Items.Add ent, COLLECTION_INDEX_PREFIX & ent.ID
+            Filter.Items.Add ent, COLLECTION_INDEX_PREFIX & ent.ID
         End If
     Next ent
 
@@ -130,7 +130,7 @@ Public Function GetByID(ByVal ID As Double) As Entity
     Set GetByID = IRecordCollection_GetByID(ID)
 End Function
 
-Public Sub MapRefs(ByRef externalCollection As IRecordCollection)
+Public Sub MapRefsEntityTypes(ByRef externalCollection As IRecordCollection)
     Dim ent As Entity
     Dim parentFK As Double
     
@@ -153,4 +153,3 @@ Private Sub LinkParents()
         End If
     Next ent
 End Sub
-

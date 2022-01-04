@@ -5,11 +5,13 @@ Attribute VB_Name = "modMain"
 Option Compare Database
 Option Explicit
 
-Public Function GetORM() As ORM
+Public Function GetORM(Optional Force As Boolean = False) As ORM
     Static ORM As ORM
-    'If ORM Is Nothing Then
+    If Force = True Then
         Set ORM = New ORM
-    'End If
+    ElseIf ORM Is Nothing Then
+        Set ORM = New ORM
+    End If
     Set GetORM = ORM
 End Function
 
@@ -24,13 +26,32 @@ Public Sub Main()
     'TestCommits ORM
     'TestLookups ORM
     'TestDetails ORM
-    
+    'TestDetailFields ORM
+    TestModel ORM
     Debug.Print "."
+End Sub
+
+Private Sub TestModel(ByRef ORM As ORM)
+    Dim ent As Entity
+    Dim detval As DetailValue
+    Set ent = ORM.Entities.GetByID(6)
+    Debug.Print "Entity: " & ent.ToString
+    Debug.Print " Details found: " & ent.Details.Count
+    For Each detval In ent.Details.Items
+    Debug.Print "  " & detval.ToString
+    Next detval
+End Sub
+
+Private Sub TestDetailFields(ByRef ORM As ORM)
+    Dim detFld As DetailField
+    For Each detFld In ORM.DetailFields
+        Debug.Print detFld.ToString
+    Next detFld
 End Sub
 
 Private Sub TestDetails(ByRef ORM As ORM)
     Dim detTbl As DetailTable
-    Dim detVal As DetailValue
+    Dim detval As DetailValue
     
     Debug.Print "Listing Detail Tables:"
     For Each detTbl In ORM.DetailTables
@@ -42,13 +63,13 @@ Private Sub TestDetails(ByRef ORM As ORM)
     
     Debug.Print "Detail Table Name: " & detTbl.Name
     Debug.Print detTbl.ToString
-    For Each detVal In detTbl.DetailValues
-        Debug.Print "   " & detVal.ToString
-    Next detVal
+    For Each detval In detTbl.DetailValues
+        Debug.Print "   " & detval.ToString
+    Next detval
     Debug.Print " "
     
-    Set detVal = detTbl.DetailValues(1)
-    Debug.Print detVal.ToString
+    Set detval = detTbl.DetailValues(1)
+    Debug.Print detval.ToString
 End Sub
 
 Private Sub TestLookups(ByRef ORM As ORM)

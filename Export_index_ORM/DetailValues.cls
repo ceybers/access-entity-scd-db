@@ -115,6 +115,20 @@ Public Function GetByID(ByVal ID As Double) As Commit
     Set GetByID = IRecordCollection_GetByID(ID)
 End Function
 
+Public Function Filter(ByRef Entity As Entity, Optional ByVal IsLatest As Boolean = True) As DetailValues
+    Dim result As DetailValues
+    Dim detval As DetailValue
+    Set result = New DetailValues
+    
+    For Each detval In this.Items
+        If (detval.Entity Is Entity) And (detval.IsLatest) Then
+            result.Items.Add detval, COLLECTION_INDEX_PREFIX & detval.ID
+        End If
+    Next detval
+    
+    Set Filter = result
+End Function
+
 Public Sub LoadValues()
     LinkTable this.TableName
     LoadFromRecordset this.Items, this.TableName, DetailValue
@@ -124,37 +138,37 @@ End Sub
 
 ' Private Methods
 Private Sub SetParent()
-    Dim detVal As DetailValue
-    For Each detVal In this.Items
-        Set detVal.Parent = Me.Parent
-    Next detVal
+    Dim detval As DetailValue
+    For Each detval In this.Items
+        Set detval.Parent = Me.Parent
+    Next detval
 End Sub
 
 Public Sub MapRefsEntities(ByRef externalCollection As IRecordCollection)
-    Dim detVal As DetailValue
+    Dim detval As DetailValue
     Dim parentFK As Long
     Dim ent As Entity
-    For Each detVal In this.Items
+    For Each detval In this.Items
         'parentFK = GetFieldValue(this.TableName, detVal.ID, "EntityFK")
-        parentFK = detVal.Entity.ID * -1
+        parentFK = detval.Entity.ID * -1
         If parentFK > 0 Then
             Set ent = externalCollection.GetByID(parentFK)
-            Set detVal.Entity = ent
+            Set detval.Entity = ent
         End If
-    Next detVal
+    Next detval
 End Sub
 
 Public Sub MapRefsTracks(ByRef externalCollection As IRecordCollection)
-    Dim detVal As DetailValue
+    Dim detval As DetailValue
     Dim parentFK As Long
     Dim trk As Track
     
-    For Each detVal In this.Items
+    For Each detval In this.Items
         'parentFK = GetFieldValue(this.TableName, detVal.ID, "TrackFK")
-        parentFK = detVal.Track.ID * -1
+        parentFK = detval.Track.ID * -1
         If parentFK > 0 Then
             Set trk = externalCollection.GetByID(parentFK)
-            Set detVal.Track = trk
+            Set detval.Track = trk
         End If
-    Next detVal
+    Next detval
 End Sub

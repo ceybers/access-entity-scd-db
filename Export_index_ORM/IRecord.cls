@@ -26,4 +26,3 @@ End Property
 
 Public Function Create(ByRef rs As Recordset) As IRecord
 End Function
-

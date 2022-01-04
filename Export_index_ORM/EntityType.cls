@@ -77,6 +77,7 @@ Private Function IRecord_Create(ByRef rs As Recordset) As IRecord
     End With
 End Function
 
+
 Public Function ToString() As String
     ToString = this.ID & "# " & this.Name
     If Not this.Entities Is Nothing Then

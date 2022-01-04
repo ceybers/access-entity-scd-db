@@ -109,12 +109,12 @@ Public Function GetByName(ByVal Name As String) As EntityType
     Next et
 End Function
 
-Public Sub MapRefs(ByRef externalCollection As IRecordCollection)
+Public Sub MapRefsEntities(ByRef externalCollection As IRecordCollection)
     Dim et As EntityType
     Dim Entities As Entities
     Set Entities = externalCollection
     For Each et In this.Items
-        Set et.Entities = Entities.GetByEntityType(et)
+        Set et.Entities = Entities.Filter(et)
     Next et
 End Sub
 
@@ -128,5 +128,3 @@ Private Function IRecordCollection_GetByID(ByVal ID As Double) As IRecord
         End If
     Next ent
 End Function
-
-

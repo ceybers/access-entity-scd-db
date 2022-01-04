@@ -97,15 +97,10 @@ Private Sub IRecordCollection_Clear()
 End Sub
 
 Private Function IRecordCollection_GetByID(ByVal ID As Double) As IRecord
+    If ID < 0 Then
+        ID = ID * -1
+    End If
     Set IRecordCollection_GetByID = this.Items.Item(COLLECTION_INDEX_PREFIX & ID)
-    Exit Function
-    Dim cmt As IRecord
-    For Each cmt In this.Items
-        If cmt.ID = ID Then
-            Set IRecordCollection_GetByID = cmt
-            Exit Function
-        End If
-    Next cmt
 End Function
 
 ' Public Methods
@@ -113,15 +108,13 @@ Public Function GetByID(ByVal ID As Double) As Commit
     Set GetByID = IRecordCollection_GetByID(ID)
 End Function
 
-Public Sub MapRefs(ByRef externalCollection As IRecordCollection)
+Public Sub MapRefsTracks(ByRef externalCollection As IRecordCollection)
     Dim cmt As Commit
     Dim Tracks As Tracks
     Set Tracks = externalCollection
     For Each cmt In this.Items
-        Set cmt.Tracks = Tracks.GetByCommit(cmt)
+        Set cmt.Tracks = Tracks.Filter(cmt)
     Next cmt
 End Sub
 
 ' Private Methods
-
-

@@ -80,6 +80,7 @@ Private Function IRecord_Create(ByRef rs As Recordset) As IRecord
     Set IRecord_Create = result
 End Function
 
+
 Public Function ToString() As String
     ToString = this.ID & "# " & this.Name
     'ToString = this.ID & "# " & this.Name & ", Parent = " & this.Parent.ToString

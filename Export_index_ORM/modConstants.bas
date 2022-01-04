@@ -9,6 +9,7 @@ Public Const COMMITS_TABLE As String = "tblCommits"
 Public Const TRACKS_TABLE As String = "tblTrack"
 Public Const LOOKUPS_TABLE As String = "metaLookupTables"
 Public Const DETAILS_TABLE As String = "metaDetailTables"
+Public Const DETAILFIELDS_TABLE As String = "metaSchema"
 
 Public Const ENTITYTYPE_FIELDNAME As String = "EntityType"
 Public Const ENTITY_FIELDNAME As String = "Entity"
