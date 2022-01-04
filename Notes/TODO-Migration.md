@@ -59,3 +59,15 @@ dstRS.Close
 Set dstRS = Nothing
 Set db = Nothing
 ```
+
+## TODO
+
+- [ ] GetNewID() opens a new recordset on every call. Rather just cache everything in a Collection: Store the newID in the value field, and use the key in the format `tableName#oldID`. Same for `TranslateLookupValues()`.
+- [ ] Handle null values in lookup fields. Only try to translate if it is not blank.
+- [ ] Detail Table creator is not setting Short Text fields to `Allow Zero Length Strings`
+- [ ] Commit (tblUpdRef) Title field needs to be sanitised for escape-able characters
+- [ ] TankDB3 has test tables that need to be removed (Never Implemented)
+- [ ] Some old detail tables have blank rows not linked to tanks or commits
+- [ ] Also a small amount of orphaned Track records
+- [ ] Subs in MigrateTracks need to be renamed, they still show as MigrateCommits
+- [ ] `ResetSourceTables` to query from TableDefs instead of Array()

@@ -4,11 +4,13 @@ Option Compare Database
 Option Explicit
 
 Public Sub Main()
-    StartMigration
     ResetMigration
+    StartMigration
 End Sub
 
 Public Sub StartMigration()
+    ' Todo add start/stop messages
+    ' Optional duplicate sub with timers
     MigrateEntities
     MigrateCommits
     MigrateTracks
@@ -17,6 +19,7 @@ Public Sub StartMigration()
 End Sub
 
 Public Sub ResetMigration()
+    ' TODO Ask first
     ResetSourceTables
     ResetDestinationTables
 End Sub
