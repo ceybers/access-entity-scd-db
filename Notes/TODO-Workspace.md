@@ -2,7 +2,7 @@
 
 Current performance: 961ms to load ORM. 
 
-Benchmark reduced to 260ms by replacing `GetFieldValue(tableName, ID, "FieldName")` with dummy objects, where the ID is stored negatively, and the actual object is mapped later. This lets us temporarily store the Foreign Key without needing separate fields.
+Benchmark reduced to 260ms by replacing `f(tableName, ID, "FieldName")` with dummy objects, where the ID is stored negatively, and the actual object is mapped later. This lets us temporarily store the Foreign Key without needing separate fields.
 
 Missed one GetFieldValue(), now reduced to 157ms.
 
