@@ -27,26 +27,26 @@ Public Sub BuildTablesForDetails()
     Debug.Print
     
     Debug.Print "Filtering to include only empty tables..."
-    Set tables2 = FilterEmptyTablesOnly(tables)
-    Debug.Print " " & tables2.count & " table(s) found"
-    Debug.Print
+    'Set tables2 = FilterEmptyTablesOnly(tables)
+    'Debug.Print " " & tables2.count & " table(s) found"
+    'Debug.Print
     
     Dim dropResult As Integer
     Debug.Print "Removing tables with 0 records..."
-    dropResult = DropTables(tables2)
-    Debug.Print " " & dropResult & " table(s) dropped"
-    Debug.Print
+    'dropResult = DropTables(tables2)
+    'Debug.Print " " & dropResult & " table(s) dropped"
+    'Debug.Print
         
     Dim createResult As Integer
     Debug.Print "Creating tables..."
-    createResult = CreateTables(tables2)
-    Debug.Print " " & createResult & " table(s) created and linked"
-    Debug.Print
+    'createResult = CreateTables(tables2)
+    'Debug.Print " " & createResult & " table(s) created and linked"
+    'Debug.Print
         
     Dim formResult As Integer
     If MsgBox("Build forms?", vbYesNo + vbDefaultButton2 + vbInformation) = vbYes Then
         Debug.Print "Creating forms..."
-        formResult = CreateForms(tables2)
+        formResult = CreateForms(tables)
         Debug.Print " " & formResult & " forms(s) built"
         Debug.Print
     End If

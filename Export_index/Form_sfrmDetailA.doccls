@@ -1,8 +1,0 @@
-﻿
-'@Folder "Subforms"
-Option Compare Database
-Option Explicit
-
-Private Sub txtAfterID_Click()
-    MsgBox "Yell"
-End Sub

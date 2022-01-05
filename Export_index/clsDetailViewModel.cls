@@ -224,7 +224,7 @@ Private Function ChangeToSaveEdits()
         For Each ctl In DetailForm.controls
             If ctl.name Like "???RHS*" Then
                 fieldName = Right$(ctl.name, Len(ctl.name) - 6)
-                rs.fields(fieldName) = ctl
+                Set rs.fields(fieldName) = ctl
             End If
         Next ctl
     ElseIf This.State = EditNew Then

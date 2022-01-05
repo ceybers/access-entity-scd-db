@@ -10,10 +10,10 @@ Public Enum RAGColors
     Green = 14282978
 End Enum
 
-Public Const ENTITYTYPES_TABLE As String = "lkpEntityTypes"
-Public Const ENTITIES_TABLE As String = "tblEntities"
-Public Const COMMITS_TABLE As String = "tblCommits"
-Public Const TRACKS_TABLE As String = "tblTrack"
+Public Const ENTITYTYPES_TABLE As String = "metaEntityTypes"
+Public Const ENTITIES_TABLE As String = "metaEntities"
+Public Const COMMITS_TABLE As String = "metaCommits"
+Public Const TRACKS_TABLE As String = "metaTrack"
 Public Const LOOKUPS_TABLE As String = "metaLookupTables"
 Public Const DETAILS_TABLE As String = "metaDetailTables"
 Public Const DETAILFIELDS_TABLE As String = "metaSchema"

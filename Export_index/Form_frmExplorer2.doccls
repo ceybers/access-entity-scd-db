@@ -1,0 +1,44 @@
+﻿Option Compare Database
+Option Explicit
+
+Private Sub cboEntityType_BeforeUpdate(Cancel As Integer)
+
+End Sub
+
+Private Sub cboEntityType_Change()
+    Dim entityTypeId As Double
+    Dim sql As String
+    
+    'entityTypeId = Me.cboEntityType.Value
+    entityTypeId = Me.cboEntityType.Column(0)
+    sql = "SELECT * FROM metaEntities WHERE EntityType = " & entityTypeId & ";"
+    Me.recordSource = sql
+    Me.lbEntities.RowSource = sql
+End Sub
+
+Private Sub Form_Load()
+    Me.chldDetailSubform.SourceObject = ""
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    Me.chldDetailSubform.SourceObject = ""
+End Sub
+
+Private Sub lbDetails_DblClick(Cancel As Integer)
+    Dim tblName As String
+    Dim sfrmName As String
+
+    ' tblName = lbDetails.Recordset.fields("TableName").Value ' This is incorrect!
+    tblName = lbDetails.Column(2)
+    sfrmName = Replace(tblName, "tbl", "sfrm")
+    
+    Me.chldDetailSubform.SourceObject = sfrmName
+    '  Me.chldDetailSubform.LinkMasterFields = "ID"
+    '  Me.chldDetailSubform.LinkChildFields = "EntityFK"
+End Sub
+
+Private Sub lbEntities_DblClick(Cancel As Integer)
+    Me.RecordsetClone.FindFirst "[ID] = " & Me.lbEntities
+    Me.Bookmark = Me.RecordsetClone.Bookmark
+    Debug.Print "lbEntities_DblClick " & Me.lbEntities
+End Sub
