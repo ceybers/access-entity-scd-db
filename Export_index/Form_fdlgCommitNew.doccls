@@ -7,18 +7,18 @@ Private Type TFrmCommits
     ViewModel As clsCommitViewModel
     IsCancelled As Boolean
 End Type
-Private This As TFrmCommits
+Private this As TFrmCommits
 
 ' Properties
 Private Property Get ViewModel() As clsCommitViewModel
-    If This.ViewModel Is Nothing Then
-        Set This.ViewModel = New clsCommitViewModel
+    If this.ViewModel Is Nothing Then
+        Set this.ViewModel = New clsCommitViewModel
     End If
-    Set ViewModel = This.ViewModel
+    Set ViewModel = this.ViewModel
 End Property
 
 Public Property Set ViewModel(ByRef RHS As clsCommitViewModel)
-    Set This.ViewModel = RHS
+    Set this.ViewModel = RHS
 End Property
 
 ' Events

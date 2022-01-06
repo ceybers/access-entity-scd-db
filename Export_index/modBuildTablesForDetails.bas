@@ -74,20 +74,20 @@ Private Function CreateTables(tables As Collection) As Integer
     Next tbl
 End Function
 
-Private Function CreateTable(TableName As String) As Boolean
+Private Function CreateTable(tableName As String) As Boolean
     Dim db As Database
     Dim tbl As TableDef
     
     Set db = OpenDatabase(BE_DATABASE_FILENAME, False, False)
     
-    Set tbl = db.CreateTableDef(TableName)
+    Set tbl = db.CreateTableDef(tableName)
 
     CreateIDField tbl
     
     CreateGenericField tbl, "EntityFK", dbLong ' TODO Const this
     CreateGenericField tbl, "TrackFK", dbLong ' TODO Const this
     
-    AddFieldsToTableDefFromMetaSchema tbl, TableName
+    AddFieldsToTableDefFromMetaSchema tbl, tableName
     
     db.TableDefs.Append tbl
     db.TableDefs.Refresh
@@ -98,12 +98,12 @@ Private Function CreateTable(TableName As String) As Boolean
     CreateTable = True
 End Function
 
-Private Sub AddFieldsToTableDefFromMetaSchema(tblDef As TableDef, TableName As String)
+Private Sub AddFieldsToTableDefFromMetaSchema(tblDef As TableDef, tableName As String)
     Dim db As Database
     Dim rs As Recordset
     Dim sql As String
     
-    sql = "SELECT * FROM " & SCHEMA_TABLE & " WHERE TableName = '" & TableName & "';"
+    sql = "SELECT * FROM " & SCHEMA_TABLE & " WHERE TableName = '" & tableName & "';"
     Set db = CurrentDb
     Set rs = db.OpenRecordset(sql)
     
@@ -190,7 +190,7 @@ Private Function GetListOfTablesFromSchema() As Collection
     
     If Not rs.BOF And Not rs.EOF Then
         Do While Not rs.EOF
-            GetListOfTablesFromSchema.Add CStr(rs!TableName)
+            GetListOfTablesFromSchema.Add CStr(rs!tableName)
             rs.MoveNext
         Loop
     End If
@@ -200,7 +200,7 @@ Private Function GetListOfTablesFromSchema() As Collection
 End Function
 
 Private Function FilterEmptyTablesOnly(tables As Collection) As Collection
-    Dim TableName As String
+    Dim tableName As String
     Dim tbl As Variant
     Dim db As Database
     
@@ -209,9 +209,9 @@ Private Function FilterEmptyTablesOnly(tables As Collection) As Collection
     Set FilterEmptyTablesOnly = New Collection
     
     For Each tbl In tables
-        TableName = CStr(tbl)
-        If DoesTableExist(TableName, db) Then
-            If IsTableEmpty(TableName, db) Then
+        tableName = CStr(tbl)
+        If DoesTableExist(tableName, db) Then
+            If IsTableEmpty(tableName, db) Then
                 FilterEmptyTablesOnly.Add tbl
             End If
         Else

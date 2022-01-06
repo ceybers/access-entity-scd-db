@@ -14,8 +14,8 @@ Private Type TControlSet
 End Type
 
 Public Function BuildFormForDetail(detailName As String)
-    Dim TableName As String, formName As String
-    TableName = "tblDetail" & detailName
+    Dim tableName As String, formName As String
+    tableName = "tblDetail" & detailName
     formName = "sfrmDetail" & detailName
     Dim controlSets() As TControlSet
     
@@ -25,7 +25,7 @@ Public Function BuildFormForDetail(detailName As String)
     OpenFormInDesignMode formName
     RemoveAllControls formName
     SetFormProperties formName
-    controlSets = GetFields(TableName)
+    controlSets = GetFields(tableName)
     DrawFields formName, controlSets
     SetSCDFields formName
     CloseFormInDesignMode formName
@@ -77,14 +77,14 @@ Private Function DrawFields(formName As String, fields() As TControlSet)
     Next i
 End Function
 
-Private Function GetFields(TableName As String) As TControlSet()
+Private Function GetFields(tableName As String) As TControlSet()
     Dim db As DAO.Database
     Dim rs As DAO.Recordset
     Dim results() As TControlSet
     Dim i As Integer
     
     Set db = CurrentDb
-    Set rs = db.OpenRecordset("SELECT * FROM " & SCHEMA_TABLE & " WHERE TableName = '" & TableName & "';")
+    Set rs = db.OpenRecordset("SELECT * FROM " & SCHEMA_TABLE & " WHERE TableName = '" & tableName & "';")
     i = 1
     
     If Not rs.BOF And Not rs.EOF Then
@@ -209,8 +209,8 @@ Private Function CreateComboBox(formName As String, controlName As String, field
     cb.ColumnCount = 2
 End Function
 
-Private Function GetSQL(TableName As String)
-     GetSQL = "SELECT * FROM ((" & TableName & " AS tblDetail LEFT JOIN " _
+Private Function GetSQL(tableName As String)
+     GetSQL = "SELECT * FROM ((" & tableName & " AS tblDetail LEFT JOIN " _
         & ENTITIES_TABLE & " ON tblDetail.EntityFK = " & ENTITIES_TABLE & ".ID) LEFT JOIN " _
         & TRACKS_TABLE & " ON tblDetail.TrackFK = " & TRACKS_TABLE & ".ID) LEFT JOIN " & _
         COMMITS_TABLE & " ON " & TRACKS_TABLE & "." & TRACK_COMMITFK_FIELDNAME & " = " & _

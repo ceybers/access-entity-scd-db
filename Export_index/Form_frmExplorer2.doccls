@@ -1,44 +1,329 @@
 ﻿Option Compare Database
 Option Explicit
 
-Private Sub cboEntityType_BeforeUpdate(Cancel As Integer)
+' Variables
+Private ViewModel As ViewModelExplorer2
+Private Const COLLECTION_PREFIX As String = "Entity#"
+Private Const DETAIL_TABLENAME_COLUMN As Integer = 2
 
+' Faux-static Getter for VM
+Private Property Get GetVM() As ViewModelExplorer2
+    If ViewModel Is Nothing Then
+        Set ViewModel = New ViewModelExplorer2
+    End If
+    Set GetVM = ViewModel
+End Property
+
+' Control Events
+Private Sub cboEntityType_Change()
+    If IsNull(Me.cboEntityType.Column(0)) Then
+        Exit Sub
+    End If
+    GetVM.entityTypeid = Me.cboEntityType.Column(0)
+    DisplayEntityType
 End Sub
 
-Private Sub cboEntityType_Change()
-    Dim entityTypeId As Double
-    Dim sql As String
+Private Sub cmbSearch_Click()
+    If IsNull(Me.txtSearch) Then
+        Exit Sub
+    End If
     
-    'entityTypeId = Me.cboEntityType.Value
-    entityTypeId = Me.cboEntityType.Column(0)
-    sql = "SELECT * FROM metaEntities WHERE EntityType = " & entityTypeId & ";"
-    Me.recordSource = sql
-    Me.lbEntities.RowSource = sql
+    Me.txtSearch.SetFocus
+    GetVM.SearchCriteria = Me.txtSearch.text
+    SearchEntity
+End Sub
+
+Private Sub cmbTest_Click()
+    TestTreeview
 End Sub
 
 Private Sub Form_Load()
     Me.chldDetailSubform.SourceObject = ""
+    InitializeImageList
+    PopulateListView
+
+    Me.cboEntityType = Me.cboEntityType.Column(0, 3)
+    cboEntityType_Change
+    'PopulateTreeview 4
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
-    Me.chldDetailSubform.SourceObject = ""
+    ' Do Nothing
 End Sub
 
-Private Sub lbDetails_DblClick(Cancel As Integer)
-    Dim tblName As String
-    Dim sfrmName As String
-
-    ' tblName = lbDetails.Recordset.fields("TableName").Value ' This is incorrect!
-    tblName = lbDetails.Column(2)
-    sfrmName = Replace(tblName, "tbl", "sfrm")
+Private Sub lvDetails_DblClick()
+    Dim li As ListItem
+    Dim lv As listview
     
-    Me.chldDetailSubform.SourceObject = sfrmName
-    '  Me.chldDetailSubform.LinkMasterFields = "ID"
-    '  Me.chldDetailSubform.LinkChildFields = "EntityFK"
+    Set lv = Me.lvDetails.Object
+    Set li = lv.SelectedItem
+    
+    If li Is Nothing Then Exit Sub
+
+    GetVM.DetailTableName = li.key
+    DisplayDetail
 End Sub
 
-Private Sub lbEntities_DblClick(Cancel As Integer)
-    Me.RecordsetClone.FindFirst "[ID] = " & Me.lbEntities
+Private Sub tvEntities_Collapse(ByVal Node As Object)
+    'On Error Resume Next ' TODO FIX
+    Exit Sub
+    Dim nde As Node
+    Set nde = Node
+    If nde.Tag <> "EntityTypeID#4" Then
+        nde.Image = "Kdirectory_closed"
+    End If
+End Sub
+
+Private Sub tvEntities_Expand(ByVal Node As Object)
+    'On Error Resume Next ' TODO FIX
+    Exit Sub
+    Dim nde As Node
+    Set nde = Node
+    If nde.Tag <> "EntityTypeID#4" Then
+        nde.Image = "Kdirectory_open"
+    End If
+End Sub
+
+Private Sub tvEntities_NodeClick(ByVal Node As Object)
+    Debug.Assert Not Node Is Nothing
+    
+    GetVM.EntityID = Replace(Node.key, COLLECTION_PREFIX, "")
+    DisplayEntity
+End Sub
+
+Private Sub txtSearch_KeyUp(KeyCode As Integer, Shift As Integer)
+    Exit Sub
+    If IsNull(Me.txtSearch) Then
+        Exit Sub
+    End If
+    
+    GetVM.SearchCriteria = Me.txtSearch.text
+    SearchEntity
+End Sub
+
+' Methods
+Private Sub DisplayEntity()
+    Me.RecordsetClone.FindFirst "[ID] = " & GetVM.EntityID
     Me.Bookmark = Me.RecordsetClone.Bookmark
-    Debug.Print "lbEntities_DblClick " & Me.lbEntities
+    UpdateCaption
+End Sub
+
+Private Sub SearchEntity()
+    Dim criteria As String
+    Dim nde As Node
+    
+    criteria = GetVM.SearchCriteria
+    If Len(criteria) < 3 Then Exit Sub
+    
+    Set nde = FindNodeInTreeview(Me.tvEntities.Object, criteria)
+    If Not nde Is Nothing Then
+        nde.selected = True
+        nde.EnsureVisible
+        GetVM.EntityID = Replace(nde.key, COLLECTION_PREFIX, "")
+        DisplayEntity
+    End If
+End Sub
+
+Private Function FindNodeInTreeview(ByRef tv As treeview, ByVal criteria As String, Optional exact As Boolean = False) As Node
+    Debug.Assert Not tv Is Nothing
+    Debug.Assert Len(criteria) > 0
+    
+    Dim nde As Node
+    
+    If Not exact Then
+        criteria = "*" & criteria & "*"
+    End If
+    
+    For Each nde In tv.Nodes
+        If nde.text Like criteria Then
+            Set FindNodeInTreeview = nde
+            Exit Function
+        End If
+    Next nde
+End Function
+
+Private Sub DisplayEntityType()
+    PopulateTreeview GetVM.entityTypeid
+End Sub
+
+Private Sub InitializeTreeview(ByRef treeview As treeview)
+    Debug.Assert Not treeview Is Nothing
+    
+    With treeview
+        .Appearance = ccFlat
+        .Checkboxes = False
+        .Indentation = 19
+        '.Style = tvwTreelinesPlusMinusText
+        .Style = tvwTreelinesPlusMinusPictureText
+        .LabelEdit = tvwManual
+        .LineStyle = tvwRootLines
+        .HideSelection = False
+        .SingleSel = False
+        .FullRowSelect = True
+        .ImageList = Me.ilImageListSmall.Object
+        
+    End With
+End Sub
+
+Private Sub InitializeImageList()
+    Dim il As ImageList
+    Set il = Me.ilImageListSmall.Object
+    
+    modLoadImageList.Clear il
+        
+    il.ImageWidth = 16
+    il.ImageHeight = 16
+    
+    If il.ListImages.count = 0 Then
+        modLoadImageList.Load il
+    End If
+    
+    Set il = Me.ilImageListLarge.Object
+    
+    modLoadImageList.Clear il
+        
+    il.ImageWidth = 32
+    il.ImageHeight = 32
+    
+    If il.ListImages.count = 0 Then
+        modLoadImageList.Load il
+    End If
+End Sub
+
+Private Sub ClearTreeview(ByRef treeview As treeview)
+    Debug.Assert Not treeview Is Nothing
+
+    If treeview.Nodes.count > 0 Then
+        treeview.Nodes.Clear
+    End If
+End Sub
+
+Private Sub DisplayDetail()
+    Me.chldDetailSubform.SourceObject = GetVM.DetailSubFormName
+    UpdateCaption
+End Sub
+
+Private Sub PopulateListView()
+    Dim lv As listview
+    Set lv = Me.lvDetails.Object
+    
+    lv.ListItems.Clear
+    lv.ColumnHeaders.Clear
+    
+    InitializeListview lv
+    
+    Dim rs As Recordset
+    Set rs = CurrentDb.OpenRecordset("SELECT * FROM metaDetailTables ORDER BY SortOrder ASC;", dbOpenSnapshot, dbReadOnly)
+    
+    Dim key As String
+    Dim text As String
+    
+    If Not rs.BOF And Not rs.EOF Then
+        Do While Not rs.EOF
+                key = rs.fields("tableName").Value
+                text = rs.fields("DetailTable").Value
+                lv.ListItems.Add , key, text, "Ktemplate_empty-0", "Ktemplate_empty-0"
+            rs.MoveNext
+        Loop
+    End If
+    
+    rs.Close
+    Set rs = Nothing
+End Sub
+
+Private Sub InitializeListview(ByRef listview As listview)
+    Debug.Assert Not listview Is Nothing
+    
+    'InitializeImageList
+    listview.ColumnHeaders.Add , , "Details", 2880
+    
+    With listview
+        .FullRowSelect = True
+        .GridLines = False
+        .HideColumnHeaders = False
+        .HideSelection = False
+        .Appearance = ccFlat
+        .LabelEdit = lvwManual
+        .LabelWrap = False
+        .BorderStyle = ccNone
+        .Arrange = lvwAutoLeft
+        
+        '.View = lvwIcon
+        .View = lvwList
+        '.View = lvwReport
+        '.View = lvwSmallIcon
+        
+        .Icons = Me.ilImageListLarge.Object
+        '.SmallIcons = Me.ilImageListSmall.Object
+        .SmallIcons = Me.ilImageListLarge.Object
+        
+        ' NOTE To get 32x32 icons with icon on left and text on right, use lvwList and set .SmallIcons to a 32x32 ImageList
+    End With
+End Sub
+
+Private Sub PopulateTreeview(ByVal entityTypeid As Double)
+    Dim vm As ViewModelExplorer2
+    Dim tv As MSComctlLib.treeview
+    Dim rs As Recordset
+    
+    Me.tvEntities.Visible = True
+    Set tv = Me.tvEntities.Object
+    Set vm = GetVM
+    
+    InitializeTreeview tv
+    ClearTreeview tv
+
+    Me.recordSource = vm.GetSQL
+    Set rs = vm.GetRecordset
+    
+    PopulateTreeviewFromRecordset tv, rs
+    
+    rs.Close
+    Set rs = Nothing
+End Sub
+
+Private Sub PopulateTreeviewFromRecordset(ByRef tv As treeview, ByRef rs As Recordset)
+    ' TODO Move this into ViewModel.
+    ' Form code-behind should just get a collection of POCO with ID, Entity, ParentFK.
+    ' How it chooses to populate it to UI goes in here
+    
+    Debug.Assert Not tv Is Nothing
+    Debug.Assert Not rs Is Nothing
+    
+    Dim nde As Node
+    'Me.tvEntities.Visible = False
+    If Not rs.BOF And Not rs.EOF Then
+        Do While Not rs.EOF
+            If rs.fields("ParentFK") = 0 Then
+                Set nde = tv.Nodes.Add(, , COLLECTION_PREFIX & rs.fields("ID"), rs.fields("Entity"))
+            Else
+                Set nde = tv.Nodes.Add(COLLECTION_PREFIX & rs.fields("ParentFK"), tvwChild, COLLECTION_PREFIX & rs.fields("ID"), rs.fields("Entity"))
+            End If
+            nde.Tag = "EntityTypeID#" & rs.fields("EntityType")
+            nde.Image = "Kdirectory_closed"
+            nde.Expanded = False
+            'nde.SelectedImage = "Kdirectory_open"
+            'nde.Expanded = true
+            If rs.fields("EntityType") = 4 Then
+                nde.Image = "Kdocument"
+                'nde.SelectedImage = "Kdocument"
+            End If
+            
+            rs.MoveNext
+        Loop
+    End If
+    'Me.tvEntities.Visible = True
+End Sub
+
+Private Sub TestTreeview()
+    Dim startTime As Long
+    startTime = VBA.DateTime.Timer
+    PopulateTreeview 4
+    Debug.Print "Duration = " & (VBA.DateTime.Timer) - startTime & " seconds"
+End Sub
+
+Private Sub UpdateCaption()
+    Dim newcaption As String
+    newcaption = GetVM().DetailTableName & " @ Entity#" & GetVM().EntityID
+    Me.lblSubformCaption.caption = newcaption
 End Sub

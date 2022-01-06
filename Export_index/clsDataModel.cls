@@ -19,7 +19,7 @@ Private Type TDataModel
      EntityTypes As Collection
      Commits As Collection
 End Type
-Private This As TDataModel
+Private this As TDataModel
 
 ' Ctor
 Private Sub Class_Initialize()
@@ -27,31 +27,31 @@ End Sub
 
 ' Getters
 Public Property Get Details() As Collection
-    If This.Details Is Nothing Then
-        Set This.Details = LoadThings(DETAILS_TABLE)
+    If this.Details Is Nothing Then
+        Set this.Details = LoadThings(DETAILS_TABLE)
     End If
-    Set Details = This.Details
+    Set Details = this.Details
 End Property
 
 Public Property Get Entities() As Collection
-    If This.Entities Is Nothing Then
-        Set This.Entities = LoadThings(ENTITIES_TABLE)
+    If this.Entities Is Nothing Then
+        Set this.Entities = LoadThings(ENTITIES_TABLE)
     End If
-    Set Entities = This.Entities
+    Set Entities = this.Entities
 End Property
 
 Public Property Get EntityTypes() As Collection
-    If This.EntityTypes Is Nothing Then
-        Set This.EntityTypes = LoadThings(ENTITYTYPES_TABLE)
+    If this.EntityTypes Is Nothing Then
+        Set this.EntityTypes = LoadThings(ENTITYTYPES_TABLE)
     End If
-    Set EntityTypes = This.EntityTypes
+    Set EntityTypes = this.EntityTypes
 End Property
 
 Public Property Get Commits() As Collection
-    If This.Commits Is Nothing Then
-        Set This.Commits = LoadThings(COMMITS_TABLE)
+    If this.Commits Is Nothing Then
+        Set this.Commits = LoadThings(COMMITS_TABLE)
     End If
-    Set Commits = This.Commits
+    Set Commits = this.Commits
 End Property
 
 ' Public Methods
@@ -67,15 +67,15 @@ Public Function GetThingByID(thingCollection As Collection, idx As Double) As IT
 End Function
 
 ' Private Methods
-Private Function LoadThings(TableName As String) As Collection
+Private Function LoadThings(tableName As String) As Collection
     Dim rs As DAO.Recordset
     Set LoadThings = New Collection
 
-    Set rs = CurrentDb.OpenRecordset("SELECT * FROM " & TableName)
+    Set rs = CurrentDb.OpenRecordset("SELECT * FROM " & tableName)
     
     If Not rs.BOF And Not rs.EOF Then
         Do Until rs.EOF = True
-            Select Case TableName
+            Select Case tableName
                 Case DETAILS_TABLE
                     LoadThings.Add DetailFactory.CreateFromRecordset(rs)
                 Case ENTITIES_TABLE

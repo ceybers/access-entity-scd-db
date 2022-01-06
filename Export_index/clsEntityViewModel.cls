@@ -25,83 +25,83 @@ Private Type TViewModel
      SelectedEntityType As clsEntityType
      Model As clsDataModel
 End Type
-Private This As TViewModel
+Private this As TViewModel
 
 ' Ctor
 Private Sub Class_Initialize()
-    Set This.Model = New clsDataModel
+    Set this.Model = New clsDataModel
 End Sub
 
 ' Getters
 Public Property Get IsValid() As Boolean
-    If This.SelectedDetail Is Nothing Then Exit Property
-    If This.SelectedEntity Is Nothing Then Exit Property
+    If this.SelectedDetail Is Nothing Then Exit Property
+    If this.SelectedEntity Is Nothing Then Exit Property
     IsValid = True
 End Property
 
 Public Property Get Detail() As clsDetail
-    Debug.Assert Not This.SelectedDetail Is Nothing
-    Set Detail = This.SelectedDetail
+    Debug.Assert Not this.SelectedDetail Is Nothing
+    Set Detail = this.SelectedDetail
 End Property
 
 Public Property Get Entity() As clsEntity
-    Debug.Assert Not This.SelectedEntity Is Nothing
-    Set Entity = This.SelectedEntity
+    Debug.Assert Not this.SelectedEntity Is Nothing
+    Set Entity = this.SelectedEntity
 End Property
 
 Public Property Get EntityType() As clsEntityType
-    Debug.Assert Not This.SelectedEntityType Is Nothing
-    Set EntityType = This.SelectedEntityType
+    Debug.Assert Not this.SelectedEntityType Is Nothing
+    Set EntityType = this.SelectedEntityType
 End Property
 
 ' Letters
 Public Property Let Detail(ByRef vNewValue As clsDetail)
     If vNewValue Is Nothing Then Exit Property
-    If Not This.SelectedDetail Is Nothing Then
+    If Not this.SelectedDetail Is Nothing Then
         If Detail.ID = vNewValue.ID Then
             Exit Property
         End If
     End If
 
-    Set This.SelectedDetail = vNewValue
+    Set this.SelectedDetail = vNewValue
     RaiseEvent DetailChanged
 End Property
 
 Public Property Let Entity(ByRef vNewValue As clsEntity)
     If vNewValue Is Nothing Then Exit Property
-    If Not This.SelectedEntity Is Nothing Then
+    If Not this.SelectedEntity Is Nothing Then
         If Entity.ID = vNewValue.ID Then
             Exit Property
         End If
     End If
     
-    Set This.SelectedEntity = vNewValue
+    Set this.SelectedEntity = vNewValue
     RaiseEvent EntityChanged
 End Property
 
 Public Property Let EntityType(ByRef vNewValue As clsEntityType)
     If vNewValue Is Nothing Then Exit Property
-    If Not This.SelectedEntityType Is Nothing Then
+    If Not this.SelectedEntityType Is Nothing Then
         If EntityType.ID = vNewValue.ID Then
             Exit Property
         End If
     End If
     
-    Set This.SelectedEntityType = vNewValue
+    Set this.SelectedEntityType = vNewValue
     RaiseEvent EntityTypeChanged
 End Property
 
 ' Methods
 Public Function SetDetailByID(idx As Double)
-    Detail = This.Model.GetThingByID(This.Model.Details, idx)
+    Detail = this.Model.GetThingByID(this.Model.Details, idx)
 End Function
 
 Public Function SetEntityByID(idx As Double)
-    Entity = This.Model.GetThingByID(This.Model.Entities, idx)
+    Entity = this.Model.GetThingByID(this.Model.Entities, idx)
 End Function
 
 Public Function SetEntityTypeByID(idx As Double)
-    EntityType = This.Model.GetThingByID(This.Model.EntityTypes, idx)
+    EntityType = this.Model.GetThingByID(this.Model.EntityTypes, idx)
 End Function
 
 ' Apply Functions for Form Controls
@@ -140,11 +140,11 @@ Public Function SearchEntity(tb As textbox, lb As ListBox)
     tb.SetFocus
     criteria = tb.text & "*"
     
-    For Each Entity In This.Model.Entities
+    For Each Entity In this.Model.Entities
         If Entity.name Like criteria Then
-            If (This.SelectedEntityType Is Nothing) Then
+            If (this.SelectedEntityType Is Nothing) Then
                 filteredEntities.Add Entity
-            ElseIf Entity.EntityType = This.SelectedEntityType.ID Then
+            ElseIf Entity.EntityType = this.SelectedEntityType.ID Then
                 filteredEntities.Add Entity
             End If
         End If

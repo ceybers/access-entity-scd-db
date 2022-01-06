@@ -18,43 +18,43 @@ Implements IThing
 Private Type TDetail
     ID As Double
     name As String
-    TableName As String
+    tableName As String
 End Type
-Private This As TDetail
+Private this As TDetail
 
 Public Property Get Self() As clsDetail
     Set Self = Me
 End Property
 
 Public Property Get ID() As Double
-    ID = This.ID
+    ID = this.ID
 End Property
 
 Public Property Get name() As String
-    name = This.name
+    name = this.name
 End Property
 
 Private Property Get IThing_ID() As Double
-    IThing_ID = This.ID
+    IThing_ID = this.ID
 End Property
 
 Private Property Get IThing_Name() As String
-    IThing_Name = This.name
+    IThing_Name = this.name
 End Property
 
-Public Property Get TableName() As String
-    TableName = This.TableName
+Public Property Get tableName() As String
+    tableName = this.tableName
 End Property
 
 Public Property Let ID(ByVal vNewValue As Double)
-    This.ID = vNewValue
+    this.ID = vNewValue
 End Property
 
 Public Property Let name(ByVal vNewValue As String)
-    This.name = vNewValue
+    this.name = vNewValue
 End Property
 
-Public Property Let TableName(ByVal vNewValue As String)
-    This.TableName = vNewValue
+Public Property Let tableName(ByVal vNewValue As String)
+    this.tableName = vNewValue
 End Property
 

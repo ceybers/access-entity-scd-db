@@ -64,7 +64,7 @@ Private Sub TryUpdateDetail()
     If Not commitModel.IsValid Then Exit Sub
     If Not entityModel.IsValid Then Exit Sub
     
-    detailModel.entityID = entityModel.Entity.ID
+    detailModel.EntityID = entityModel.Entity.ID
     Set detailModel.Detail = entityModel.Detail
     detailModel.CommitID = commitModel.Commit.ID
 End Sub

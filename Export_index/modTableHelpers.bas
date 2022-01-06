@@ -15,23 +15,23 @@ Public Function DropTables(ByVal tables As Collection, Optional ByRef db As DAO.
     Next tbl
 End Function
 
-Public Function DropTable(ByVal TableName As String, Optional ByRef db As DAO.Database) As Boolean
+Public Function DropTable(ByVal tableName As String, Optional ByRef db As DAO.Database) As Boolean
     Dim sql As String
     If db Is Nothing Then Set db = CurrentDb
-    If DoesTableExist(TableName, db) Then
-        sql = "DROP TABLE " & TableName
+    If DoesTableExist(tableName, db) Then
+        sql = "DROP TABLE " & tableName
         db.Execute sql, dbFailOnError
         DropTable = True
     End If
 End Function
 
-Public Function IsTableEmpty(ByVal TableName As String, Optional ByRef db As DAO.Database) As Boolean
+Public Function IsTableEmpty(ByVal tableName As String, Optional ByRef db As DAO.Database) As Boolean
     Dim result As Boolean
     Dim sql As String
     Dim rs As Recordset
     
     If db Is Nothing Then Set db = CurrentDb
-    sql = "SELECT Count(*) AS TotalCount FROM " & TableName & ";"
+    sql = "SELECT Count(*) AS TotalCount FROM " & tableName & ";"
     Set rs = db.OpenRecordset(sql)
     result = rs.fields("TotalCount").Value
     
@@ -55,20 +55,20 @@ Public Sub DEBUG_PrintTables(Optional ByRef db As DAO.Database)
     Debug.Print vbNullString
 End Sub
 
-Public Function DoesTableExist(ByVal TableName As String, Optional ByRef db As DAO.Database) As Boolean
+Public Function DoesTableExist(ByVal tableName As String, Optional ByRef db As DAO.Database) As Boolean
     Dim tdf As TableDef
     
     If db Is Nothing Then Set db = CurrentDb
     
     For Each tdf In db.TableDefs
-        If tdf.name = TableName Then
+        If tdf.name = tableName Then
             DoesTableExist = True
             Exit Function
         End If
     Next tdf
 End Function
 
-Public Function LinkTable(ByVal TableName As String) As Boolean
+Public Function LinkTable(ByVal tableName As String) As Boolean
     Dim db As Database
     Dim tdf As TableDef
     On Error GoTo Catch
@@ -76,12 +76,12 @@ Public Function LinkTable(ByVal TableName As String) As Boolean
 'Try
     Set db = CurrentDb
     
-    If DoesTableExist(TableName, db) Then Exit Function
+    If DoesTableExist(tableName, db) Then Exit Function
     
-    Set tdf = db.CreateTableDef(TableName)
+    Set tdf = db.CreateTableDef(tableName)
     
     tdf.Connect = LINKED_DB_CONNECT & BE_DATABASE_FILENAME
-    tdf.SourceTableName = TableName
+    tdf.SourceTableName = tableName
 
     db.TableDefs.Append tdf
     db.TableDefs.Refresh

@@ -19,33 +19,33 @@ Private Type TEntityType
     ID As Double
     name As String
 End Type
-Private This As TEntityType
+Private this As TEntityType
 
 Public Property Get Self() As clsEntityType
     Set Self = Me
 End Property
 
 Public Property Get ID() As Double
-    ID = This.ID
+    ID = this.ID
 End Property
 
 Public Property Get name() As String
-    name = This.name
+    name = this.name
 End Property
 
 Private Property Get IThing_ID() As Double
-    IThing_ID = This.ID
+    IThing_ID = this.ID
 End Property
 
 Private Property Get IThing_Name() As String
-    IThing_Name = This.name
+    IThing_Name = this.name
 End Property
 
 Public Property Let ID(ByVal vNewValue As Double)
-    This.ID = vNewValue
+    this.ID = vNewValue
 End Property
 
 Public Property Let name(ByVal vNewValue As String)
-    This.name = vNewValue
+    this.name = vNewValue
 End Property
 
