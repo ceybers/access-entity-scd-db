@@ -27,6 +27,22 @@ Private Sub cboEntityType_Change()
     DisplayEntityType
 End Sub
 
+Private Sub cmbAdd_Click()
+    Explorer2DetailSubform.EditNew Me.chldDetailSubform
+End Sub
+
+Private Sub cmbEdit_Click()
+    'Explorer2DetailSubform.EditExisting Me.chldDetailSubform
+End Sub
+
+Private Sub cmbViewMany_Click()
+    Explorer2DetailSubform.ViewMany Me.chldDetailSubform
+End Sub
+
+Private Sub cmbViewOne_Click()
+    Explorer2DetailSubform.ViewOne Me.chldDetailSubform
+End Sub
+
 Private Sub cmbSearch_Click()
     If IsNull(Me.txtSearch) Then
         Exit Sub

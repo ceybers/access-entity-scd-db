@@ -231,8 +231,8 @@ Private Sub SetSCDFields(formName As String)
     Dim frm As Form
     Set frm = Forms(formName)
     
-    frm!lblTrackFK.Visible = False
-    frm!TrackFK.Visible = False
+    'frm!lblTrackFK.Visible = False
+    'frm!TrackFK.Visible = False
 End Sub
 
 Private Sub HideForm(formName As String)

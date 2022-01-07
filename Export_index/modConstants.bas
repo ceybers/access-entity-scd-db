@@ -6,7 +6,7 @@ Option Explicit
 Public Enum RAGColors
     Default = 16777215
     Red = 13421823
-    Yellow = 13431551
+    yellow = 13431551
     Green = 14282978
     Grey = 15921906
 End Enum
