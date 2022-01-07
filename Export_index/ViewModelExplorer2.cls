@@ -8,9 +8,12 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '@PredeclaredId
-'@Folder("index")
+'@Folder "Explorer2"
 Option Compare Database
 Option Explicit
+
+Private Const ENTITY_PREFIX As String = "Entity#"
+Private Const ENTITYTYPE_PREFIX As String = "EntityType#"
 
 Private Type TViewModelExplorer2
     EntityID As Double
@@ -66,6 +69,39 @@ Public Function GetRecordset() As Recordset
     Set GetRecordset = CurrentDb.OpenRecordset(GetSQL, dbOpenSnapshot, dbReadOnly)
 End Function
 
+' ---
+Public Function GetCollectionFromRecordset() As Collection
+    Dim rs As Recordset
+    Dim result As Collection
+    Dim ent As Explorer2Entity
+    
+    Set result = New Collection
+    Set rs = GetRecordset
+    
+    If Not rs.BOF And Not rs.EOF Then
+        Do While Not rs.EOF
+            Set ent = RecordToEntity(rs)
+            result.Add ent, ent.ID
+            rs.MoveNext
+        Loop
+    End If
+    
+    rs.Close
+    Set rs = Nothing
+    
+    Set GetCollectionFromRecordset = result
+End Function
+
+Private Function RecordToEntity(ByRef rs As Recordset) As Explorer2Entity
+    Set RecordToEntity = New Explorer2Entity
+    With RecordToEntity
+        .ID = (ENTITY_PREFIX & rs.fields("ID").Value)
+        .Entity = rs.fields("Entity").Value
+        .Parent = ENTITY_PREFIX & rs.fields("ParentFK").Value
+        .EntityType = ENTITYTYPE_PREFIX & rs.fields("EntityType").Value
+    End With
+End Function
+' Ctor
 Private Sub Class_Initialize()
     ' TODO below is test env only. Handle unselcted/uninit entityTypeID properly
     this.entityTypeid = 1

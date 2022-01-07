@@ -121,7 +121,7 @@ Private Function ChangeToViewNewMode()
         If ctl.name Like "???LHS*" Then
             ctl.Locked = False
             ctl.Visible = False
-            ctl.Properties("BackColor") = RAGColors.Yellow
+            ctl.Properties("BackColor") = RAGColors.yellow
         ElseIf ctl.name Like "???RHS*" Then
             ctl.Visible = False
          ElseIf ctl.name Like "lblSuffix*" Then
@@ -141,7 +141,7 @@ Private Function ChangeToEditNewMode()
         If ctl.name Like "???LHS*" Then
             ctl.Locked = False
             ctl.Visible = True
-            ctl.Properties("BackColor") = RAGColors.Yellow
+            ctl.Properties("BackColor") = RAGColors.yellow
         ElseIf ctl.name Like "???RHS*" Then
             ctl.Visible = False
          ElseIf ctl.name Like "lblSuffix*" Then
@@ -189,7 +189,7 @@ Private Function ChangeToEditExistingMode()
             ctl.Properties("BackColor") = RAGColors.Default
         ElseIf ctl.name Like "???RHS*" Then
             ctl.Visible = True
-            ctl.Properties("BackColor") = RAGColors.Yellow
+            ctl.Properties("BackColor") = RAGColors.yellow
             Set ctl = GetControlByName(DetailForm.controls, Replace(ctl.name, "RHS", "LHS"))
         ElseIf ctl.name Like "lblSuffix*" Then ctl.Properties("Left") = 6804
             '4394 or 6804

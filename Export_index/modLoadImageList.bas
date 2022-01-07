@@ -1,5 +1,5 @@
 Attribute VB_Name = "modLoadImageList"
-'@Folder("index")
+'@Folder "Explorer2"
 Option Compare Database
 Option Explicit
 

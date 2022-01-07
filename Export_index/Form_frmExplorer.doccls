@@ -72,8 +72,8 @@ End Sub
 Private Sub ResetFormLayout()
     Me.sfrmEntity.width = 13.7 * 567
     Me.sfrmCommit.width = 16 * 567
-    Me.sfrmCommit.Height = 2 * 567
-    Me.sfrmDetail.Height = 16 * 567
+    Me.sfrmCommit.height = 2 * 567
+    Me.sfrmDetail.height = 16 * 567
     
     Me.sfrmEntity.Locked = False
     Me.sfrmCommit.Locked = False
