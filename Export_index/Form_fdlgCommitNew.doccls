@@ -17,6 +17,7 @@ Private Property Get ViewModel() As clsCommitViewModel
     Set ViewModel = this.ViewModel
 End Property
 
+'@Ignore MisleadingByRefParameter
 Public Property Set ViewModel(ByRef RHS As clsCommitViewModel)
     Set this.ViewModel = RHS
 End Property

@@ -19,7 +19,7 @@ Public Sub BuildTablesForDetails()
     '    Exit Sub
     'End If
     
-    Dim tables As Collection, tables2 As Collection
+    Dim tables As Collection
     
     Debug.Print "Getting list of detail tables from metaSchema..."
     Set tables = GetListOfTablesFromSchema
@@ -31,19 +31,17 @@ Public Sub BuildTablesForDetails()
     'Debug.Print " " & tables2.count & " table(s) found"
     'Debug.Print
     
-    Dim dropResult As Integer
     Debug.Print "Removing tables with 0 records..."
     'dropResult = DropTables(tables2)
     'Debug.Print " " & dropResult & " table(s) dropped"
     'Debug.Print
         
-    Dim createResult As Integer
     Debug.Print "Creating tables..."
     'createResult = CreateTables(tables2)
     'Debug.Print " " & createResult & " table(s) created and linked"
     'Debug.Print
         
-    Dim formResult As Integer
+    Dim formResult As Long
     If MsgBox("Build forms?", vbYesNo + vbDefaultButton2 + vbInformation) = vbYes Then
         Debug.Print "Creating forms..."
         formResult = CreateForms(tables)
@@ -54,7 +52,7 @@ Public Sub BuildTablesForDetails()
     Debug.Print "END"
 End Sub
 
-Private Function CreateForms(tables As Collection) As Integer
+Private Function CreateForms(tables As Collection) As Long
     Dim tbl As Variant
     For Each tbl In tables
         If BuildFormForDetail(Replace(tbl, "tblDetail", vbNullString)) Then ' TODO Const this
@@ -63,7 +61,7 @@ Private Function CreateForms(tables As Collection) As Integer
     Next tbl
 End Function
 
-Private Function CreateTables(tables As Collection) As Integer
+Private Function CreateTables(tables As Collection) As Long
     Dim tbl As Variant
     
     For Each tbl In tables
@@ -120,12 +118,13 @@ Private Sub AddFieldsToTableDefFromMetaSchema(tblDef As TableDef, tableName As S
 End Sub
 
 Private Function AddFieldToTableDefFromMetaSchema(tblDef As TableDef, rs As Recordset)
-    Dim fldType As Integer
+    Dim fldType As Long
     Dim prop As DAO.Property
     Dim fld As Field
     
     fldType = dbText
-    Select Case rs!fieldType
+    
+    Select Case rs.fields("fieldType")
         Case "Number"
             fldType = dbLong
         Case "Date/Time"
@@ -149,7 +148,7 @@ Private Function AddFieldToTableDefFromMetaSchema(tblDef As TableDef, rs As Reco
     tblDef.fields.Append fld
 End Function
 
-Private Function CreateGenericField(tbl As TableDef, fieldName As String, Optional fieldType As Integer = dbText)
+Private Function CreateGenericField(tbl As TableDef, fieldName As String, Optional fieldType As Long = dbText)
     Dim fld As Field
     Set fld = tbl.CreateField(fieldName, fieldType)
     tbl.fields.Append fld

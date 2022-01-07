@@ -7,6 +7,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'@IgnoreModule
 
 '@Folder "DataModels"
 Option Compare Database
@@ -22,8 +23,6 @@ End Type
 Private this As TDataModel
 
 ' Ctor
-Private Sub Class_Initialize()
-End Sub
 
 ' Getters
 Public Property Get Details() As Collection

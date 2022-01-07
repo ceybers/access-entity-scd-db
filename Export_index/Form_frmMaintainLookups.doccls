@@ -60,14 +60,14 @@ Private Sub btnNew_Click()
     Me.txtFieldName.SetFocus
 End Sub
 
-Private Function UpdateButtons()
+Private Sub UpdateButtons()
     Me.btnNew.Enabled = (Not Me.NewRecord) And (ActiveTableName <> vbNullString) And (Not IsEditing)
     Me.btnEdit.Enabled = (Not IsEditing) And (ActiveTableName <> vbNullString)
     Me.btnUpdate.Enabled = False
     Me.btnInsert.Enabled = False
     Me.btnDelete.Enabled = (Not Me.NewRecord) And (IsEditing)
     Me.btnCancel.Enabled = Me.Dirty Or Me.NewRecord Or IsEditing
-End Function
+End Sub
 
 Private Sub Form_Undo(Cancel As Integer)
     StopEditing
@@ -117,7 +117,7 @@ Private Sub Form_Load()
     StopEditing
 End Sub
 
-Private Function LoadTablesToListbox()
+Private Sub LoadTablesToListbox()
     ClearListBox Me.lstTables
     
     Dim db As DAO.Database
@@ -130,19 +130,19 @@ Private Function LoadTablesToListbox()
     Next
     Set tdf = Nothing
     Set db = Nothing
-End Function
+End Sub
 
-Private Function ClearListBox(lb As ListBox)
-    If lb Is Nothing Then Exit Function
+Private Sub ClearListBox(lb As ListBox)
+    If lb Is Nothing Then Exit Sub
     If lb.RowSourceType <> "Value List" Then
         lb.RowSource = vbNullString
-        Exit Function
+        Exit Sub
     End If
-    Dim i As Integer
+    Dim i As Long
     For i = lb.ListCount - 1 To 0 Step -1
         lb.RemoveItem i
     Next i
-End Function
+End Sub
 
 Private Sub lstRecords_Click()
     If Me.lstRecords.ListCount <= 1 Then Exit Sub
@@ -151,7 +151,7 @@ Private Sub lstRecords_Click()
         Exit Sub
     End If
     
-    Dim idx As Integer
+    Dim idx As Long
     idx = CInt(Me.lstRecords)
     Dim rs As Recordset
     Set rs = Me.Recordset.Clone
@@ -168,34 +168,34 @@ Private Sub lstTables_Click()
     SetFormTitle
 End Sub
 
-Private Function LoadItemsFromTableToListbox()
-    If ActiveTableName = vbNullString Then Exit Function
+Private Sub LoadItemsFromTableToListbox()
+    If ActiveTableName = vbNullString Then Exit Sub
     Me.lstRecords.RowSource = "SELECT * FROM " & ActiveTableName
-End Function
+End Sub
 
-Private Function RebindForm()
+Private Sub RebindForm()
     ActiveFieldName = CurrentDb.OpenRecordset(ActiveTableName).fields(1).name
     
     Me.recordSource = ActiveTableName
     Me.txtID.ControlSource = "ID"
     Me.txtFieldName.ControlSource = ActiveFieldName
     Me.lblFieldName.caption = ActiveFieldName
-End Function
+End Sub
 
-Private Function SelectCurrentInListBox()
-    If IsNull(Me.txtID) Then Exit Function
+Private Sub SelectCurrentInListBox()
+    If IsNull(Me.txtID) Then Exit Sub
     Me.lstRecords = CInt(Me.txtID)
-End Function
+End Sub
 
-Private Function SetTitleColor(Optional IsEditing As Boolean = True)
+Private Sub SetTitleColor(Optional IsEditing As Boolean = True)
     Me.FormHeader.BackColor = IIf(IsEditing, 4686591, 11829830)
-End Function
+End Sub
 
-Private Function SetFormTitle()
+Private Sub SetFormTitle()
     Me.lblTitle.caption = FORM_TITLE_CAPTION & "'" & ActiveTableName & "'"
-End Function
+End Sub
 
-Private Function LogEvent(lt As LogType)
+Private Sub LogEvent(lt As LogType)
     Dim sql As String
     sql = "INSERT INTO logMaintainLookups (TableName,Operation,LookupFK,OldValue,NewValue,[Timestamp]) VALUES ('"
     DoCmd.SetWarnings False
@@ -219,18 +219,18 @@ Private Function LogEvent(lt As LogType)
             'Debug.Print "LogEvent ELSE"
     End Select
     DoCmd.SetWarnings True
-End Function
+End Sub
 
-Private Function StartEditing()
+Private Sub StartEditing()
     IsEditing = True
     'Debug.Print "Start Editing"
     SetTitleColor True
     Me.txtFieldName.Locked = False
     Me.lstRecords.Locked = True
     UpdateButtons
-End Function
+End Sub
 
-Private Function StopEditing()
+Private Sub StopEditing()
     IsEditing = False
     Me.lstRecords.Requery
     SelectCurrentInListBox
@@ -240,4 +240,4 @@ Private Function StopEditing()
     Me.lstRecords.Locked = False
     Me.AllowAdditions = False
     UpdateButtons
-End Function
+End Sub

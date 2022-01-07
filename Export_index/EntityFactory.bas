@@ -1,4 +1,5 @@
 Attribute VB_Name = "EntityFactory"
+'@IgnoreModule
 '@Folder "Factories"
 Option Compare Database
 Option Explicit

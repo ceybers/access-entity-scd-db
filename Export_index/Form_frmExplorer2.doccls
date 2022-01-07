@@ -1,15 +1,19 @@
-﻿Option Compare Database
+﻿'@Folder "Explorer2"
+Option Compare Database
 Option Explicit
 
 ' Variables
-Private ViewModel As ViewModelExplorer2
-Private Const COLLECTION_PREFIX As String = "Entity#"
-Private Const DETAIL_TABLENAME_COLUMN As Integer = 2
+Private WithEvents ViewModel As ViewModelExplorer2
+Private Const ENTITY_PREFIX As String = "Entity#"
+Private Const ENTITYTYPE_PREFIX As String = "EntityType#"
+Private Const DETAIL_TABLENAME_COLUMN As Long = 2
 
 ' Faux-static Getter for VM
 Private Property Get GetVM() As ViewModelExplorer2
     If ViewModel Is Nothing Then
         Set ViewModel = New ViewModelExplorer2
+        MapEventButtons ViewModel
+        Set ViewModel.Subform = Me.chldDetailSubform
     End If
     Set GetVM = ViewModel
 End Property
@@ -33,23 +37,40 @@ Private Sub cmbSearch_Click()
     SearchEntity
 End Sub
 
-Private Sub cmbTest_Click()
-    TestTreeview
+
+Private Sub Form_Close()
+    Dim tv As MSComctlLib.treeview
+    If Me.tvEntities Is Nothing Then Exit Sub
+    If Me.tvEntities.Object Is Nothing Then Exit Sub
+    Set tv = Me.tvEntities.Object
+    'Set lv = Me.lvDetails.Object
+    tv.Nodes.Clear
+    'lv.ListItems.Clear
 End Sub
 
 Private Sub Form_Load()
-    Me.chldDetailSubform.SourceObject = ""
-    InitializeImageList
-    PopulateListView
+    Me.chldDetailSubform.SourceObject = vbNullString
+    InitializeImageList Me.ilImageListLarge.Object, 32, 32
+    InitializeImageList Me.ilImageListSmall.Object, 16, 16
+    
+    PopulateListView Me.lvDetails.Object, Me.ilImageListLarge.Object, Me.ilImageListLarge.Object
 
-    Me.cboEntityType = Me.cboEntityType.Column(0, 3)
+    Me.cboEntityType = Me.cboEntityType.Column(0, 1)
     cboEntityType_Change
     'PopulateTreeview 4
 End Sub
 
-Private Sub Form_Unload(Cancel As Integer)
-    ' Do Nothing
+Private Sub MapEventButtons(vm As ViewModelExplorer2)
+    With vm
+        .AddEvents Me.cmbAdd, "EditNew"
+        .AddEvents Me.cmbEdit, "EditExisting"
+        .AddEvents Me.cmbSave, "Save"
+        .AddEvents Me.cmbSearch, "Search"
+        .AddEvents Me.cmbViewMany, "ViewMany"
+        .AddEvents Me.cmbViewOne, "ViewOne"
+    End With
 End Sub
+
 
 Private Sub lvDetails_DblClick()
     Dim li As ListItem
@@ -87,7 +108,7 @@ End Sub
 Private Sub tvEntities_NodeClick(ByVal Node As Object)
     Debug.Assert Not Node Is Nothing
     
-    GetVM.EntityID = Replace(Node.key, COLLECTION_PREFIX, "")
+    GetVM.EntityID = Replace(Node.key, ENTITY_PREFIX, vbNullString)
     DisplayEntity
 End Sub
 
@@ -119,83 +140,13 @@ Private Sub SearchEntity()
     If Not nde Is Nothing Then
         nde.selected = True
         nde.EnsureVisible
-        GetVM.EntityID = Replace(nde.key, COLLECTION_PREFIX, "")
+        GetVM.EntityID = Replace(nde.key, ENTITY_PREFIX, vbNullString)
         DisplayEntity
     End If
 End Sub
 
-Private Function FindNodeInTreeview(ByRef tv As treeview, ByVal criteria As String, Optional exact As Boolean = False) As Node
-    Debug.Assert Not tv Is Nothing
-    Debug.Assert Len(criteria) > 0
-    
-    Dim nde As Node
-    
-    If Not exact Then
-        criteria = "*" & criteria & "*"
-    End If
-    
-    For Each nde In tv.Nodes
-        If nde.text Like criteria Then
-            Set FindNodeInTreeview = nde
-            Exit Function
-        End If
-    Next nde
-End Function
-
 Private Sub DisplayEntityType()
     PopulateTreeview GetVM.entityTypeid
-End Sub
-
-Private Sub InitializeTreeview(ByRef treeview As treeview)
-    Debug.Assert Not treeview Is Nothing
-    
-    With treeview
-        .Appearance = ccFlat
-        .Checkboxes = False
-        .Indentation = 19
-        '.Style = tvwTreelinesPlusMinusText
-        .Style = tvwTreelinesPlusMinusPictureText
-        .LabelEdit = tvwManual
-        .LineStyle = tvwRootLines
-        .HideSelection = False
-        .SingleSel = False
-        .FullRowSelect = True
-        .ImageList = Me.ilImageListSmall.Object
-        
-    End With
-End Sub
-
-Private Sub InitializeImageList()
-    Dim il As ImageList
-    Set il = Me.ilImageListSmall.Object
-    
-    modLoadImageList.Clear il
-        
-    il.ImageWidth = 16
-    il.ImageHeight = 16
-    
-    If il.ListImages.count = 0 Then
-        modLoadImageList.Load il
-    End If
-    
-    Set il = Me.ilImageListLarge.Object
-    
-    modLoadImageList.Clear il
-        
-    il.ImageWidth = 32
-    il.ImageHeight = 32
-    
-    If il.ListImages.count = 0 Then
-        modLoadImageList.Load il
-    End If
-End Sub
-
-Private Sub ClearTreeview(ByRef treeview As treeview)
-    Debug.Assert Not treeview Is Nothing
-
-    If treeview.Nodes.count > 0 Then
-        treeview.Nodes.Clear
-    End If
 End Sub
 
 Private Sub DisplayDetail()
@@ -203,127 +154,44 @@ Private Sub DisplayDetail()
     UpdateCaption
 End Sub
 
-Private Sub PopulateListView()
-    Dim lv As listview
-    Set lv = Me.lvDetails.Object
-    
-    lv.ListItems.Clear
-    lv.ColumnHeaders.Clear
-    
-    InitializeListview lv
-    
-    Dim rs As Recordset
-    Set rs = CurrentDb.OpenRecordset("SELECT * FROM metaDetailTables ORDER BY SortOrder ASC;", dbOpenSnapshot, dbReadOnly)
-    
-    Dim key As String
-    Dim text As String
-    
-    If Not rs.BOF And Not rs.EOF Then
-        Do While Not rs.EOF
-                key = rs.fields("tableName").Value
-                text = rs.fields("DetailTable").Value
-                lv.ListItems.Add , key, text, "Ktemplate_empty-0", "Ktemplate_empty-0"
-            rs.MoveNext
-        Loop
-    End If
-    
-    rs.Close
-    Set rs = Nothing
-End Sub
-
-Private Sub InitializeListview(ByRef listview As listview)
-    Debug.Assert Not listview Is Nothing
-    
-    'InitializeImageList
-    listview.ColumnHeaders.Add , , "Details", 2880
-    
-    With listview
-        .FullRowSelect = True
-        .GridLines = False
-        .HideColumnHeaders = False
-        .HideSelection = False
-        .Appearance = ccFlat
-        .LabelEdit = lvwManual
-        .LabelWrap = False
-        .BorderStyle = ccNone
-        .Arrange = lvwAutoLeft
-        
-        '.View = lvwIcon
-        .View = lvwList
-        '.View = lvwReport
-        '.View = lvwSmallIcon
-        
-        .Icons = Me.ilImageListLarge.Object
-        '.SmallIcons = Me.ilImageListSmall.Object
-        .SmallIcons = Me.ilImageListLarge.Object
-        
-        ' NOTE To get 32x32 icons with icon on left and text on right, use lvwList and set .SmallIcons to a 32x32 ImageList
-    End With
-End Sub
-
 Private Sub PopulateTreeview(ByVal entityTypeid As Double)
     Dim vm As ViewModelExplorer2
     Dim tv As MSComctlLib.treeview
-    Dim rs As Recordset
     
-    Me.tvEntities.Visible = True
     Set tv = Me.tvEntities.Object
     Set vm = GetVM
     
-    InitializeTreeview tv
-    ClearTreeview tv
-
     Me.recordSource = vm.GetSQL
-    Set rs = vm.GetRecordset
-    
-    PopulateTreeviewFromRecordset tv, rs
-    
-    rs.Close
-    Set rs = Nothing
-End Sub
-
-Private Sub PopulateTreeviewFromRecordset(ByRef tv As treeview, ByRef rs As Recordset)
-    ' TODO Move this into ViewModel.
-    ' Form code-behind should just get a collection of POCO with ID, Entity, ParentFK.
-    ' How it chooses to populate it to UI goes in here
-    
-    Debug.Assert Not tv Is Nothing
-    Debug.Assert Not rs Is Nothing
-    
-    Dim nde As Node
-    'Me.tvEntities.Visible = False
-    If Not rs.BOF And Not rs.EOF Then
-        Do While Not rs.EOF
-            If rs.fields("ParentFK") = 0 Then
-                Set nde = tv.Nodes.Add(, , COLLECTION_PREFIX & rs.fields("ID"), rs.fields("Entity"))
-            Else
-                Set nde = tv.Nodes.Add(COLLECTION_PREFIX & rs.fields("ParentFK"), tvwChild, COLLECTION_PREFIX & rs.fields("ID"), rs.fields("Entity"))
-            End If
-            nde.Tag = "EntityTypeID#" & rs.fields("EntityType")
-            nde.Image = "Kdirectory_closed"
-            nde.Expanded = False
-            'nde.SelectedImage = "Kdirectory_open"
-            'nde.Expanded = true
-            If rs.fields("EntityType") = 4 Then
-                nde.Image = "Kdocument"
-                'nde.SelectedImage = "Kdocument"
-            End If
-            
-            rs.MoveNext
-        Loop
-    End If
-    'Me.tvEntities.Visible = True
-End Sub
-
-Private Sub TestTreeview()
-    Dim startTime As Long
-    startTime = VBA.DateTime.Timer
-    PopulateTreeview 4
-    Debug.Print "Duration = " & (VBA.DateTime.Timer) - startTime & " seconds"
+        
+    InitializeTreeview tv, Me.ilImageListSmall.Object
+    ClearTreeview tv
+    PopulateTreeviewFromCollection tv, GetVM.GetCollectionFromRecordset
 End Sub
 
 Private Sub UpdateCaption()
     Dim newcaption As String
     newcaption = GetVM().DetailTableName & " @ Entity#" & GetVM().EntityID
     Me.lblSubformCaption.caption = newcaption
+End Sub
+
+Private Sub ViewModel_CancelEditing()
+    SetControlState True
+End Sub
+
+Private Sub ViewModel_StartEditing()
+    SetControlState False
+End Sub
+
+Private Sub ViewModel_StopEditing()
+    SetControlState True
+End Sub
+
+Private Sub SetControlState(ByVal enable As Boolean)
+    'Me.tvEntities.Locked = enable
+    'Me.lvDetails.Locked = enable
+    Me.cmbAdd.Enabled = enable
+    Me.cmbEdit.Enabled = enable
+    Me.cmbSave.Enabled = Not enable
+    Me.cmbViewMany.Enabled = enable
+    Me.cmbViewOne.Enabled = enable
 End Sub

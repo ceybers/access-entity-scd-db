@@ -7,7 +7,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-
+'@Folder "Explorer1"
 Option Compare Database
 Option Explicit
 
@@ -17,12 +17,12 @@ Attribute cmdBtn.VB_VarHelpID = -1
 
 Private Type TEventCommandButton
     State As DetailStateForSCD
-    context As clsDetailViewModel
+    Context As clsDetailViewModel
 End Type
 Private this As TEventCommandButton
 
-Public Property Set ViewModel(context As clsDetailViewModel)
-    Set this.context = context
+Public Property Set ViewModel(Context As clsDetailViewModel)
+    Set this.Context = Context
 End Property
 
 Public Property Set CommandButton(textbox As Access.CommandButton)
@@ -53,6 +53,6 @@ Public Property Get Self() As clsEventCommandButton
 End Property
 
 Private Sub cmdBtn_Click()
-    this.context.HandleEvent this.State
+    this.Context.HandleEvent this.State
 End Sub
 

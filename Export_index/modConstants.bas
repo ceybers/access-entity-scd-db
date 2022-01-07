@@ -8,6 +8,7 @@ Public Enum RAGColors
     Red = 13421823
     Yellow = 13431551
     Green = 14282978
+    Grey = 15921906
 End Enum
 
 Public Const ENTITYTYPES_TABLE As String = "metaEntityTypes"
@@ -45,5 +46,5 @@ Public Const NEW_COMMIT_FORM As String = "fdlgCommitNew"
 
 Public Const SCHEMA_FILENAME As String = "C:\Users\User\Documents\access-entity-scd-db\Schema\schema.csv" ' TODO Check if still required
 
-Public Const CM_TO_TWIP As Integer = 567
-Public Const DEFAULT_HEIGHT As Integer = 360
+Public Const CM_TO_TWIP As Long = 567
+Public Const DEFAULT_HEIGHT As Long = 360

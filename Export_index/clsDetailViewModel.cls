@@ -7,6 +7,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'@IgnoreModule
 
 '@Folder "ViewModels"
 Option Compare Database
@@ -37,7 +38,7 @@ Public Enum DetailStateForSCD
 End Enum
 
 Private Type TDetailViewModel
-    SubFormControl As SubForm
+    SubFormControl As Subform
     EntityID As Integer
     CommitID As Integer
     State As DetailStateForSCD
@@ -63,7 +64,7 @@ Public Property Get Detail() As clsDetail
     Set Detail = this.Detail
 End Property
 
-Public Property Set SubForm(ByRef RHS As SubForm)
+Public Property Set Subform(ByRef RHS As Subform)
     Set this.SubFormControl = RHS
 End Property
 
@@ -354,24 +355,7 @@ ErrorHandling:
     Err.Raise 5, , "Error in RemoveCancelledNewRecord()"
 End Function
 
-Private Function CreateNewTrackRecord(CommitFK As Double) As Integer
-    Dim db As Database
-    Dim rs As Recordset
-    
-    Set db = CurrentDb
-    Set rs = db.OpenRecordset("SELECT * FROM " & TRACKS_TABLE, dbOpenDynaset, dbSeeChanges)
-    
-    rs.AddNew
-    CreateNewTrackRecord = rs!ID
-    rs.fields(TRACK_COMMITFK_FIELDNAME) = CommitFK
-    rs.fields(TRACK_VALIDFROM_FIELDNAME) = Now()
-    rs.fields(TRACK_VALIDUNTIL_FIELDNAME) = #12/31/9999#
-    rs.Update
-    
-    rs.Close
-    Set rs = Nothing
-    Set db = Nothing
-End Function
+
 
 ' Form Events
 

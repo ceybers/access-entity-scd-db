@@ -25,7 +25,7 @@ End Sub
 ' Ctor
 Private Sub Form_Load()
     Me.sfrmDetail.SourceObject = vbNullString
-    Set ViewModel.SubForm = Me.sfrmDetail
+    Set ViewModel.Subform = Me.sfrmDetail
     MapButtonsToStates ViewModel
 End Sub
 

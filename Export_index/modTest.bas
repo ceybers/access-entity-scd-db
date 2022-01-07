@@ -1,17 +1,20 @@
 Attribute VB_Name = "modTest"
-'@Folder("index")
+'@Folder "Main"
 Option Compare Database
 Option Explicit
 
-Public Sub TEST()
+Public Sub BuildSampleEntities()
     Dim db As Database
-    Dim rs As Recordset
     Dim divID As Long, strmID As Long, deptID As Long
+    
+    If vbNo = MsgBox("Are you sure?", vbExclamation + vbYesNo + vbDefaultButton2, "Build Sample Entities") Then
+        Exit Sub
+    End If
     
     Set db = CurrentDb
     db.Execute "DELETE * FROM metaEntities;"
 
-    Dim i As Integer, j As Integer, k As Integer, l As Integer
+    Dim i As Long, j As Long, k As Long, l As Long
     For i = 1 To 8
         db.Execute "INSERT INTO metaEntities ([Entity], [ParentFK], [EntityType]) VALUES ('Division " & i & "', 0, 1)"
         divID = db.OpenRecordset("SELECT @@Identity FROM metaEntities")(0)
@@ -28,7 +31,9 @@ Public Sub TEST()
         Next j
     Next i
     
-    'rs.Close
-    Set rs = Nothing
     Set db = Nothing
+    
+    Dim n As Long
+    n = 8 * 2 * 14 * 8
+    MsgBox "Built " & n & "entites OK", vbInformation + vbOKOnly, "Build Sample Entities"
 End Sub

@@ -1,5 +1,5 @@
 Attribute VB_Name = "modLoadImageList"
-'@Folder("index")
+'@Folder "Explorer2"
 Option Compare Database
 Option Explicit
 
@@ -28,9 +28,9 @@ Public Sub Load(ByRef il As ImageList)
         Exit Sub
     End If
     
-    Dim i As Integer
+    Dim i As Long
     For i = 0 To UBound(fileArr)
-        il.ListImages.Add key:="K" & Replace(fileArr(i), ".ico", ""), Picture:=LoadPicture(PATH & "\" & fileArr(i))
+        il.ListImages.Add key:="K" & Replace(fileArr(i), ".ico", vbNullString), Picture:=LoadPicture(PATH & "\" & fileArr(i))
     Next i
     
     'Debug.Print UBound(fileArr) & " icon(s) loaded OK" ', vbInformation + vbOKOnly
