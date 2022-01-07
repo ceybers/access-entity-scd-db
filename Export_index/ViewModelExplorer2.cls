@@ -24,7 +24,7 @@ Private Type TViewModelExplorer2
     entityTypeid As Double
     DetailTableName As String
     SearchCriteria As String
-    Events As Collection
+    Events As collection
     Subform As Subform
     CommitID As Double
     IsEditing As Boolean
@@ -36,7 +36,7 @@ Private this As TViewModelExplorer2
 Private Sub Class_Initialize()
     ' TODO below is test env only. Handle unselcted/uninit entityTypeID properly
     this.entityTypeid = 1
-    Set this.Events = New Collection
+    Set this.Events = New collection
     this.CommitID = 1
 End Sub
 
@@ -96,12 +96,12 @@ Public Function GetRecordset() As Recordset
 End Function
 
 ' ---
-Public Function GetCollectionFromRecordset() As Collection
+Public Function GetCollectionFromRecordset() As collection
     Dim rs As Recordset
-    Dim result As Collection
+    Dim result As collection
     Dim ent As Explorer2Entity
     
-    Set result = New Collection
+    Set result = New collection
     Set rs = GetRecordset
     
     If Not rs.BOF And Not rs.EOF Then
@@ -174,3 +174,11 @@ Private Sub DetailEditNew()
     RaiseEvent StartEditing
     this.IsEditing = False
 End Sub
+
+Private Function DoesSubformHaveZeroRecords() As Boolean
+    Debug.Assert Not this.Subform Is Nothing
+    Debug.Assert Not this.Subform.Form Is Nothing
+    Dim recordCount As Long
+    recordCount = this.Subform.Form.RecordsetClone.recordCount
+    DoesSubformHaveZeroRecords = (recordCount = 0)
+End Function

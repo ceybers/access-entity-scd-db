@@ -42,7 +42,7 @@ Private Function ProcessReport(Model As clsCommitViewModel, frm As Form) As Bool
     
     repDate = CDate(s(3))
     
-    frm!Title = CStr(s(1)) & " " & CStr(s(0)) & " " & format(repDate, "yyyymmdd")
+    frm!Title = CStr(s(1)) & " " & CStr(s(0)) & " " & Format(repDate, "yyyymmdd")
     'frm!RecvdFrom = CStr(s(0))
     frm!RecvdDate = Now()
     frm!CommitType = CommitTypes.Report
@@ -62,7 +62,7 @@ Private Function ProcessDrawing(Model As clsCommitViewModel, frm As Form) As Boo
     
     dwgDate = CDate(s(3))
     
-    frm!Title = CStr(s(1)) & " " & CStr(s(0)) & " " & format(dwgDate, "yyyymmdd")
+    frm!Title = CStr(s(1)) & " " & CStr(s(0)) & " " & Format(dwgDate, "yyyymmdd")
     'frm!RecvdFrom = CStr(s(0))
     frm!RecvdDate = Now()
     frm!CommitType = CommitTypes.Drawing

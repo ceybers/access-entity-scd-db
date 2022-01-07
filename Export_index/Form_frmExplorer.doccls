@@ -70,8 +70,8 @@ Private Sub TryUpdateDetail()
 End Sub
 
 Private Sub ResetFormLayout()
-    Me.sfrmEntity.width = 13.7 * 567
-    Me.sfrmCommit.width = 16 * 567
+    Me.sfrmEntity.Width = 13.7 * 567
+    Me.sfrmCommit.Width = 16 * 567
     Me.sfrmCommit.height = 2 * 567
     Me.sfrmDetail.height = 16 * 567
     

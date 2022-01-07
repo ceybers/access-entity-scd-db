@@ -6,9 +6,9 @@ Option Explicit
 Public Enum RAGColors
     Default = 16777215
     Red = 13421823
-    yellow = 13431551
+    Yellow = 13431551
     Green = 14282978
-    Grey = 15921906
+    grey = 15921906
 End Enum
 
 Public Const ENTITYTYPES_TABLE As String = "metaEntityTypes"

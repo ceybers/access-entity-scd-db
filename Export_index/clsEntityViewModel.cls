@@ -122,7 +122,7 @@ Public Function ApplyCommitsSourceToCombobox(ByRef cmb As ComboBox)
 End Function
 
 Public Function SearchEntity(tb As textbox, lb As ListBox)
-    Dim filteredEntities As Collection
+    Dim filteredEntities As collection
     Dim Entity As clsEntity
     Dim i As Integer
     Dim criteria As String
@@ -137,7 +137,7 @@ Public Function SearchEntity(tb As textbox, lb As ListBox)
         Exit Function
     End If
     
-    Set filteredEntities = New Collection
+    Set filteredEntities = New collection
     tb.SetFocus
     criteria = tb.text & "*"
     

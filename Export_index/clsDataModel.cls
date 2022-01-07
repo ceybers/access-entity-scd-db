@@ -15,38 +15,38 @@ Option Explicit
 
 ' Private Variables
 Private Type TDataModel
-     Details As Collection
-     Entities As Collection
-     EntityTypes As Collection
-     Commits As Collection
+     Details As collection
+     Entities As collection
+     EntityTypes As collection
+     Commits As collection
 End Type
 Private this As TDataModel
 
 ' Ctor
 
 ' Getters
-Public Property Get Details() As Collection
+Public Property Get Details() As collection
     If this.Details Is Nothing Then
         Set this.Details = LoadThings(DETAILS_TABLE)
     End If
     Set Details = this.Details
 End Property
 
-Public Property Get Entities() As Collection
+Public Property Get Entities() As collection
     If this.Entities Is Nothing Then
         Set this.Entities = LoadThings(ENTITIES_TABLE)
     End If
     Set Entities = this.Entities
 End Property
 
-Public Property Get EntityTypes() As Collection
+Public Property Get EntityTypes() As collection
     If this.EntityTypes Is Nothing Then
         Set this.EntityTypes = LoadThings(ENTITYTYPES_TABLE)
     End If
     Set EntityTypes = this.EntityTypes
 End Property
 
-Public Property Get Commits() As Collection
+Public Property Get Commits() As collection
     If this.Commits Is Nothing Then
         Set this.Commits = LoadThings(COMMITS_TABLE)
     End If
@@ -54,7 +54,7 @@ Public Property Get Commits() As Collection
 End Property
 
 ' Public Methods
-Public Function GetThingByID(thingCollection As Collection, idx As Double) As IThing
+Public Function GetThingByID(thingCollection As collection, idx As Double) As IThing
     Dim thisThing As IThing
     For Each thisThing In thingCollection
         If thisThing.ID = idx Then
@@ -66,9 +66,9 @@ Public Function GetThingByID(thingCollection As Collection, idx As Double) As IT
 End Function
 
 ' Private Methods
-Private Function LoadThings(tableName As String) As Collection
+Private Function LoadThings(tableName As String) As collection
     Dim rs As DAO.Recordset
-    Set LoadThings = New Collection
+    Set LoadThings = New collection
 
     Set rs = CurrentDb.OpenRecordset("SELECT * FROM " & tableName)
     

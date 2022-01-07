@@ -27,22 +27,6 @@ Private Sub cboEntityType_Change()
     DisplayEntityType
 End Sub
 
-Private Sub cmbAdd_Click()
-    Explorer2DetailSubform.EditNew Me.chldDetailSubform
-End Sub
-
-Private Sub cmbEdit_Click()
-    'Explorer2DetailSubform.EditExisting Me.chldDetailSubform
-End Sub
-
-Private Sub cmbViewMany_Click()
-    Explorer2DetailSubform.ViewMany Me.chldDetailSubform
-End Sub
-
-Private Sub cmbViewOne_Click()
-    Explorer2DetailSubform.ViewOne Me.chldDetailSubform
-End Sub
-
 Private Sub cmbSearch_Click()
     If IsNull(Me.txtSearch) Then
         Exit Sub
@@ -60,7 +44,7 @@ Private Sub Form_Close()
     If Me.tvEntities.Object Is Nothing Then Exit Sub
     Set tv = Me.tvEntities.Object
     'Set lv = Me.lvDetails.Object
-    tv.Nodes.Clear
+    Explorer2TreeView.ClearTreeview tv
     'lv.ListItems.Clear
 End Sub
 
@@ -71,7 +55,7 @@ Private Sub Form_Load()
     
     PopulateListView Me.lvDetails.Object, Me.ilImageListLarge.Object, Me.ilImageListLarge.Object
 
-    Me.cboEntityType = Me.cboEntityType.Column(0, 1)
+    Me.cboEntityType = Me.cboEntityType.Column(0, 3)
     cboEntityType_Change
     'PopulateTreeview 4
 End Sub
@@ -187,7 +171,7 @@ End Sub
 Private Sub UpdateCaption()
     Dim newcaption As String
     newcaption = GetVM().DetailTableName & " @ Entity#" & GetVM().EntityID
-    Me.lblSubformCaption.caption = newcaption
+    Me.lblSubformCaption.Caption = newcaption
 End Sub
 
 Private Sub ViewModel_CancelEditing()

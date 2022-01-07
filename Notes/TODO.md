@@ -52,3 +52,16 @@
 - [ ] Merge `modDBHelpers` and `modCommon`
 - [ ] Split `modCommon.DropTables` into `DropTables` and `DropTable`
 - [ ] Implement `DoesQueryExist
+
+## Recordset to Class Object Pattern
+
+Needs: SQL query to run, an instance (or Predeclared) of a class that has a subroutine that accepts a Recordset, and returns an object. Then we add the object to a collection, and return the collection. Alternatively, we pass the collection, and let the class add the object to the collection, thus not needing us to know about it.
+
+```
+    Do While Not rs.EOF
+        yourClassObject.RecordToClassObject(ByRef rs as Recordset, ByRef coll as Collection)
+        rs.MoveNext
+    Loop
+
+    Set thisFunction = coll
+```

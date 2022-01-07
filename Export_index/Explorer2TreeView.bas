@@ -7,6 +7,7 @@ Public Sub ClearTreeview(ByRef treeview As treeview)
     Debug.Assert Not treeview Is Nothing
 
     If treeview.Nodes.count > 0 Then
+        treeview.Nodes.Remove (1) 'Faster if we have one root node
         treeview.Nodes.Clear
     End If
 End Sub
@@ -49,7 +50,7 @@ Public Sub InitializeTreeview(ByRef treeview As treeview, ByRef ImageList As Ima
     End With
 End Sub
 
-Public Sub PopulateTreeviewFromCollection(ByRef tv As treeview, ByRef coll As Collection)
+Public Sub PopulateTreeviewFromCollection(ByRef tv As treeview, ByRef coll As collection)
     Dim ent As Explorer2Entity
     Dim nde As Node
     
@@ -64,7 +65,7 @@ Public Sub PopulateTreeviewFromCollection(ByRef tv As treeview, ByRef coll As Co
             nde.Image = "Kdocument"
         Else
             nde.Image = "Kdirectory_closed"
-            'nde.Expanded = False
+            nde.Expanded = True
         End If
     Next ent
 End Sub

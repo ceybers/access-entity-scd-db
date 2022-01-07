@@ -1,39 +1,44 @@
 Attribute VB_Name = "modTest"
-'@Folder "Main"
+'@Folder("Main")
 Option Compare Database
 Option Explicit
 
-Public Sub BuildSampleEntities()
-    Dim db As Database
-    Dim divID As Long, strmID As Long, deptID As Long
+Public Sub TEST()
+    Dim controlSets As collection
+    Dim sql As String
     
-    If vbNo = MsgBox("Are you sure?", vbExclamation + vbYesNo + vbDefaultButton2, "Build Sample Entities") Then
-        Exit Sub
-    End If
+    sql = "SELECT * FROM metaSchema WHERE TableName = 'tblDetailA';"
+    Set controlSets = modRecordsetHelpers.RecordsetToCollection(sql, SubformControlSetRSCollector)
+    
+    Debug.Print controlSets.count
+    Dim cs As subformcontrolset
+    For Each cs In controlSets
+        Debug.Print cs.FieldName
+    Next
+End Sub
+
+Private Function GetFields(tableName As String) As Variant ' TControlSet()
+    Dim db As DAO.Database
+    Dim rs As DAO.Recordset
+    Dim results() As TControlSet
+    Dim i As Long
     
     Set db = CurrentDb
-    db.Execute "DELETE * FROM metaEntities;"
-
-    Dim i As Long, j As Long, k As Long, l As Long
-    For i = 1 To 8
-        db.Execute "INSERT INTO metaEntities ([Entity], [ParentFK], [EntityType]) VALUES ('Division " & i & "', 0, 1)"
-        divID = db.OpenRecordset("SELECT @@Identity FROM metaEntities")(0)
-        For j = 1 To 2
-            db.Execute "INSERT INTO metaEntities ([Entity], [ParentFK], [EntityType]) VALUES ('Stream " & i & "." & j & "', " & divID & ", 2)"
-            strmID = db.OpenRecordset("SELECT @@Identity FROM metaEntities")(0)
-            For k = 1 To 14
-                db.Execute "INSERT INTO metaEntities ([Entity], [ParentFK], [EntityType]) VALUES ('Depot " & i & "." & j & "." & k & "', " & strmID & ", 3)"
-                deptID = db.OpenRecordset("SELECT @@Identity FROM metaEntities")(0)
-                For l = 1 To 8
-                    db.Execute "INSERT INTO metaEntities ([Entity], [ParentFK], [EntityType]) VALUES ('Tank " & i & "." & j & "." & k & "." & l & "', " & deptID & ", 4)"
-                Next l
-            Next k
-        Next j
-    Next i
+    Set rs = db.OpenRecordset("SELECT * FROM " & SCHEMA_TABLE & " WHERE TableName = '" & tableName & "';")
+    i = 1
     
+    If Not rs.BOF And Not rs.EOF Then
+        Do While Not rs.EOF
+            ReDim Preserve results(1 To i)
+            results(i) = RecordToControlSet(rs)
+            i = i + 1
+            rs.MoveNext
+        Loop
+    End If
+
+    rs.Close
+    Set rs = Nothing
     Set db = Nothing
     
-    Dim n As Long
-    n = 8 * 2 * 14 * 8
-    MsgBox "Built " & n & "entites OK", vbInformation + vbOKOnly, "Build Sample Entities"
-End Sub
+    GetFields = results
+End Function

@@ -3,10 +3,10 @@ Attribute VB_Name = "Explorer2ImageList"
 Option Compare Database
 Option Explicit
 
-Public Sub InitializeImageList(ByRef il As ImageList, ByVal width As Long, ByVal height As Long)
+Public Sub InitializeImageList(ByRef il As ImageList, ByVal Width As Long, ByVal height As Long)
     modLoadImageList.Clear il
         
-    il.ImageWidth = width
+    il.ImageWidth = Width
     il.ImageHeight = height
     
     If il.ListImages.count = 0 Then

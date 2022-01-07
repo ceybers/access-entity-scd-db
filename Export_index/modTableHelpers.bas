@@ -4,7 +4,7 @@ Attribute VB_Name = "modTableHelpers"
 Option Compare Database
 Option Explicit
 
-Public Function DropTables(ByVal tables As Collection, Optional ByRef db As DAO.Database) As Double
+Public Function DropTables(ByVal tables As collection, Optional ByRef db As DAO.Database) As Double
     Dim tbl As Variant
     
     If db Is Nothing Then Set db = CurrentDb

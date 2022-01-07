@@ -20,7 +20,7 @@ Public Event EditingStopped()
 '@MemberAttribute VB_VarHelpID, -1
 Private WithEvents frmForEvents As Access.Form
 Attribute frmForEvents.VB_VarHelpID = -1
-Private Events As Collection
+Private Events As collection
 
 Public Enum DetailStateForSCD
     invalid
@@ -102,7 +102,7 @@ End Property
 
 ' Ctor
 Private Sub Class_Initialize()
-    Set Events = New Collection
+    Set Events = New collection
     this.CommitID = 1
     this.State = invalid
 End Sub
@@ -122,7 +122,7 @@ Private Function ChangeToViewNewMode()
         If ctl.name Like "???LHS*" Then
             ctl.Locked = False
             ctl.Visible = False
-            ctl.Properties("BackColor") = RAGColors.yellow
+            ctl.Properties("BackColor") = RAGColors.Yellow
         ElseIf ctl.name Like "???RHS*" Then
             ctl.Visible = False
          ElseIf ctl.name Like "lblSuffix*" Then
@@ -142,7 +142,7 @@ Private Function ChangeToEditNewMode()
         If ctl.name Like "???LHS*" Then
             ctl.Locked = False
             ctl.Visible = True
-            ctl.Properties("BackColor") = RAGColors.yellow
+            ctl.Properties("BackColor") = RAGColors.Yellow
         ElseIf ctl.name Like "???RHS*" Then
             ctl.Visible = False
          ElseIf ctl.name Like "lblSuffix*" Then
@@ -190,7 +190,7 @@ Private Function ChangeToEditExistingMode()
             ctl.Properties("BackColor") = RAGColors.Default
         ElseIf ctl.name Like "???RHS*" Then
             ctl.Visible = True
-            ctl.Properties("BackColor") = RAGColors.yellow
+            ctl.Properties("BackColor") = RAGColors.Yellow
             Set ctl = GetControlByName(DetailForm.controls, Replace(ctl.name, "RHS", "LHS"))
         ElseIf ctl.name Like "lblSuffix*" Then ctl.Properties("Left") = 6804
             '4394 or 6804
@@ -203,7 +203,7 @@ Private Function ChangeToEditExistingMode()
 End Function
 
 Private Function ChangeToSaveEdits()
-    Dim fieldName As String
+    Dim FieldName As String
     Dim rs As Recordset
     Dim ctl As control
     
@@ -224,8 +224,8 @@ Private Function ChangeToSaveEdits()
         
         For Each ctl In DetailForm.controls
             If ctl.name Like "???RHS*" Then
-                fieldName = Right$(ctl.name, Len(ctl.name) - 6)
-                 rs.fields(fieldName) = ctl
+                FieldName = Right$(ctl.name, Len(ctl.name) - 6)
+                 rs.fields(FieldName) = ctl
             End If
         Next ctl
     ElseIf this.State = EditNew Then
@@ -396,7 +396,7 @@ End Function
 
 Private Function Log(text As String)
     Dim s As String
-    s = "[" & format(Now(), "hh:mm:ss") & "] " & text
+    s = "[" & Format(Now(), "hh:mm:ss") & "] " & text
     Debug.Print s
 End Function
 

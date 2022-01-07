@@ -179,7 +179,7 @@ Private Sub RebindForm()
     Me.recordSource = ActiveTableName
     Me.txtID.ControlSource = "ID"
     Me.txtFieldName.ControlSource = ActiveFieldName
-    Me.lblFieldName.caption = ActiveFieldName
+    Me.lblFieldName.Caption = ActiveFieldName
 End Sub
 
 Private Sub SelectCurrentInListBox()
@@ -192,7 +192,7 @@ Private Sub SetTitleColor(Optional IsEditing As Boolean = True)
 End Sub
 
 Private Sub SetFormTitle()
-    Me.lblTitle.caption = FORM_TITLE_CAPTION & "'" & ActiveTableName & "'"
+    Me.lblTitle.Caption = FORM_TITLE_CAPTION & "'" & ActiveTableName & "'"
 End Sub
 
 Private Sub LogEvent(lt As LogType)
@@ -202,17 +202,17 @@ Private Sub LogEvent(lt As LogType)
     Select Case lt
         Case Insert
             'Debug.Print "INSERT " & CStr(Me.RecordSource) & " ID#" & CStr(Me.txtID) & " '" & CStr(Me.txtFieldName) & "' at " & Format(Now(), "yyyy/mm/dd hh:MM:ss")
-            sql = sql & ActiveTableName & "','INSERT'," & Me.txtID & ",'','" & Me.txtFieldName & "',#" & format(Now(), "MM/dd/yyyy hh:mm:ss") & "#)"
+            sql = sql & ActiveTableName & "','INSERT'," & Me.txtID & ",'','" & Me.txtFieldName & "',#" & Format(Now(), "MM/dd/yyyy hh:mm:ss") & "#)"
             'Debug.Print sql
             DoCmd.RunSQL sql
         Case Update
             'Debug.Print "UPDATE " & CStr(Me.RecordSource) & " ID#" & CStr(Me.txtID) & " '" & CStr(Me.txtFieldName.OldValue) & "' -> '" & CStr(Me.txtFieldName) & "' at " & Format(Now(), "yyyy/mm/dd hh:MM:ss")
-            sql = sql & ActiveTableName & "','UPDATE'," & Me.txtID & ",'" & Me.txtFieldName.OldValue & "','" & Me.txtFieldName & "',#" & format(Now(), "MM/dd/yyyy hh:mm:ss") & "#)"
+            sql = sql & ActiveTableName & "','UPDATE'," & Me.txtID & ",'" & Me.txtFieldName.OldValue & "','" & Me.txtFieldName & "',#" & Format(Now(), "MM/dd/yyyy hh:mm:ss") & "#)"
             'Debug.Print sql
             DoCmd.RunSQL sql
         Case Delete
             'Debug.Print "DELETE " & CStr(Me.RecordSource) & " ID#" & CStr(Me.txtID) & " '" & CStr(Me.txtFieldName) & "' at " & Format(Now(), "yyyy/mm/dd hh:MM:ss")
-            sql = sql & ActiveTableName & "','DELETE'," & Me.txtID & ",'" & Me.txtFieldName & "','',#" & format(Now(), "MM/dd/yyyy hh:mm:ss") & "#)"
+            sql = sql & ActiveTableName & "','DELETE'," & Me.txtID & ",'" & Me.txtFieldName & "','',#" & Format(Now(), "MM/dd/yyyy hh:mm:ss") & "#)"
             'Debug.Print sql
             DoCmd.RunSQL sql
         Case Else

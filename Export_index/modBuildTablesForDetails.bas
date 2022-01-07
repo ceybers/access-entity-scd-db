@@ -5,13 +5,13 @@ Option Compare Database
 Option Explicit
 
 Private Type TControlSet
-    fieldName As String
-    caption As String
-    width As String
-    lookupTable As String
-    suffix As String
-    format As String
-    textalign As String
+    FieldName As String
+    Caption As String
+    Width As String
+    LookupTable As String
+    Suffix As String
+    Format As String
+    Textalign As String
 End Type
 
 Public Sub BuildTablesForDetails()
@@ -19,7 +19,7 @@ Public Sub BuildTablesForDetails()
     '    Exit Sub
     'End If
     
-    Dim tables As Collection
+    Dim tables As collection
     
     Debug.Print "Getting list of detail tables from metaSchema..."
     Set tables = GetListOfTablesFromSchema
@@ -52,7 +52,7 @@ Public Sub BuildTablesForDetails()
     Debug.Print "END"
 End Sub
 
-Private Function CreateForms(tables As Collection) As Long
+Private Function CreateForms(tables As collection) As Long
     Dim tbl As Variant
     For Each tbl In tables
         If BuildFormForDetail(Replace(tbl, "tblDetail", vbNullString)) Then ' TODO Const this
@@ -61,7 +61,7 @@ Private Function CreateForms(tables As Collection) As Long
     Next tbl
 End Function
 
-Private Function CreateTables(tables As Collection) As Long
+Private Function CreateTables(tables As collection) As Long
     Dim tbl As Variant
     
     For Each tbl In tables
@@ -133,11 +133,11 @@ Private Function AddFieldToTableDefFromMetaSchema(tblDef As TableDef, rs As Reco
             fldType = dbDouble
     End Select
     
-    Set fld = tblDef.CreateField(rs!fieldName, fldType)
+    Set fld = tblDef.CreateField(rs!FieldName, fldType)
     
-    If Nz(rs!format) <> vbNullString Then
+    If Nz(rs!Format) <> vbNullString Then
         Set prop = fld.CreateProperty("Format", dbText)
-        prop.Value = rs!format
+        prop.Value = rs!Format
         'fld.Properties.Append prop
     End If
     
@@ -148,42 +148,42 @@ Private Function AddFieldToTableDefFromMetaSchema(tblDef As TableDef, rs As Reco
     tblDef.fields.Append fld
 End Function
 
-Private Function CreateGenericField(tbl As TableDef, fieldName As String, Optional fieldType As Long = dbText)
+Private Function CreateGenericField(tbl As TableDef, FieldName As String, Optional fieldType As Long = dbText)
     Dim fld As Field
-    Set fld = tbl.CreateField(fieldName, fieldType)
+    Set fld = tbl.CreateField(FieldName, fieldType)
     tbl.fields.Append fld
 End Function
 
-Private Function CreateIDField(tbl As TableDef, Optional fieldName As String = "ID")
+Private Function CreateIDField(tbl As TableDef, Optional FieldName As String = "ID")
     Dim fld As DAO.Field
     Dim idx As DAO.index
     
-    Set fld = CreateAutoNumberField(tbl, fieldName)
+    Set fld = CreateAutoNumberField(tbl, FieldName)
     tbl.fields.Append fld
     
     Set idx = tbl.CreateIndex
     
     With idx
         .name = "Primary Key"
-        .fields.Append .CreateField(fieldName)
+        .fields.Append .CreateField(FieldName)
         .Unique = True
         .Primary = True
     End With
     tbl.Indexes.Append idx
 End Function
 
-Private Function CreateAutoNumberField(tbl As TableDef, fieldName As String) As Field
-    Set CreateAutoNumberField = tbl.CreateField(fieldName, dbLong, 4)
+Private Function CreateAutoNumberField(tbl As TableDef, FieldName As String) As Field
+    Set CreateAutoNumberField = tbl.CreateField(FieldName, dbLong, 4)
     With CreateAutoNumberField
          .Attributes = dbAutoIncrField
     End With
 End Function
 
-Private Function GetListOfTablesFromSchema() As Collection
+Private Function GetListOfTablesFromSchema() As collection
     Dim rs As Recordset
     Dim sql As String
     
-    Set GetListOfTablesFromSchema = New Collection
+    Set GetListOfTablesFromSchema = New collection
     sql = "SELECT DISTINCT TableName FROM " & SCHEMA_TABLE & ";"
     Set rs = CurrentDb.OpenRecordset(sql)
     
@@ -198,14 +198,14 @@ Private Function GetListOfTablesFromSchema() As Collection
     Set rs = Nothing
 End Function
 
-Private Function FilterEmptyTablesOnly(tables As Collection) As Collection
+Private Function FilterEmptyTablesOnly(tables As collection) As collection
     Dim tableName As String
     Dim tbl As Variant
     Dim db As Database
     
     Set db = OpenDatabase(BE_DATABASE_FILENAME, False, False)
     
-    Set FilterEmptyTablesOnly = New Collection
+    Set FilterEmptyTablesOnly = New collection
     
     For Each tbl In tables
         tableName = CStr(tbl)

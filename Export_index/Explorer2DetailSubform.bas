@@ -65,8 +65,8 @@ Private Sub HideSCD(ByRef frm As Form)
     
     frm.controls("ValidFrom").Locked = True
     frm.controls("ValidUntil").Locked = True
-    frm.controls("ValidFrom").Properties("BackColor") = RAGColors.Grey
-    frm.controls("ValidUntil").Properties("BackColor") = RAGColors.Grey
+    frm.controls("ValidFrom").Properties("BackColor") = RAGColors.grey
+    frm.controls("ValidUntil").Properties("BackColor") = RAGColors.grey
 End Sub
 
 Private Sub LeftOnlyReadWrite(ByRef frm As Form)
@@ -145,13 +145,5 @@ Private Sub DatasheetHistory(ByRef frm As Form, Optional ByRef sfrm As Subform)
     
     frm.AllowAdditions = False
     frm.dataentry = False
-    
-    For Each ctl In frm.controls
-        If ctl.name Like "txtRHS*" Or ctl.name = "TrackFK" Or ctl.name = "CommitFK" Then
-            ctl.ColumnHidden = True
-        ElseIf ctl.name Like "Valid*" Then
-            ctl.ColumnWidth = 4 * CM_TO_TWIP
-        End If
-    Next ctl
 End Sub
 
