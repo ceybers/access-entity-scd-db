@@ -65,7 +65,7 @@ Public Sub PopulateTreeviewFromCollection(ByRef tv As treeview, ByRef coll As co
             nde.Image = "Kdocument"
         Else
             nde.Image = "Kdirectory_closed"
-            nde.Expanded = True
+            nde.Expanded = False
         End If
     Next ent
 End Sub

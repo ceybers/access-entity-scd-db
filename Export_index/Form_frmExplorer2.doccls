@@ -37,7 +37,6 @@ Private Sub cmbSearch_Click()
     SearchEntity
 End Sub
 
-
 Private Sub Form_Close()
     Dim tv As MSComctlLib.treeview
     If Me.tvEntities Is Nothing Then Exit Sub
@@ -71,7 +70,6 @@ Private Sub MapEventButtons(vm As ViewModelExplorer2)
     End With
 End Sub
 
-
 Private Sub lvDetails_DblClick()
     Dim li As ListItem
     Dim lv As listview
@@ -82,12 +80,20 @@ Private Sub lvDetails_DblClick()
     If li Is Nothing Then Exit Sub
 
     GetVM.DetailTableName = li.key
-    DisplayDetail
+    'DisplayDetail
+End Sub
+
+Private Sub ViewModel_DetailChanged(ByVal DetailTableName As String)
+    Debug.Print "Now: " & DetailTableName
+    Debug.Print "Was: " & Me.chldDetailSubform.SourceObject
+    If DetailTableName <> Me.chldDetailSubform.SourceObject Then
+        Me.chldDetailSubform.SourceObject = GetVM.DetailSubFormName
+    End If
 End Sub
 
 Private Sub tvEntities_Collapse(ByVal Node As Object)
     'On Error Resume Next ' TODO FIX
-    Exit Sub
+    'Exit Sub
     Dim nde As Node
     Set nde = Node
     If nde.Tag <> "EntityTypeID#4" Then
@@ -97,7 +103,7 @@ End Sub
 
 Private Sub tvEntities_Expand(ByVal Node As Object)
     'On Error Resume Next ' TODO FIX
-    Exit Sub
+    'Exit Sub
     Dim nde As Node
     Set nde = Node
     If nde.Tag <> "EntityTypeID#4" Then
@@ -108,7 +114,18 @@ End Sub
 Private Sub tvEntities_NodeClick(ByVal Node As Object)
     Debug.Assert Not Node Is Nothing
     
-    GetVM.EntityID = Replace(Node.key, ENTITY_PREFIX, vbNullString)
+    GetVM.entityID = Replace(Node.key, ENTITY_PREFIX, vbNullString)
+    'DisplayEntity
+End Sub
+
+Private Sub ViewModel_EntityChanged(ByVal entityID As Long)
+    Dim tv As treeview
+    Set tv = Me.tvEntities.Object
+    Dim entityCode As String
+    entityCode = ENTITY_PREFIX & entityID
+    If tv.SelectedItem.key <> entityCode Then
+        ' NYI
+    End If
     DisplayEntity
 End Sub
 
@@ -124,9 +141,21 @@ End Sub
 
 ' Methods
 Private Sub DisplayEntity()
-    Me.RecordsetClone.FindFirst "[ID] = " & GetVM.EntityID
+    Me.RecordsetClone.FindFirst "[ID] = " & GetVM.entityID
     Me.Bookmark = Me.RecordsetClone.Bookmark
     UpdateCaption
+    
+    ' TODO Refactor TreeView helpers GetByKey
+    Dim tv As MSComctlLib.treeview
+    Dim nde As Node
+    Set tv = Me.tvEntities.Object
+    For Each nde In tv.Nodes
+        If nde.key = ENTITY_PREFIX & GetVM.entityID Then
+            nde.selected = True
+            nde.EnsureVisible
+            Exit Sub
+        End If
+    Next nde
 End Sub
 
 Private Sub SearchEntity()
@@ -140,8 +169,8 @@ Private Sub SearchEntity()
     If Not nde Is Nothing Then
         nde.selected = True
         nde.EnsureVisible
-        GetVM.EntityID = Replace(nde.key, ENTITY_PREFIX, vbNullString)
-        DisplayEntity
+        GetVM.entityID = Replace(nde.key, ENTITY_PREFIX, vbNullString)
+        'DisplayEntity
     End If
 End Sub
 
@@ -170,7 +199,7 @@ End Sub
 
 Private Sub UpdateCaption()
     Dim newcaption As String
-    newcaption = GetVM().DetailTableName & " @ Entity#" & GetVM().EntityID
+    newcaption = GetVM().DetailTableName & " @ Entity#" & GetVM().entityID
     Me.lblSubformCaption.Caption = newcaption
 End Sub
 

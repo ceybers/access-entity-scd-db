@@ -120,6 +120,7 @@ Private Sub CreateTextBoxSCD(ByVal formName As String, ByVal prefix As String, B
         .Textalign = 1 'Left
         .ColumnWidth = 4 * CM_TO_TWIP
         .BackColor = RAGColors.grey
+        .ColumnHidden = True
     End With
 End Sub
 
@@ -157,11 +158,21 @@ Private Sub CreateComboBox(ByVal formName As String, ByVal prefix As String, ByR
         .name = prefix & cs.FieldName
         .SpecialEffect = SPECIAL_EFFECT
         .TopMargin = TOP_MARGIN
-        .ControlSource = cs.FieldName
+        '.ControlSource = cs.FieldName
         .RowSource = cs.LookupTable
         .ColumnWidths = "0;" & (4 * CM_TO_TWIP) '2835" '2835 = 5cm
         .ColumnCount = 2
     End With
+    
+    If prefix = "cmbLHS" Then
+        cb.ControlSource = cs.FieldName
+        With CreateControl(formName, acLabel, acDetail, cb.name, , 0.25 * CM_TO_TWIP, top, 3 * CM_TO_TWIP, DEFAULT_HEIGHT)
+            .name = "lbl" & cs.FieldName
+            .Caption = cs.Caption
+        End With
+    Else
+        cb.ColumnHidden = True
+    End If
 End Sub
 
 Private Sub SetSCDFields(ByVal formName As String)
@@ -170,6 +181,7 @@ Private Sub SetSCDFields(ByVal formName As String)
     
     frm.controls("lblTrackFK").Visible = False
     frm.controls("TrackFK").Visible = False
+    frm.controls("ValidFrom").ColumnHidden = False
 End Sub
 
 

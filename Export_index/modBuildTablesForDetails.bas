@@ -55,10 +55,9 @@ End Sub
 Private Function CreateForms(tables As collection) As Long
     Dim tbl As Variant
     For Each tbl In tables
-        If BuildFormForDetail(Replace(tbl, "tblDetail", vbNullString)) Then ' TODO Const this
-            CreateForms = CreateForms + 1
-        End If
+        BuildFormForDetail Replace(tbl, "tblDetail", vbNullString)
     Next tbl
+    CreateForms = -1 ' TODO Implement or refactor into Sub
 End Function
 
 Private Function CreateTables(tables As collection) As Long

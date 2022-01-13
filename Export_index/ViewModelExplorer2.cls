@@ -15,12 +15,14 @@ Option Explicit
 Public Event StartEditing()
 Public Event StopEditing()
 Public Event CancelEditing()
+Public Event EntityChanged(ByVal entityID As Long)
+Public Event DetailChanged(ByVal DetailTableName As String)
 
 Private Const ENTITY_PREFIX As String = "Entity#"
 Private Const ENTITYTYPE_PREFIX As String = "EntityType#"
 
 Private Type TViewModelExplorer2
-    EntityID As Double
+    entityID As Double
     entityTypeid As Double
     DetailTableName As String
     SearchCriteria As String
@@ -50,12 +52,23 @@ Public Property Set Subform(ByRef RHS As Subform)
     Set this.Subform = RHS
 End Property
 
-Public Property Get EntityID() As Double
-    EntityID = this.EntityID
+Public Property Get entityID() As Double
+    entityID = this.entityID
 End Property
 
-Public Property Let EntityID(ByVal RHS As Double)
-    this.EntityID = RHS
+Public Property Let entityID(ByVal RHS As Double)
+    If this.IsEditing Then
+        MsgBox "Cannot change Entity while editing!"
+        RaiseEvent EntityChanged(this.entityID) ' This resets the TreeView control
+        Exit Property
+    End If
+    
+    If this.entityID = RHS Then
+        Exit Property
+    End If
+    
+    this.entityID = RHS
+    RaiseEvent EntityChanged(RHS)
 End Property
 
 Public Property Get entityTypeid() As Double
@@ -75,7 +88,12 @@ Public Property Get DetailTableName() As String
 End Property
 
 Public Property Let DetailTableName(ByVal RHS As String)
+    If this.DetailTableName = RHS Then
+        Exit Property
+    End If
+    
     this.DetailTableName = RHS
+    RaiseEvent DetailChanged(RHS)
 End Property
 
 Public Property Get SearchCriteria() As String
@@ -166,13 +184,14 @@ Private Sub DetailEditNew()
     Explorer2DetailSubform.EditNew this.Subform
     Set frm = this.Subform.Form
     frm.Undo
-    
+    frm.dataentry = True
+    frm.Recordset.AddNew
     'DoCmd.GoToRecord acDataForm, frm.name, acNewRec
     frm.controls("ValidUntil").Value = #12/31/9999#
     frm.controls("CommitFK").Value = this.CommitID
     
     RaiseEvent StartEditing
-    this.IsEditing = False
+    this.IsEditing = True
 End Sub
 
 Private Function DoesSubformHaveZeroRecords() As Boolean

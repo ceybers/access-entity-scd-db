@@ -39,7 +39,7 @@ End Enum
 
 Private Type TDetailViewModel
     SubFormControl As Subform
-    EntityID As Integer
+    entityID As Integer
     CommitID As Integer
     State As DetailStateForSCD
     IsEditing As Boolean
@@ -57,7 +57,7 @@ Public Property Set Detail(ByRef RHS As clsDetail)
     this.SubFormControl.SourceObject = Replace(RHS.tableName, "tbl", "sfrm")
     Log " SubFormControlSourceObject = " & Replace(RHS.tableName, "tbl", "sfrm")
     
-    If this.EntityID > 0 Then TrySetState Ready
+    If this.entityID > 0 Then TrySetState Ready
 End Property
 
 Public Property Get Detail() As clsDetail
@@ -68,13 +68,13 @@ Public Property Set Subform(ByRef RHS As Subform)
     Set this.SubFormControl = RHS
 End Property
 
-Public Property Let EntityID(RHS As Integer)
-    If this.EntityID = RHS Then
+Public Property Let entityID(RHS As Integer)
+    If this.entityID = RHS Then
         Exit Property
     End If
-    this.EntityID = RHS
+    this.entityID = RHS
     
-    Log "(Property) Let Entity = '" & this.EntityID & "'"
+    Log "(Property) Let Entity = '" & this.entityID & "'"
     If Not this.Detail Is Nothing Then TrySetState Ready
 End Property
 
@@ -86,8 +86,8 @@ Public Property Get CommitID() As Integer
     CommitID = this.CommitID
 End Property
 
-Public Property Get EntityID() As Integer
-    EntityID = this.EntityID
+Public Property Get entityID() As Integer
+    entityID = this.entityID
 End Property
 
 Public Property Get IsEditing() As Boolean
@@ -232,7 +232,7 @@ Private Function ChangeToSaveEdits()
         rs.Edit
     End If
     
-    rs!EntityFK = EntityID
+    rs!EntityFK = entityID
     rs!TrackFK = CreateNewTrackRecord(CommitID)
     rs.Update
     
@@ -365,22 +365,22 @@ Private Function GotoEntity()
     Dim frm As Form
     Dim rs As Recordset
     
-    Debug.Assert EntityID > 0
+    Debug.Assert entityID > 0
     
     Set frm = DetailForm
     recordSource = frm.recordSource
     frm.recordSource = vbNullString
     
-    frm.Filter = "EntityFK = " & EntityID & " AND " & TRACK_VALIDUNTIL_FIELDNAME & " = #9999/12/31#"
+    frm.Filter = "EntityFK = " & entityID & " AND " & TRACK_VALIDUNTIL_FIELDNAME & " = #9999/12/31#"
     frm.FilterOn = True
     frm.recordSource = recordSource
     
     Set rs = frm.RecordsetClone
-    rs.FindLast "EntityFK = " & EntityID & " AND " & TRACK_VALIDUNTIL_FIELDNAME & " = #9999/12/31#"
+    rs.FindLast "EntityFK = " & entityID & " AND " & TRACK_VALIDUNTIL_FIELDNAME & " = #9999/12/31#"
     
     frm.Bookmark = rs.Bookmark
     
-    Log "GotoEntity #" & EntityID
+    Log "GotoEntity #" & entityID
 End Function
 
 Private Function GetControlByName(controls As controls, name As String)
@@ -418,13 +418,13 @@ End Function
 Private Function CheckForExistingRecords() As Boolean
     On Error GoTo ErrorHandling
     If Detail Is Nothing Then Exit Function
-    If EntityID = 0 Then Exit Function
+    If entityID = 0 Then Exit Function
     
     Dim results As Integer
     Dim rs As Recordset
     Dim sql As String
     
-    sql = "SELECT Count(*) AS TotalCount FROM " & Detail.tableName & " WHERE EntityFK = " & EntityID & ";"
+    sql = "SELECT Count(*) AS TotalCount FROM " & Detail.tableName & " WHERE EntityFK = " & entityID & ";"
     Set rs = CurrentDb.OpenRecordset(sql)
     results = rs!TotalCount
     
