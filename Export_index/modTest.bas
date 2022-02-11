@@ -3,6 +3,6 @@ Attribute VB_Name = "modTest"
 Option Compare Database
 Option Explicit
 
-Public Sub TEST()
+Public Sub Test()
     Debug.Print "Nothing to do"
 End Sub

@@ -53,12 +53,12 @@ Public Sub ViewMany(ByRef sfrm As Subform)
 End Sub
 
 Private Sub HideSCD(ByRef frm As Form)
-    Dim ctl As control
+    Dim ctl As Control
     
     For Each ctl In frm.controls
-        If ctl.name Like "*TrackFK" Or ctl.name Like "*CommitFK" Then
+        If ctl.Name Like "*TrackFK" Or ctl.Name Like "*CommitFK" Then
             ctl.Visible = False
-        ElseIf ctl.name Like "txtLHS*" Then
+        ElseIf ctl.Name Like "txtLHS*" Then
             ctl.SetFocus
         End If
     Next ctl
@@ -71,14 +71,14 @@ End Sub
 
 Private Sub LeftOnlyReadWrite(ByRef frm As Form)
     DoCmd.RunCommand acCmdSubformFormView
-    Dim ctl As control
+    Dim ctl As Control
     For Each ctl In frm.controls
-        If ctl.name Like "???LHS*" Then
+        If ctl.Name Like "???LHS*" Then
             ctl.Visible = True
             ctl.Properties("Backcolor") = RAGColors.Yellow
-        ElseIf ctl.name Like "???RHS*" Then
+        ElseIf ctl.Name Like "???RHS*" Then
             ctl.Visible = False
-        ElseIf ctl.name Like "lblSuffix*" Then
+        ElseIf ctl.Name Like "lblSuffix*" Then
             ctl.Visible = True
         End If
     Next ctl
@@ -88,14 +88,14 @@ End Sub
 
 Private Sub LeftOnlyReadOnly(ByRef frm As Form)
     DoCmd.RunCommand acCmdSubformFormView
-    Dim ctl As control
+    Dim ctl As Control
     For Each ctl In frm.controls
-        If ctl.name Like "???LHS*" Then
+        If ctl.Name Like "???LHS*" Then
             ctl.Visible = True
             ctl.Locked = True
-        ElseIf ctl.name Like "???RHS*" Then
+        ElseIf ctl.Name Like "???RHS*" Then
             ctl.Visible = False
-        ElseIf ctl.name Like "lblSuffix*" Then
+        ElseIf ctl.Name Like "lblSuffix*" Then
             ctl.Visible = True
         End If
     Next ctl
@@ -105,19 +105,19 @@ End Sub
 
 Private Sub LeftOnlyBlank(ByRef frm As Form)
     'DoCmd.RunCommand acCmdSubformFormView
-    Dim ctl As control
+    Dim ctl As Control
     frm.AllowAdditions = False
     frm.dataentry = True
     ' AllowAdd = false and DataEntry = true will blank the subform OK
     Exit Sub
     
     For Each ctl In frm.controls
-        If ctl.name Like "???LHS*" Then
+        If ctl.Name Like "???LHS*" Then
             ctl.Visible = False
             ctl.Properties("Backcolor") = RAGColors.Red
-        ElseIf ctl.name Like "???RHS*" Then
+        ElseIf ctl.Name Like "???RHS*" Then
             ctl.Visible = False
-        ElseIf ctl.name Like "lblSuffix*" Then
+        ElseIf ctl.Name Like "lblSuffix*" Then
             ctl.Visible = False
         End If
     Next ctl
@@ -126,14 +126,14 @@ End Sub
 
 Private Sub LeftRightReadWrite(ByRef frm As Form)
     DoCmd.RunCommand acCmdSubformFormView
-    Dim ctl As control
+    Dim ctl As Control
     For Each ctl In frm.controls
-        If ctl.name Like "???LHS*" Then
+        If ctl.Name Like "???LHS*" Then
             ctl.Visible = True
-        ElseIf ctl.name Like "???RHS*" Then
+        ElseIf ctl.Name Like "???RHS*" Then
             ctl.Visible = True
             ctl.Properties("BackColor") = RAGColors.Yellow
-        ElseIf ctl.name Like "lblSuffix*" Then
+        ElseIf ctl.Name Like "lblSuffix*" Then
             ctl.Visible = False
         End If
     Next ctl
@@ -141,7 +141,7 @@ End Sub
 
 Private Sub DatasheetHistory(ByRef frm As Form, Optional ByRef sfrm As Subform)
     DoCmd.RunCommand acCmdSubformDatasheetView
-    Dim ctl As control
+    Dim ctl As Control
     
     frm.AllowAdditions = False
     frm.dataentry = False

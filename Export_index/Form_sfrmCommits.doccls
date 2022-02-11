@@ -56,7 +56,7 @@ Private Sub CreateNewCommit()
         DoCmd.Close acForm, NEW_COMMIT_FORM, acSaveNo
     End If
     
-    DoCmd.OpenForm formName:=NEW_COMMIT_FORM, View:=acNormal
+    DoCmd.OpenForm formName:=NEW_COMMIT_FORM, view:=acNormal
     Set frm = Forms(NEW_COMMIT_FORM)
     Set frm.ViewModel = ViewModel
 End Sub

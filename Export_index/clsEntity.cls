@@ -17,44 +17,44 @@ Implements IThing
 
 Private Type TEntity
     ID As Double
-    name As String
+    Name As String
     EntityType As Double
 End Type
-Private this As TEntity
+Private This As TEntity
 
 Public Property Get Self() As clsEntity
     Set Self = Me
 End Property
 
 Public Property Get ID() As Double
-    ID = this.ID
+    ID = This.ID
 End Property
 
-Public Property Get name() As String
-    name = this.name
+Public Property Get Name() As String
+    Name = This.Name
 End Property
 
 Public Property Get EntityType() As Double
-    EntityType = this.EntityType
+    EntityType = This.EntityType
 End Property
 
 Private Property Get IThing_ID() As Double
-    IThing_ID = this.ID
+    IThing_ID = This.ID
 End Property
 
 Private Property Get IThing_Name() As String
-    IThing_Name = this.name
+    IThing_Name = This.Name
 End Property
 
 Public Property Let ID(ByVal vNewValue As Double)
-    this.ID = vNewValue
+    This.ID = vNewValue
 End Property
 
-Public Property Let name(ByVal vNewValue As String)
-    this.name = vNewValue
+Public Property Let Name(ByVal vNewValue As String)
+    This.Name = vNewValue
 End Property
 
 Public Property Let EntityType(ByVal vNewValue As Double)
-    this.EntityType = vNewValue
+    This.EntityType = vNewValue
 End Property
 

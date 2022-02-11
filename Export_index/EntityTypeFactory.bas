@@ -4,10 +4,10 @@ Attribute VB_Name = "EntityTypeFactory"
 Option Compare Database
 Option Explicit
 
-Public Function Create(ID As Double, name As String) As clsEntityType
+Public Function Create(ID As Double, Name As String) As clsEntityType
     With New clsEntityType
         .ID = ID
-        .name = name
+        .Name = Name
         Set Create = .Self
     End With
 End Function
@@ -15,7 +15,7 @@ End Function
 Public Function CreateFromRecordset(ByRef rs As DAO.Recordset) As clsEntityType
     With New clsEntityType
         .ID = rs!ID
-        .name = rs!EntityType
+        .Name = rs!EntityType
         Set CreateFromRecordset = .Self
     End With
 End Function

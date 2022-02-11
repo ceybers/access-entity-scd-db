@@ -19,10 +19,10 @@ Private Type TEventCommandButton
     State As DetailStateForSCD
     Context As clsDetailViewModel
 End Type
-Private this As TEventCommandButton
+Private This As TEventCommandButton
 
 Public Property Set ViewModel(Context As clsDetailViewModel)
-    Set this.Context = Context
+    Set This.Context = Context
 End Property
 
 Public Property Set CommandButton(textbox As Access.CommandButton)
@@ -31,11 +31,11 @@ Public Property Set CommandButton(textbox As Access.CommandButton)
 End Property
 
 Public Property Let ActionState(State As DetailStateForSCD)
-    this.State = State
+    This.State = State
 End Property
 
 Public Property Get ActionState() As DetailStateForSCD
-    ActionState = this.State
+    ActionState = This.State
 End Property
 
 Public Property Let Enabled(State As Boolean)
@@ -53,6 +53,6 @@ Public Property Get Self() As clsEventCommandButton
 End Property
 
 Private Sub cmdBtn_Click()
-    this.Context.HandleEvent this.State
+    This.Context.HandleEvent This.State
 End Sub
 

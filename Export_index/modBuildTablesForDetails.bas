@@ -116,7 +116,7 @@ Private Sub AddFieldsToTableDefFromMetaSchema(tblDef As TableDef, tableName As S
     Set db = Nothing
 End Sub
 
-Private Function AddFieldToTableDefFromMetaSchema(tblDef As TableDef, rs As Recordset)
+Private Sub AddFieldToTableDefFromMetaSchema(tblDef As TableDef, rs As Recordset)
     Dim fldType As Long
     Dim prop As DAO.Property
     Dim fld As Field
@@ -145,15 +145,15 @@ Private Function AddFieldToTableDefFromMetaSchema(tblDef As TableDef, rs As Reco
     End If
     
     tblDef.fields.Append fld
-End Function
+End Sub
 
-Private Function CreateGenericField(tbl As TableDef, FieldName As String, Optional fieldType As Long = dbText)
+Private Sub CreateGenericField(tbl As TableDef, FieldName As String, Optional fieldType As Long = dbText)
     Dim fld As Field
     Set fld = tbl.CreateField(FieldName, fieldType)
     tbl.fields.Append fld
-End Function
+End Sub
 
-Private Function CreateIDField(tbl As TableDef, Optional FieldName As String = "ID")
+Private Sub CreateIDField(tbl As TableDef, Optional FieldName As String = "ID")
     Dim fld As DAO.Field
     Dim idx As DAO.index
     
@@ -163,13 +163,13 @@ Private Function CreateIDField(tbl As TableDef, Optional FieldName As String = "
     Set idx = tbl.CreateIndex
     
     With idx
-        .name = "Primary Key"
+        .Name = "Primary Key"
         .fields.Append .CreateField(FieldName)
         .Unique = True
         .Primary = True
     End With
     tbl.Indexes.Append idx
-End Function
+End Sub
 
 Private Function CreateAutoNumberField(tbl As TableDef, FieldName As String) As Field
     Set CreateAutoNumberField = tbl.CreateField(FieldName, dbLong, 4)

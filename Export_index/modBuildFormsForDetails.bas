@@ -54,7 +54,7 @@ Private Sub InitializeFormProperties(ByRef frm As Form)
         .AllowAdditions = True
         .AllowEdits = True
         .AllowDeletions = False
-        .recordSource = GetSQL(Replace(frm.name, "sfrm", "tbl"))
+        .recordSource = GetSQL(Replace(frm.Name, "sfrm", "tbl"))
     End With
 End Sub
 
@@ -102,7 +102,7 @@ Private Sub CreateLabel(ByVal formName As String, ByVal prefix As String, ByRef 
     Set lbl = CreateControl(formName:=formName, ControlType:=acLabel, left:=left, top:=top, Width:=(3 * CM_TO_TWIP), height:=DEFAULT_HEIGHT)
     
     With lbl
-        .name = prefix & cs.FieldName
+        .Name = prefix & cs.FieldName
         .Caption = cs.Caption
         .TopMargin = TOP_MARGIN
     End With
@@ -113,7 +113,7 @@ Private Sub CreateTextBoxSCD(ByVal formName As String, ByVal prefix As String, B
     Set tb = CreateControl(formName:=formName, ControlType:=acTextBox, left:=left, top:=top, Width:=(4 * CM_TO_TWIP), height:=DEFAULT_HEIGHT)
     
     With tb
-        .name = prefix & cs.FieldName
+        .Name = prefix & cs.FieldName
         .SpecialEffect = SPECIAL_EFFECT ' Sunken
         .TopMargin = TOP_MARGIN
         .ControlSource = cs.FieldName
@@ -128,7 +128,7 @@ Private Sub CreateTextBox(ByVal formName As String, ByVal prefix As String, ByRe
     Dim tb As textbox
     Set tb = CreateControl(formName:=formName, ControlType:=acTextBox, left:=left, top:=top, Width:=(CDbl(cs.Width) * CM_TO_TWIP), height:=DEFAULT_HEIGHT)
     
-    tb.name = prefix & cs.FieldName
+    tb.Name = prefix & cs.FieldName
     tb.SpecialEffect = SPECIAL_EFFECT
     tb.TopMargin = TOP_MARGIN
 
@@ -142,8 +142,8 @@ Private Sub CreateTextBox(ByVal formName As String, ByVal prefix As String, ByRe
     
     If prefix = "txtLHS" Then
         tb.ControlSource = cs.FieldName
-        With CreateControl(formName, acLabel, acDetail, tb.name, , 0.25 * CM_TO_TWIP, top, 3 * CM_TO_TWIP, DEFAULT_HEIGHT)
-            .name = "lbl" & cs.FieldName
+        With CreateControl(formName, acLabel, acDetail, tb.Name, , 0.25 * CM_TO_TWIP, top, 3 * CM_TO_TWIP, DEFAULT_HEIGHT)
+            .Name = "lbl" & cs.FieldName
             .Caption = cs.Caption
         End With
     Else
@@ -155,7 +155,7 @@ Private Sub CreateComboBox(ByVal formName As String, ByVal prefix As String, ByR
     Dim cb As ComboBox
     Set cb = CreateControl(formName:=formName, ControlType:=acComboBox, left:=left, top:=top, Width:=(4 * CM_TO_TWIP), height:=DEFAULT_HEIGHT)
     With cb
-        .name = prefix & cs.FieldName
+        .Name = prefix & cs.FieldName
         .SpecialEffect = SPECIAL_EFFECT
         .TopMargin = TOP_MARGIN
         '.ControlSource = cs.FieldName
@@ -166,8 +166,8 @@ Private Sub CreateComboBox(ByVal formName As String, ByVal prefix As String, ByR
     
     If prefix = "cmbLHS" Then
         cb.ControlSource = cs.FieldName
-        With CreateControl(formName, acLabel, acDetail, cb.name, , 0.25 * CM_TO_TWIP, top, 3 * CM_TO_TWIP, DEFAULT_HEIGHT)
-            .name = "lbl" & cs.FieldName
+        With CreateControl(formName, acLabel, acDetail, cb.Name, , 0.25 * CM_TO_TWIP, top, 3 * CM_TO_TWIP, DEFAULT_HEIGHT)
+            .Name = "lbl" & cs.FieldName
             .Caption = cs.Caption
         End With
     Else

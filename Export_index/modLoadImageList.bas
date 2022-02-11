@@ -21,7 +21,7 @@ Public Sub Load(ByRef il As ImageList)
     'filesToLoad = "4.ico;5.ico;fontview_111.ico"
     filesToLoad = "directory_open.ico;directory_closed.ico;document.ico;template_empty-0.ico"
     Dim fileArr As Variant
-    fileArr = split(filesToLoad, ";")
+    fileArr = Split(filesToLoad, ";")
     
     If il.ListImages.count > 0 Then
         MsgBox "Cannot load - Please clear first", vbCritical

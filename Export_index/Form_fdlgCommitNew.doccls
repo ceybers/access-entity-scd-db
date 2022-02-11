@@ -7,25 +7,25 @@ Private Type TFrmCommits
     ViewModel As clsCommitViewModel
     IsCancelled As Boolean
 End Type
-Private this As TFrmCommits
+Private This As TFrmCommits
 
 ' Properties
 Private Property Get ViewModel() As clsCommitViewModel
-    If this.ViewModel Is Nothing Then
-        Set this.ViewModel = New clsCommitViewModel
+    If This.ViewModel Is Nothing Then
+        Set This.ViewModel = New clsCommitViewModel
     End If
-    Set ViewModel = this.ViewModel
+    Set ViewModel = This.ViewModel
 End Property
 
 '@Ignore MisleadingByRefParameter
-Public Property Set ViewModel(ByRef RHS As clsCommitViewModel)
-    Set this.ViewModel = RHS
+Public Property Set ViewModel(ByRef rhs As clsCommitViewModel)
+    Set This.ViewModel = rhs
 End Property
 
 ' Events
 Private Sub Form_AfterUpdate()
     'Model.RecordID = Me.Recordset!ID
-    ViewModel.SetCommitByID Me.Recordset!ID
+    ViewModel.SetCommitByID Me.Recordset.fields("ID").Value
     DoCmd.Close acForm, "frmCommits", acSaveNo
 End Sub
 

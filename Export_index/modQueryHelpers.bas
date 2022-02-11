@@ -23,7 +23,7 @@ Public Function DoesQueryExist(ByVal queryName As String, Optional ByRef db As D
     If db Is Nothing Then Set db = CurrentDb
 
     For Each qdf In db.QueryDefs
-        If qdf.name = queryName Then
+        If qdf.Name = queryName Then
             DoesQueryExist = True
             Exit Function
         End If

@@ -123,9 +123,9 @@ Private Sub ViewModel_EntityChanged(ByVal entityID As Long)
     Set tv = Me.tvEntities.Object
     Dim entityCode As String
     entityCode = ENTITY_PREFIX & entityID
-    If tv.SelectedItem.key <> entityCode Then
+    'If tv.SelectedItem.key <> entityCode Then
         ' NYI
-    End If
+    'End If
     DisplayEntity
 End Sub
 

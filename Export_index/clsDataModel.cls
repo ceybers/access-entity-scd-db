@@ -20,37 +20,37 @@ Private Type TDataModel
      EntityTypes As collection
      Commits As collection
 End Type
-Private this As TDataModel
+Private This As TDataModel
 
 ' Ctor
 
 ' Getters
 Public Property Get Details() As collection
-    If this.Details Is Nothing Then
-        Set this.Details = LoadThings(DETAILS_TABLE)
+    If This.Details Is Nothing Then
+        Set This.Details = LoadThings(DETAILS_TABLE)
     End If
-    Set Details = this.Details
+    Set Details = This.Details
 End Property
 
 Public Property Get Entities() As collection
-    If this.Entities Is Nothing Then
-        Set this.Entities = LoadThings(ENTITIES_TABLE)
+    If This.Entities Is Nothing Then
+        Set This.Entities = LoadThings(ENTITIES_TABLE)
     End If
-    Set Entities = this.Entities
+    Set Entities = This.Entities
 End Property
 
 Public Property Get EntityTypes() As collection
-    If this.EntityTypes Is Nothing Then
-        Set this.EntityTypes = LoadThings(ENTITYTYPES_TABLE)
+    If This.EntityTypes Is Nothing Then
+        Set This.EntityTypes = LoadThings(ENTITYTYPES_TABLE)
     End If
-    Set EntityTypes = this.EntityTypes
+    Set EntityTypes = This.EntityTypes
 End Property
 
 Public Property Get Commits() As collection
-    If this.Commits Is Nothing Then
-        Set this.Commits = LoadThings(COMMITS_TABLE)
+    If This.Commits Is Nothing Then
+        Set This.Commits = LoadThings(COMMITS_TABLE)
     End If
-    Set Commits = this.Commits
+    Set Commits = This.Commits
 End Property
 
 ' Public Methods

@@ -9,7 +9,7 @@ Private Enum CommitTypes
     Email = 6
 End Enum
 
-Public Function DoAutofill(Model As clsCommitViewModel, frm As Form)
+Public Sub DoAutofill(Model As clsCommitViewModel, frm As Form)
     Select Case Model.AutofillType
         Case "Email"
             ProcessEmail Model, frm
@@ -18,11 +18,11 @@ Public Function DoAutofill(Model As clsCommitViewModel, frm As Form)
         Case "Drawing"
             ProcessDrawing Model, frm
     End Select
-End Function
+End Sub
 
 Private Function ProcessEmail(Model As clsCommitViewModel, frm As Form) As Boolean
     Dim s As Variant
-    s = split(Model.AutofillData)
+    s = Split(Model.AutofillData)
     If UBound(s) <> 3 Then Exit Function
     
     frm!Title = Model.AutofillData
@@ -37,12 +37,12 @@ End Function
 Private Function ProcessReport(Model As clsCommitViewModel, frm As Form) As Boolean
     Dim repDate As Date
     Dim s As Variant
-    s = split(Model.AutofillData, " - ")
+    s = Split(Model.AutofillData, " - ")
     If UBound(s) <> 3 Then Exit Function
     
     repDate = CDate(s(3))
     
-    frm!Title = CStr(s(1)) & " " & CStr(s(0)) & " " & Format(repDate, "yyyymmdd")
+    frm!Title = CStr(s(1)) & " " & CStr(s(0)) & " " & Format$(repDate, "yyyymmdd")
     'frm!RecvdFrom = CStr(s(0))
     frm!RecvdDate = Now()
     frm!CommitType = CommitTypes.Report
@@ -57,12 +57,12 @@ End Function
 Private Function ProcessDrawing(Model As clsCommitViewModel, frm As Form) As Boolean
     Dim dwgDate As Date
     Dim s As Variant
-    s = split(Model.AutofillData, " - ")
+    s = Split(Model.AutofillData, " - ")
     If UBound(s) <> 3 Then Exit Function
     
     dwgDate = CDate(s(3))
     
-    frm!Title = CStr(s(1)) & " " & CStr(s(0)) & " " & Format(dwgDate, "yyyymmdd")
+    frm!Title = CStr(s(1)) & " " & CStr(s(0)) & " " & Format$(dwgDate, "yyyymmdd")
     'frm!RecvdFrom = CStr(s(0))
     frm!RecvdDate = Now()
     frm!CommitType = CommitTypes.Drawing

@@ -4,10 +4,10 @@ Attribute VB_Name = "CommitFactory"
 Option Compare Database
 Option Explicit
 
-Public Function Create(ID As Double, name As String) As clsCommit
+Public Function Create(ID As Double, Name As String) As clsCommit
     With New clsCommit
         .ID = ID
-        .name = name
+        .Name = Name
         Set Create = .Self
     End With
 End Function
@@ -15,7 +15,7 @@ End Function
 Public Function CreateFromRecordset(ByRef rs As DAO.Recordset) As clsCommit
     With New clsCommit
         .ID = rs!ID
-        .name = rs!Title
+        .Name = rs!Title
         Set CreateFromRecordset = .Self
     End With
 End Function

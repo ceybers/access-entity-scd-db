@@ -24,30 +24,30 @@ Private Type TCommitViewModel
     Commit As clsCommit
     Model As clsDataModel
 End Type
-Private this As TCommitViewModel
+Private This As TCommitViewModel
 
 Public Property Get AutofillType() As String
-    AutofillType = this.AutofillType
+    AutofillType = This.AutofillType
 End Property
 
-Public Property Let AutofillType(ByVal RHS As String)
-    this.AutofillType = RHS
+Public Property Let AutofillType(ByVal rhs As String)
+    This.AutofillType = rhs
 End Property
 
 Public Property Get AutofillData() As String
-    AutofillData = this.AutofillData
+    AutofillData = This.AutofillData
 End Property
 
-Public Property Let AutofillData(ByVal RHS As String)
-    this.AutofillData = RHS
+Public Property Let AutofillData(ByVal rhs As String)
+    This.AutofillData = rhs
 End Property
 
 Public Property Get Commit() As clsCommit
-    Set Commit = this.Commit
+    Set Commit = This.Commit
 End Property
 
-Public Property Set Commit(ByRef RHS As clsCommit)
-    Set this.Commit = RHS
+Public Property Set Commit(ByRef rhs As clsCommit)
+    Set This.Commit = rhs
     RaiseEvent CommitChanged
 End Property
 
@@ -63,14 +63,14 @@ Public Function CanAutofill() As Boolean
 End Function
 
 Private Sub Class_Initialize()
-    Set this.Model = New clsDataModel
-    this.AutofillType = -1
+    Set This.Model = New clsDataModel
+    This.AutofillType = -1
 End Sub
 
 Public Function SetCommitByID(idx As Double)
     Dim aCommit As clsCommit
-    Set this.Model = New clsDataModel
-    Set aCommit = this.Model.GetThingByID(this.Model.Commits, idx)
+    Set This.Model = New clsDataModel
+    Set aCommit = This.Model.GetThingByID(This.Model.Commits, idx)
     Set Commit = aCommit
 End Function
 

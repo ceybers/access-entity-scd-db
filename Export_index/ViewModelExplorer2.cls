@@ -32,80 +32,80 @@ Private Type TViewModelExplorer2
     IsEditing As Boolean
 End Type
 
-Private this As TViewModelExplorer2
+Private This As TViewModelExplorer2
 
 ' Ctor
 Private Sub Class_Initialize()
     ' TODO below is test env only. Handle unselcted/uninit entityTypeID properly
-    this.entityTypeid = 1
-    Set this.Events = New collection
-    this.CommitID = 1
+    This.entityTypeid = 1
+    Set This.Events = New collection
+    This.CommitID = 1
 End Sub
 
 ' Properties
 Public Property Get IsEditing() As Boolean
-    IsEditing = this.IsEditing
+    IsEditing = This.IsEditing
 End Property
 
 '@Ignore MisleadingByRefParameter
-Public Property Set Subform(ByRef RHS As Subform)
-    Set this.Subform = RHS
+Public Property Set Subform(ByRef rhs As Subform)
+    Set This.Subform = rhs
 End Property
 
 Public Property Get entityID() As Double
-    entityID = this.entityID
+    entityID = This.entityID
 End Property
 
-Public Property Let entityID(ByVal RHS As Double)
-    If this.IsEditing Then
+Public Property Let entityID(ByVal rhs As Double)
+    If This.IsEditing Then
         MsgBox "Cannot change Entity while editing!"
-        RaiseEvent EntityChanged(this.entityID) ' This resets the TreeView control
+        RaiseEvent EntityChanged(This.entityID) ' This resets the TreeView control
         Exit Property
     End If
     
-    If this.entityID = RHS Then
+    If This.entityID = rhs Then
         Exit Property
     End If
     
-    this.entityID = RHS
-    RaiseEvent EntityChanged(RHS)
+    This.entityID = rhs
+    RaiseEvent EntityChanged(rhs)
 End Property
 
 Public Property Get entityTypeid() As Double
-    entityTypeid = this.entityTypeid
+    entityTypeid = This.entityTypeid
 End Property
 
-Public Property Let entityTypeid(ByVal RHS As Double)
-    this.entityTypeid = RHS
+Public Property Let entityTypeid(ByVal rhs As Double)
+    This.entityTypeid = rhs
 End Property
 
 Public Property Get DetailSubFormName() As String
-    DetailSubFormName = Replace(this.DetailTableName, "tbl", "sfrm")
+    DetailSubFormName = Replace(This.DetailTableName, "tbl", "sfrm")
 End Property
 
 Public Property Get DetailTableName() As String
-    DetailTableName = this.DetailTableName
+    DetailTableName = This.DetailTableName
 End Property
 
-Public Property Let DetailTableName(ByVal RHS As String)
-    If this.DetailTableName = RHS Then
+Public Property Let DetailTableName(ByVal rhs As String)
+    If This.DetailTableName = rhs Then
         Exit Property
     End If
     
-    this.DetailTableName = RHS
-    RaiseEvent DetailChanged(RHS)
+    This.DetailTableName = rhs
+    RaiseEvent DetailChanged(rhs)
 End Property
 
 Public Property Get SearchCriteria() As String
-    SearchCriteria = this.SearchCriteria
+    SearchCriteria = This.SearchCriteria
 End Property
 
-Public Property Let SearchCriteria(ByVal RHS As String)
-    this.SearchCriteria = RHS
+Public Property Let SearchCriteria(ByVal rhs As String)
+    This.SearchCriteria = rhs
 End Property
 
 Public Function GetSQL() As String
-    Debug.Assert this.entityTypeid > 0
+    Debug.Assert This.entityTypeid > 0
     GetSQL = "SELECT * FROM metaEntities WHERE EntityType <= " & entityTypeid & " ORDER BY EntityType ASC, Entity ASC"
 End Function
 
@@ -147,15 +147,15 @@ Private Function RecordToEntity(ByRef rs As Recordset) As Explorer2Entity
 End Function
 
 
-Public Function AddEvents(cb As CommandButton, State As String)
+Public Sub AddEvents(cb As CommandButton, State As String)
     With New Explorer2EventCommandButton
         Set .CommandButton = cb
         Set .Context = Me
         .State = State
-        this.Events.Add .Self
+        This.Events.Add .Self
     End With
     'Debug.Print "AddEvents(" & cb.name & ", " & State & ")"
-End Function
+End Sub
 
 Public Sub HandleEvent(ByVal State As String)
     'Debug.Print "HandleEvent(" & State & ")"
@@ -165,39 +165,39 @@ Public Sub HandleEvent(ByVal State As String)
         Case "Save"
             DetailSave
         Case "ViewMany"
-            Explorer2DetailSubform.ViewMany this.Subform
+            Explorer2DetailSubform.ViewMany This.Subform
         Case "ViewOne"
-            Explorer2DetailSubform.ViewOne this.Subform
+            Explorer2DetailSubform.ViewOne This.Subform
     End Select
 End Sub
 
 Private Sub DetailSave()
     RaiseEvent StopEditing
-    this.IsEditing = False
-    this.Subform.Requery
-    Explorer2DetailSubform.ViewOne this.Subform
+    This.IsEditing = False
+    This.Subform.Requery
+    Explorer2DetailSubform.ViewOne This.Subform
 End Sub
 
 Private Sub DetailEditNew()
     Dim frm As Form
     
-    Explorer2DetailSubform.EditNew this.Subform
-    Set frm = this.Subform.Form
+    Explorer2DetailSubform.EditNew This.Subform
+    Set frm = This.Subform.Form
     frm.Undo
     frm.dataentry = True
     frm.Recordset.AddNew
     'DoCmd.GoToRecord acDataForm, frm.name, acNewRec
     frm.controls("ValidUntil").Value = #12/31/9999#
-    frm.controls("CommitFK").Value = this.CommitID
+    frm.controls("CommitFK").Value = This.CommitID
     
     RaiseEvent StartEditing
-    this.IsEditing = True
+    This.IsEditing = True
 End Sub
 
 Private Function DoesSubformHaveZeroRecords() As Boolean
-    Debug.Assert Not this.Subform Is Nothing
-    Debug.Assert Not this.Subform.Form Is Nothing
+    Debug.Assert Not This.Subform Is Nothing
+    Debug.Assert Not This.Subform.Form Is Nothing
     Dim recordCount As Long
-    recordCount = this.Subform.Form.RecordsetClone.recordCount
+    recordCount = This.Subform.Form.RecordsetClone.recordCount
     DoesSubformHaveZeroRecords = (recordCount = 0)
 End Function

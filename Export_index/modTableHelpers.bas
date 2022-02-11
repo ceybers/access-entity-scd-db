@@ -49,7 +49,7 @@ Public Sub DEBUG_PrintTables(Optional ByRef db As DAO.Database)
     Debug.Print "DEBUG_PrintTables()"
     
     For Each tdf In db.TableDefs
-        Debug.Print tdf.name
+        Debug.Print tdf.Name
     Next tdf
     
     Debug.Print vbNullString
@@ -61,7 +61,7 @@ Public Function DoesTableExist(ByVal tableName As String, Optional ByRef db As D
     If db Is Nothing Then Set db = CurrentDb
     
     For Each tdf In db.TableDefs
-        If tdf.name = tableName Then
+        If tdf.Name = tableName Then
             DoesTableExist = True
             Exit Function
         End If

@@ -18,36 +18,36 @@ Private Type TExplorer2Entity
     EntityType As String
 End Type
 
-Private this As TExplorer2Entity
+Private This As TExplorer2Entity
 
 Public Property Get ID() As String
-    ID = this.ID
+    ID = This.ID
 End Property
 
-Public Property Let ID(ByVal RHS As String)
-    this.ID = RHS
+Public Property Let ID(ByVal rhs As String)
+    This.ID = rhs
 End Property
 
 Public Property Get Entity() As String
-    Entity = this.Entity
+    Entity = This.Entity
 End Property
 
-Public Property Let Entity(ByVal RHS As String)
-    this.Entity = RHS
+Public Property Let Entity(ByVal rhs As String)
+    This.Entity = rhs
 End Property
 
 Public Property Get Parent() As String
-    Parent = this.Parent
+    Parent = This.Parent
 End Property
 
-Public Property Let Parent(ByVal RHS As String)
-    this.Parent = RHS
+Public Property Let Parent(ByVal rhs As String)
+    This.Parent = rhs
 End Property
 
 Public Property Get EntityType() As String
-    EntityType = this.EntityType
+    EntityType = This.EntityType
 End Property
 
-Public Property Let EntityType(ByVal RHS As String)
-    this.EntityType = RHS
+Public Property Let EntityType(ByVal rhs As String)
+    This.EntityType = rhs
 End Property

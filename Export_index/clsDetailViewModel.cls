@@ -45,66 +45,66 @@ Private Type TDetailViewModel
     IsEditing As Boolean
     Detail As clsDetail
 End Type
-Private this As TDetailViewModel
+Private This As TDetailViewModel
 
 ' Properties
-Public Property Set Detail(ByRef RHS As clsDetail)
-    Debug.Assert Not RHS Is Nothing
-    Log "(Property) Set Detail = '" & RHS.tableName & "'"
+Public Property Set Detail(ByRef rhs As clsDetail)
+    Debug.Assert Not rhs Is Nothing
+    Log "(Property) Set Detail = '" & rhs.tableName & "'"
     
-    Set this.Detail = RHS
+    Set This.Detail = rhs
     
-    this.SubFormControl.SourceObject = Replace(RHS.tableName, "tbl", "sfrm")
-    Log " SubFormControlSourceObject = " & Replace(RHS.tableName, "tbl", "sfrm")
+    This.SubFormControl.SourceObject = Replace(rhs.tableName, "tbl", "sfrm")
+    Log " SubFormControlSourceObject = " & Replace(rhs.tableName, "tbl", "sfrm")
     
-    If this.entityID > 0 Then TrySetState Ready
+    If This.entityID > 0 Then TrySetState Ready
 End Property
 
 Public Property Get Detail() As clsDetail
-    Set Detail = this.Detail
+    Set Detail = This.Detail
 End Property
 
-Public Property Set Subform(ByRef RHS As Subform)
-    Set this.SubFormControl = RHS
+Public Property Set Subform(ByRef rhs As Subform)
+    Set This.SubFormControl = rhs
 End Property
 
-Public Property Let entityID(RHS As Integer)
-    If this.entityID = RHS Then
+Public Property Let entityID(rhs As Integer)
+    If This.entityID = rhs Then
         Exit Property
     End If
-    this.entityID = RHS
+    This.entityID = rhs
     
-    Log "(Property) Let Entity = '" & this.entityID & "'"
-    If Not this.Detail Is Nothing Then TrySetState Ready
+    Log "(Property) Let Entity = '" & This.entityID & "'"
+    If Not This.Detail Is Nothing Then TrySetState Ready
 End Property
 
-Public Property Let CommitID(RHS As Integer)
-    this.CommitID = RHS
+Public Property Let CommitID(rhs As Integer)
+    This.CommitID = rhs
 End Property
 
 Public Property Get CommitID() As Integer
-    CommitID = this.CommitID
+    CommitID = This.CommitID
 End Property
 
 Public Property Get entityID() As Integer
-    entityID = this.entityID
+    entityID = This.entityID
 End Property
 
 Public Property Get IsEditing() As Boolean
-    IsEditing = this.IsEditing
+    IsEditing = This.IsEditing
 End Property
 
 Private Property Get DetailForm() As Form
     'Debug.Assert Not This.Detail Is Nothing
     'Debug.Assert This.SubFormControl Is Nothing
-    Set DetailForm = this.SubFormControl.Form
+    Set DetailForm = This.SubFormControl.Form
 End Property
 
 ' Ctor
 Private Sub Class_Initialize()
     Set Events = New collection
-    this.CommitID = 1
-    this.State = invalid
+    This.CommitID = 1
+    This.State = invalid
 End Sub
 
 ' Mode functions
@@ -117,15 +117,15 @@ Private Function ChangeToViewNewMode()
         .controls(TRACK_COMMITFK_FIELDNAME).Locked = True
     End With
     
-    Dim ctl As control
+    Dim ctl As Control
     For Each ctl In DetailForm.controls
-        If ctl.name Like "???LHS*" Then
+        If ctl.Name Like "???LHS*" Then
             ctl.Locked = False
             ctl.Visible = False
             ctl.Properties("BackColor") = RAGColors.Yellow
-        ElseIf ctl.name Like "???RHS*" Then
+        ElseIf ctl.Name Like "???RHS*" Then
             ctl.Visible = False
-         ElseIf ctl.name Like "lblSuffix*" Then
+         ElseIf ctl.Name Like "lblSuffix*" Then
             ctl.Properties("Left") = 4394
             ctl.Visible = False
         End If
@@ -137,15 +137,15 @@ End Function
 Private Function ChangeToEditNewMode()
     SetFormEditState True, True, False, True
     
-    Dim ctl As control
+    Dim ctl As Control
     For Each ctl In DetailForm.controls
-        If ctl.name Like "???LHS*" Then
+        If ctl.Name Like "???LHS*" Then
             ctl.Locked = False
             ctl.Visible = True
             ctl.Properties("BackColor") = RAGColors.Yellow
-        ElseIf ctl.name Like "???RHS*" Then
+        ElseIf ctl.Name Like "???RHS*" Then
             ctl.Visible = False
-         ElseIf ctl.name Like "lblSuffix*" Then
+         ElseIf ctl.Name Like "lblSuffix*" Then
             ctl.Properties("Left") = 4394
         End If
     Next ctl
@@ -160,15 +160,15 @@ Private Function ChangeToViewExistingMode()
 
     GotoEntity
         
-    Dim ctl As control
+    Dim ctl As Control
     For Each ctl In DetailForm.controls
-        If ctl.name Like "???LHS*" Then
+        If ctl.Name Like "???LHS*" Then
             ctl.Locked = True
             ctl.Visible = True
             ctl.Properties("BackColor") = RAGColors.Default
-        ElseIf ctl.name Like "???RHS*" Then
+        ElseIf ctl.Name Like "???RHS*" Then
             ctl.Visible = False
-        ElseIf ctl.name Like "lblSuffix*" Then
+        ElseIf ctl.Name Like "lblSuffix*" Then
             ctl.Properties("Left") = 4394 '4394 or 6804
             ctl.Visible = True
         End If
@@ -182,17 +182,17 @@ Private Function ChangeToEditExistingMode()
 
     GotoEntity
         
-    Dim ctl As control
+    Dim ctl As Control
     For Each ctl In DetailForm.controls
-        If ctl.name Like "???LHS*" Then
+        If ctl.Name Like "???LHS*" Then
             ctl.Locked = True
             ctl.Visible = True
             ctl.Properties("BackColor") = RAGColors.Default
-        ElseIf ctl.name Like "???RHS*" Then
+        ElseIf ctl.Name Like "???RHS*" Then
             ctl.Visible = True
             ctl.Properties("BackColor") = RAGColors.Yellow
-            Set ctl = GetControlByName(DetailForm.controls, Replace(ctl.name, "RHS", "LHS"))
-        ElseIf ctl.name Like "lblSuffix*" Then ctl.Properties("Left") = 6804
+            Set ctl = GetControlByName(DetailForm.controls, Replace(ctl.Name, "RHS", "LHS"))
+        ElseIf ctl.Name Like "lblSuffix*" Then ctl.Properties("Left") = 6804
             '4394 or 6804
         End If
     Next ctl
@@ -205,13 +205,13 @@ End Function
 Private Function ChangeToSaveEdits()
     Dim FieldName As String
     Dim rs As Recordset
-    Dim ctl As control
+    Dim ctl As Control
     
     Set rs = DetailForm.Recordset
     Debug.Assert Not rs.BOF
     Debug.Assert Not rs.EOF
     
-    If this.State = EditExisting Then
+    If This.State = EditExisting Then
         rs.Edit
         rs!ValidUntil = Now()
         rs.Update
@@ -223,12 +223,12 @@ Private Function ChangeToSaveEdits()
         rs.AddNew
         
         For Each ctl In DetailForm.controls
-            If ctl.name Like "???RHS*" Then
-                FieldName = Right$(ctl.name, Len(ctl.name) - 6)
+            If ctl.Name Like "???RHS*" Then
+                FieldName = Right$(ctl.Name, Len(ctl.Name) - 6)
                  rs.fields(FieldName) = ctl
             End If
         Next ctl
-    ElseIf this.State = EditNew Then
+    ElseIf This.State = EditNew Then
         rs.Edit
     End If
     
@@ -243,10 +243,10 @@ Private Function ChangeToCancelEditing()
     Dim TrackFK As Integer
     Dim detailID As Integer
     
-    If this.IsEditing = False Then Exit Function
-    this.IsEditing = False
+    If This.IsEditing = False Then Exit Function
+    This.IsEditing = False
     
-    If (this.State = EditNew) And (Not DetailForm.NewRecord) Then
+    If (This.State = EditNew) And (Not DetailForm.NewRecord) Then
         TrackFK = DetailForm.Recordset!TrackFK
         detailID = DetailForm.Recordset.fields("tblDetail.ID")
         RemoveCancelledNewRecord TrackFK, detailID
@@ -254,9 +254,9 @@ Private Function ChangeToCancelEditing()
     
     DetailForm.Undo
     
-    If this.State = EditExisting Then
+    If This.State = EditExisting Then
         TrySetState ViewExisting
-    ElseIf this.State = EditNew Then
+    ElseIf This.State = EditNew Then
         TrySetState Viewnew
     End If
     
@@ -318,23 +318,23 @@ Public Function TrySetState(newState As DetailStateForSCD) As Boolean
 End Function
 
 Private Function DoChangeState(newState As DetailStateForSCD)
-    Log "DoChangeState from " & EnumToState(this.State) & " -> " & EnumToState(newState)
-    this.State = newState
+    Log "DoChangeState from " & EnumToState(This.State) & " -> " & EnumToState(newState)
+    This.State = newState
     RaiseEvent StateChanged(newState)
     UpdateButtonsState
 End Function
 
 ' Editing
 Public Function StartEditing()
-    If this.IsEditing Then Exit Function
-    this.IsEditing = True
+    If This.IsEditing Then Exit Function
+    This.IsEditing = True
     RaiseEvent EditingStarted
     Log "StartEditing()"
 End Function
 
 Public Function StopEditing()
-    If this.IsEditing = False Then Exit Function
-    this.IsEditing = False
+    If This.IsEditing = False Then Exit Function
+    This.IsEditing = False
     RaiseEvent EditingStopped
     Log "StopEditing()"
     TrySetState Ready
@@ -383,15 +383,15 @@ Private Function GotoEntity()
     Log "GotoEntity #" & entityID
 End Function
 
-Private Function GetControlByName(controls As controls, name As String)
-    Dim ctl As control
+Private Function GetControlByName(controls As controls, Name As String)
+    Dim ctl As Control
     For Each ctl In controls
-        If ctl.name = name Then
+        If ctl.Name = Name Then
             Set GetControlByName = ctl
             Exit Function
         End If
     Next ctl
-    Err.Raise 5, , "Cannot find GetControlByName '" & name & "'"
+    Err.Raise 5, , "Cannot find GetControlByName '" & Name & "'"
 End Function
 
 Private Function Log(text As String)
@@ -453,28 +453,28 @@ Private Sub UpdateButtonsState()
     For Each ecb In Events
         Select Case ecb.ActionState
             Case EditNew
-                ecb.Enabled = (this.State = Viewnew)
+                ecb.Enabled = (This.State = Viewnew)
             Case SaveNew
-                ecb.Enabled = (this.State = EditNew)
+                ecb.Enabled = (This.State = EditNew)
             Case CancelNew
-                ecb.Enabled = (this.State = EditNew)
+                ecb.Enabled = (This.State = EditNew)
             Case ViewExisting
                 ecb.Enabled = True
                 If Detail Is Nothing Then ecb.Enabled = False
-                If this.IsEditing = True Then ecb.Enabled = False
-                If this.State = EditNew Then ecb.Enabled = False
-                If this.State = Viewnew Then ecb.Enabled = False
-                If this.State = ViewExisting Then ecb.Enabled = False
+                If This.IsEditing = True Then ecb.Enabled = False
+                If This.State = EditNew Then ecb.Enabled = False
+                If This.State = Viewnew Then ecb.Enabled = False
+                If This.State = ViewExisting Then ecb.Enabled = False
             Case EditExisting
-                ecb.Enabled = (this.State = ViewExisting)
+                ecb.Enabled = (This.State = ViewExisting)
             Case SaveExisting
-                ecb.Enabled = (this.State = EditExisting)
+                ecb.Enabled = (This.State = EditExisting)
             Case CancelExisting
-                ecb.Enabled = (this.State = EditExisting)
+                ecb.Enabled = (This.State = EditExisting)
             Case SaveAny
-                ecb.Enabled = (this.State = EditNew) Or (this.State = EditExisting)
+                ecb.Enabled = (This.State = EditNew) Or (This.State = EditExisting)
             Case CancelAny
-                ecb.Enabled = (this.State = EditNew) Or (this.State = EditExisting)
+                ecb.Enabled = (This.State = EditNew) Or (This.State = EditExisting)
         End Select
     Next ecb
 End Sub

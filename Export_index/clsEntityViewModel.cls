@@ -26,83 +26,83 @@ Private Type TViewModel
      SelectedEntityType As clsEntityType
      Model As clsDataModel
 End Type
-Private this As TViewModel
+Private This As TViewModel
 
 ' Ctor
 Private Sub Class_Initialize()
-    Set this.Model = New clsDataModel
+    Set This.Model = New clsDataModel
 End Sub
 
 ' Getters
 Public Property Get IsValid() As Boolean
-    If this.SelectedDetail Is Nothing Then Exit Property
-    If this.SelectedEntity Is Nothing Then Exit Property
+    If This.SelectedDetail Is Nothing Then Exit Property
+    If This.SelectedEntity Is Nothing Then Exit Property
     IsValid = True
 End Property
 
 Public Property Get Detail() As clsDetail
-    Debug.Assert Not this.SelectedDetail Is Nothing
-    Set Detail = this.SelectedDetail
+    Debug.Assert Not This.SelectedDetail Is Nothing
+    Set Detail = This.SelectedDetail
 End Property
 
 Public Property Get Entity() As clsEntity
-    Debug.Assert Not this.SelectedEntity Is Nothing
-    Set Entity = this.SelectedEntity
+    Debug.Assert Not This.SelectedEntity Is Nothing
+    Set Entity = This.SelectedEntity
 End Property
 
 Public Property Get EntityType() As clsEntityType
-    Debug.Assert Not this.SelectedEntityType Is Nothing
-    Set EntityType = this.SelectedEntityType
+    Debug.Assert Not This.SelectedEntityType Is Nothing
+    Set EntityType = This.SelectedEntityType
 End Property
 
 ' Letters
 Public Property Let Detail(ByRef vNewValue As clsDetail)
     If vNewValue Is Nothing Then Exit Property
-    If Not this.SelectedDetail Is Nothing Then
+    If Not This.SelectedDetail Is Nothing Then
         If Detail.ID = vNewValue.ID Then
             Exit Property
         End If
     End If
 
-    Set this.SelectedDetail = vNewValue
+    Set This.SelectedDetail = vNewValue
     RaiseEvent DetailChanged
 End Property
 
 Public Property Let Entity(ByRef vNewValue As clsEntity)
     If vNewValue Is Nothing Then Exit Property
-    If Not this.SelectedEntity Is Nothing Then
+    If Not This.SelectedEntity Is Nothing Then
         If Entity.ID = vNewValue.ID Then
             Exit Property
         End If
     End If
     
-    Set this.SelectedEntity = vNewValue
+    Set This.SelectedEntity = vNewValue
     RaiseEvent EntityChanged
 End Property
 
 Public Property Let EntityType(ByRef vNewValue As clsEntityType)
     If vNewValue Is Nothing Then Exit Property
-    If Not this.SelectedEntityType Is Nothing Then
+    If Not This.SelectedEntityType Is Nothing Then
         If EntityType.ID = vNewValue.ID Then
             Exit Property
         End If
     End If
     
-    Set this.SelectedEntityType = vNewValue
+    Set This.SelectedEntityType = vNewValue
     RaiseEvent EntityTypeChanged
 End Property
 
 ' Methods
 Public Function SetDetailByID(idx As Double)
-    Detail = this.Model.GetThingByID(this.Model.Details, idx)
+    Detail = This.Model.GetThingByID(This.Model.Details, idx)
 End Function
 
 Public Function SetEntityByID(idx As Double)
-    Entity = this.Model.GetThingByID(this.Model.Entities, idx)
+    Entity = This.Model.GetThingByID(This.Model.Entities, idx)
 End Function
 
 Public Function SetEntityTypeByID(idx As Double)
-    EntityType = this.Model.GetThingByID(this.Model.EntityTypes, idx)
+    EntityType = This.Model.GetThingByID(This.Model.EntityTypes, idx)
 End Function
 
 ' Apply Functions for Form Controls
@@ -141,11 +141,11 @@ Public Function SearchEntity(tb As textbox, lb As ListBox)
     tb.SetFocus
     criteria = tb.text & "*"
     
-    For Each Entity In this.Model.Entities
-        If Entity.name Like criteria Then
-            If (this.SelectedEntityType Is Nothing) Then
+    For Each Entity In This.Model.Entities
+        If Entity.Name Like criteria Then
+            If (This.SelectedEntityType Is Nothing) Then
                 filteredEntities.Add Entity
-            ElseIf Entity.EntityType = this.SelectedEntityType.ID Then
+            ElseIf Entity.EntityType = This.SelectedEntityType.ID Then
                 filteredEntities.Add Entity
             End If
         End If
@@ -159,6 +159,6 @@ Public Function SearchEntity(tb As textbox, lb As ListBox)
     Next i
     
     For Each Entity In filteredEntities
-        lb.AddItem CStr(Entity.ID) & ";" & Entity.name
+        lb.AddItem CStr(Entity.ID) & ";" & Entity.Name
     Next Entity
 End Function

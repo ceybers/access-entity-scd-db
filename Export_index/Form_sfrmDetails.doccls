@@ -40,9 +40,9 @@ Private Sub MapButtonsToStates(vm As clsDetailViewModel)
 End Sub
 
 Private Sub DisableCommandButtons()
-    Dim ctl As control
+    Dim ctl As Control
     For Each ctl In Me.controls
-        If ctl.name Like "btn*" Then
+        If ctl.Name Like "btn*" Then
             ctl.Enabled = False
         End If
     Next ctl

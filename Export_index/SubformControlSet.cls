@@ -23,70 +23,70 @@ Private Type TSubformControlSet
     RecordsetQuery As String
 End Type
 
-Private this As TSubformControlSet
+Private This As TSubformControlSet
 
 Public Property Get FieldName() As String
-    FieldName = this.FieldName
+    FieldName = This.FieldName
 End Property
 
-Public Property Let FieldName(ByVal RHS As String)
-    this.FieldName = RHS
+Public Property Let FieldName(ByVal rhs As String)
+    This.FieldName = rhs
 End Property
 
 Public Property Get Caption() As String
-    Caption = this.Caption
+    Caption = This.Caption
 End Property
 
-Public Property Let Caption(ByVal RHS As String)
-    this.Caption = RHS
+Public Property Let Caption(ByVal rhs As String)
+    This.Caption = rhs
 End Property
 
 Public Property Get Width() As String
-    Width = this.Width
+    Width = This.Width
 End Property
 
-Public Property Let Width(ByVal RHS As String)
-    this.Width = RHS
+Public Property Let Width(ByVal rhs As String)
+    This.Width = rhs
 End Property
 
 Public Property Get LookupTable() As String
-    LookupTable = this.LookupTable
+    LookupTable = This.LookupTable
 End Property
 
-Public Property Let LookupTable(ByVal RHS As String)
-    this.LookupTable = RHS
+Public Property Let LookupTable(ByVal rhs As String)
+    This.LookupTable = rhs
 End Property
 
 Public Property Get Suffix() As String
-    Suffix = this.Suffix
+    Suffix = This.Suffix
 End Property
 
-Public Property Let Suffix(ByVal RHS As String)
-    this.Suffix = RHS
+Public Property Let Suffix(ByVal rhs As String)
+    This.Suffix = rhs
 End Property
 
 Public Property Get Format() As String
-    Format = this.Format
+    Format = This.Format
 End Property
 
-Public Property Let Format(ByVal RHS As String)
-    this.Format = RHS
+Public Property Let Format(ByVal rhs As String)
+    This.Format = rhs
 End Property
 
 Public Property Get Textalign() As String
-    Textalign = this.Textalign
+    Textalign = This.Textalign
 End Property
 
-Public Property Let Textalign(ByVal RHS As String)
-    this.Textalign = RHS
+Public Property Let Textalign(ByVal rhs As String)
+    This.Textalign = rhs
 End Property
 
 Public Property Get RecordsetQuery() As String
-    RecordsetQuery = this.RecordsetQuery
+    RecordsetQuery = This.RecordsetQuery
 End Property
 
-Public Property Let RecordsetQuery(ByVal RHS As String)
-    this.RecordsetQuery = RHS
+Public Property Let RecordsetQuery(ByVal rhs As String)
+    This.RecordsetQuery = rhs
 End Property
 
 Public Function Create(ByVal FieldName As String, ByVal Caption As String, ByVal Width As Long) As subformcontrolset
@@ -108,6 +108,6 @@ Public Function CreateFromRecordset(ByRef rs As Recordset) As subformcontrolset
         .Suffix = Nz(rs.fields("Suffix").Value)
         .Format = Nz(rs.fields("Format").Value)
         .Textalign = Nz(rs.fields("TextAlign").Value)
-        .RecordsetQuery = rs.name
+        .RecordsetQuery = rs.Name
     End With
 End Function

@@ -22,7 +22,7 @@ Public Sub InitializeListView(ByRef listview As listview, ByRef largeIcons As Im
         
         '.View = lvwIcon
         '.View = lvwList
-        .View = lvwReport
+        .view = lvwReport
         '.View = lvwSmallIcon
         
         .Icons = largeIcons

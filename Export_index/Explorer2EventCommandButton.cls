@@ -20,22 +20,22 @@ Private Type TExplorer2EventCommandButton
     State As String
 End Type
 
-Private this As TExplorer2EventCommandButton
+Private This As TExplorer2EventCommandButton
 
 Public Property Get Context() As ViewModelExplorer2
-    Set Context = this.Context
+    Set Context = This.Context
 End Property
 
-Public Property Set Context(ByVal RHS As ViewModelExplorer2)
-    Set this.Context = RHS
+Public Property Set Context(ByVal rhs As ViewModelExplorer2)
+    Set This.Context = rhs
 End Property
 
 Public Property Get State() As String
-    State = this.State
+    State = This.State
 End Property
 
-Public Property Let State(ByVal RHS As String)
-    this.State = RHS
+Public Property Let State(ByVal rhs As String)
+    This.State = rhs
 End Property
 
 Public Property Get Self() As Explorer2EventCommandButton
@@ -43,7 +43,7 @@ Public Property Get Self() As Explorer2EventCommandButton
 End Property
 
 Private Sub cmdBtn_Click()
-    this.Context.HandleEvent this.State
+    This.Context.HandleEvent This.State
 End Sub
 
 Public Property Set CommandButton(textbox As Access.CommandButton)

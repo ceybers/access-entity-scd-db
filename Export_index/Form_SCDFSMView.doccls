@@ -1,0 +1,83 @@
+﻿'@Folder "SCDFSM"
+Option Compare Database
+Option Explicit
+Implements IView
+
+Private WithEvents Model As SCDFSMViewModel
+
+Private Type TState
+    IsCancelled As Boolean
+End Type
+Private This As TState
+
+Private Sub Form_Activate()
+    If Model Is Nothing Then
+        'Debug.Print "Form_SCDFSMView created a new SCDFSMViewModel"
+        Set Model = New SCDFSMViewModel
+        InitializeViewModel
+    End If
+End Sub
+
+Private Sub cmbDebug_Click()
+    Me.txtDEBUG.Value = Model.GetDEBUGText
+End Sub
+
+Private Sub Model_PleaseDebug()
+    DoDEBUG
+End Sub
+
+Private Sub DoDEBUG()
+    Me.txtDEBUG.Value = Model.GetDEBUGText
+End Sub
+
+Private Function IView_ShowDialog(ByVal ViewModel As IViewModel) As Boolean
+    Set Model = ViewModel
+    This.IsCancelled = False
+    
+    DoCmd.OpenForm Me.Name
+        
+    InitializeViewModel
+    
+    DoDEBUG
+    
+    IView_ShowDialog = True
+End Function
+
+Private Sub InitializeViewModel()
+    InitializeView
+    InitializeProperties
+    Model.CurrentState = 1
+End Sub
+
+Private Sub InitializeView()
+    With Model
+        .AddEvent "Add", Me.cmbAdd
+        .AddEvent "Edit", Me.cmbEdit
+        .AddEvent "Save", Me.cmbSave
+        .AddEvent "Cancel", Me.cmbCancel
+        .AddEvent "ViewOne", Me.cmbViewOne
+        .AddEvent "ViewMany", Me.cmbViewMany
+        ' .AddEvent "IsEditing", Me.chkIsEditing
+        .AddEvent "ExistingRecords", Me.optGrpExistingRecords
+    End With
+End Sub
+
+Private Sub InitializeProperties()
+    Model_PropertyChanged "CurrentState"
+    Model_PropertyChanged "HasExistingRecords"
+    Model_PropertyChanged "IsDirty"
+End Sub
+
+Private Sub Model_PropertyChanged(ByVal PropertyName As String)
+    'Debug.Print "Model_PropertyChanged = " & PropertyName
+    Select Case PropertyName
+        Case "CurrentState"
+            Me.txtCurrentState.Value = Model.CurrentStateAsString
+        Case "HasExistingRecords"
+            Me.optGrpExistingRecords.Value = IIf(Model.HasExistingRecords, 1, 0)
+        Case "IsDirty"
+            Me.chkIsEditing = Model.IsDirty
+        Case Else
+            Debug.Assert False
+    End Select
+End Sub

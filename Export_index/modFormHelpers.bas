@@ -6,7 +6,7 @@ Option Explicit
 Public Function DoesFormExist(ByVal formName As String) As Boolean
     Dim frm As Form
     For Each frm In Application.CurrentProject.AllForms
-        If frm.name = formName Then
+        If frm.Name = formName Then
             DoesFormExist = True
             Exit Function
         End If
@@ -17,7 +17,7 @@ Public Sub CreateBlankForm(formName As String)
     Dim oldName As String
     Dim frm As Form
     Set frm = CreateForm()
-    oldName = frm.name
+    oldName = frm.Name
     DoCmd.Close acForm, oldName, acSaveYes
     DoCmd.Rename formName, acForm, oldName
 End Sub
@@ -25,7 +25,7 @@ End Sub
 Public Function DeleteExistingForm(formName As String) As Boolean
     Dim frm As Object
     For Each frm In CurrentProject.AllForms
-        If frm.name = formName Then
+        If frm.Name = formName Then
             DoCmd.DeleteObject acForm, formName
             DeleteExistingForm = True
             Exit Function
@@ -33,15 +33,15 @@ Public Function DeleteExistingForm(formName As String) As Boolean
     Next frm
 End Function
 
-Public Function RemoveAllControlsFromForm(ByRef frm As Form)
+Public Sub RemoveAllControlsFromForm(ByRef frm As Form)
     Dim i As Long
     For i = frm.controls.count To 1 Step -1
-        DeleteControl frm.name, frm.controls(i - 1).name
+        DeleteControl frm.Name, frm.controls(i - 1).Name
     Next i
-End Function
+End Sub
 
 Public Sub OpenFormInDesignMode(ByVal formName As String)
-    DoCmd.OpenForm formName:=formName, View:=acDesign
+    DoCmd.OpenForm formName:=formName, view:=acDesign
 End Sub
 
 Public Sub CloseFormInDesignMode(ByVal formName As String)
